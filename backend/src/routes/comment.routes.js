@@ -1,16 +1,17 @@
-import express from "express";
+import express from 'express'
 import {
   createComment,
   deleteComment,
   getAllComments,
   updateComment,
-} from "../controllers/comment.controller.js";
+} from '../controllers/comment.controller.js'
+import { checkToken } from '../middlewares/auth.middlewares.js'
 
-const router = express.Router();
+const router = express.Router()
 
 // CRUD ------------------------------------------------------------------------
-router.get("/", getAllComments);
-router.post("/", createComment);
-router.put("/:categoryId", updateComment);
-router.delete("/:categoryId", deleteComment);
-export default router;
+router.get('/', getAllComments)
+router.post('/', checkToken, createComment)
+router.put('/:categoryId', checkToken, updateComment)
+router.delete('/:categoryId', checkToken, deleteComment)
+export default router

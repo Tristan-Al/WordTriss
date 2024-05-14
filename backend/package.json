@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Node.js Rest API with Express, Sequelize & MySQL.",
   "main": "index.js",
   "type": "module",
   "scripts": {

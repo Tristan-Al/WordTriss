@@ -1,6 +1,10 @@
-import { User } from "../models/user.model.js";
-import { Role } from "../models/role.model.js";
-import { createToken } from "../utils/utils.js";
+import { User } from '../models/user.model.js'
+import { Role } from '../models/role.model.js'
+import { Post } from '../models/post.model.js'
+import { Category } from '../models/category.model.js'
+import { Tag } from '../models/tag.model.js'
+import { Comment } from '../models/comment.model.js'
+import { formatPost } from '../utils/utils.js'
 
 /**
  * Get all users from database
@@ -10,8 +14,8 @@ import { createToken } from "../utils/utils.js";
 export const getAllUsers = async (req, res) => {
   User.findAll()
     .then((users) => res.json(users))
-    .catch((error) => res.status(500).json({ message: error.message }));
-};
+    .catch((error) => res.status(500).json({ message: error.message }))
+}
 
 /**
  * Get user from database by id
@@ -20,17 +24,17 @@ export const getAllUsers = async (req, res) => {
  */
 export const getUserById = async (req, res) => {
   // Get user ID from request params
-  const { userId } = req.params; // Same as: userId = req.params.userId;
+  const { userId } = req.params // Same as: userId = req.params.userId;
 
   // Get user by ID from DB
   User.findByPk(userId)
     .then((user) =>
       !user
-        ? res.status(404).json({ message: "User not found" })
-        : res.json(user),
+        ? res.status(404).json({ message: 'User not found' })
+        : res.json(user)
     )
-    .catch((error) => res.status(500).json({ message: error.message }));
-};
+    .catch((error) => res.status(500).json({ message: error.message }))
+}
 
 /**
  * Create new user in database
@@ -39,7 +43,7 @@ export const getUserById = async (req, res) => {
  */
 export const createUser = async (req, res) => {
   // Destructure request body to get values
-  const { displayName, username, password, confirmPassword, email } = req.body;
+  const { displayName, username, password, confirmPassword, email } = req.body
 
   // Validate the fields
   if (
@@ -48,10 +52,10 @@ export const createUser = async (req, res) => {
       username,
       password,
       confirmPassword,
-      email,
+      email
     )
   ) {
-    return res.status(400).json({ message: "Invalid fields" });
+    return res.status(400).json({ message: 'Invalid fields' })
   }
 
   // Insert user in DB
@@ -59,11 +63,11 @@ export const createUser = async (req, res) => {
     display_name: displayName,
     username,
     password: User.encryptPassword(password),
-    email,
+    email
   })
     .then((newUser) => res.json(newUser)) // Send user to response as JSON
-    .catch((error) => res.status(500).json({ message: error.message })); // Send error message
-};
+    .catch((error) => res.status(500).json({ message: error.message })) // Send error message
+}
 
 /**
  * Update a user in database by id
@@ -72,10 +76,10 @@ export const createUser = async (req, res) => {
  */
 export const updateUser = async (req, res) => {
   // Get user ID from request params
-  const { userId } = req.params;
+  const { userId } = req.params
 
   // Destructure request body to get values
-  const { displayName, username, password, confirmPassword, email } = req.body;
+  const { displayName, username, password, confirmPassword, email } = req.body
 
   // Validate the fields
   if (
@@ -84,23 +88,23 @@ export const updateUser = async (req, res) => {
       username,
       password,
       confirmPassword,
-      email,
+      email
     )
   ) {
-    return res.status(400).json({ message: "Invalid fields" });
+    return res.status(400).json({ message: 'Invalid fields' })
   }
 
-  const { roleId } = req.params;
-  let role = null;
+  const { roleId } = req.params
+  let role = null
   if (roleId) {
-    role = await Role.findByPk(roleId);
+    role = await Role.findByPk(roleId)
   }
 
   // Update user
   User.findByPk(userId)
     .then((user) => {
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({ message: 'User not found' })
       }
 
       // Update user data
@@ -110,14 +114,14 @@ export const updateUser = async (req, res) => {
         password,
         confirmPassword,
         email,
-        role_id: roleId,
-      });
+        role_id: roleId
+      })
 
       // Save it in DB
-      user.save().then((updatedUser) => res.json(updatedUser));
+      user.save().then((updatedUser) => res.json(updatedUser))
     })
-    .catch((error) => res.status(500).json({ message: error.message }));
-};
+    .catch((error) => res.status(500).json({ message: error.message }))
+}
 
 /**
  * Delete a user from database by id
@@ -126,55 +130,53 @@ export const updateUser = async (req, res) => {
  */
 export const deleteUser = async (req, res) => {
   // Get user ID from params
-  const { userId } = req.params;
+  const { userId } = req.params
 
   // Delete user from DB
   User.destroy({ where: { id: userId } })
     .then((num) => {
       if (num === 0) {
         // Send error message
-        res.status(404).json({ message: "User not found" });
+        res.status(404).json({ message: 'User not found' })
       } else {
         // Send success message
-        res.json({ message: "User deleted successfully!" });
+        res.json({ message: 'User deleted successfully!' })
       }
     })
-    .catch((error) => res.status(500).json({ message: error.message }));
-};
+    .catch((error) => res.status(500).json({ message: error.message }))
+}
 
 /**
- * Login and generate the token for the user.
- * @param {*} req The request object
- * @param {*} res The response object
+ * Get posts from database by author
+ * @param {*} req The request object from Express
+ * @param {*} res The response object from Express
  */
-export const login = async (req, res) => {
-  try {
-    const { username, password } = req.body;
+export const getPosts = async (req, res) => {
+  // Get author id from request params
+  const { id } = req.params
 
-    // Find the user in the database
-    const user = await User.findOne({ username });
+  // Get posts from DB
+  Post.findAll({
+    where: { user_id: id },
+    include: [
+      { model: User },
+      { model: Tag },
+      { model: Category },
+      { model: Comment }
+    ]
+  })
+    .then((posts) => {
+      // Check if posts was founded
+      if (!posts) {
+        // Return error
+        return res.status(404).json({ message: 'No posts found' })
+      }
 
-    // Check if we have a user
-    if (!user) {
-      // Send error message
-      return res
-        .status(404)
-        .json({ message: "Incorrect username or password", token: null });
-    }
+      // Format response as JSON
+      const formattedPosts = posts.map(formatPost)
 
-    // Check password
-    if (!User.comparePassword(password, user.password)) {
-      return res
-        .status(400)
-        .json({ error: "Incorrect username or password", token: null });
-    }
-
-    // Success
-    res.json({
-      success: "Login successfully!",
-      token: createToken(user),
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message, token: null });
-  }
-};
+      // Send post in response as JSON
+      res.json(formattedPosts)
+    })
+    .catch((error) => res.status(500).json({ message: error.message }))
+}

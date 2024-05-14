@@ -1,10 +1,10 @@
-import { DataTypes } from "sequelize";
-import { db } from "../config/database.js";
-import { Role } from "./role.model.js";
-import bcrypt from "bcryptjs";
+import { DataTypes } from 'sequelize'
+import { db } from '../config/database.js'
+import { Role } from './role.model.js'
+import bcrypt from 'bcryptjs'
 
 export const User = db.define(
-  "users",
+  'users',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -27,16 +27,14 @@ export const User = db.define(
     email: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      isEmail: true,
     },
     biography: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
     picture: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      isEmail: true,
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     role_id: {
       type: DataTypes.INTEGER,
@@ -45,17 +43,17 @@ export const User = db.define(
   },
   {
     timestamps: true, // Enable timestamps
-    createdAt: "created_at", // Modify name for createdAt column
-    updatedAt: "updated_at", // Modify name for updatedAt column
+    createdAt: 'created_at', // Modify name for createdAt column
+    updatedAt: 'updated_at', // Modify name for updatedAt column
   },
-);
+)
 
 // N:1 Relationship between User and Role
 User.belongsTo(Role, {
-  foreignKey: "role_id",
-  onDelete: "SET DEFAULT",
-  onUpdate: "CASCADE",
-});
+  foreignKey: 'role_id',
+  onDelete: 'SET DEFAULT',
+  onUpdate: 'CASCADE',
+})
 
 /** ------------------------------------------------------
  * User Functions and Validations
@@ -83,13 +81,13 @@ User.validateAllFields = (
     password,
     confirmPassword,
     email,
-  ].every((field) => field?.trim().length > 0);
+  ].every((field) => field?.trim().length > 0)
 
   // Check if passwords match
-  const passwordsMatch = password === confirmPassword;
+  const passwordsMatch = password === confirmPassword
 
-  return isValid && passwordsMatch;
-};
+  return isValid && passwordsMatch
+}
 
 /**
  * Validate the username is unique in the database
@@ -97,8 +95,8 @@ User.validateAllFields = (
  * @return {Boolean} True if the username is valid
  */
 User.exists = async (username) => {
-  return await User.findOne({ where: { username } });
-};
+  return await User.findOne({ where: { username } })
+}
 
 /**
  * Encrypt the password using bcrypt
@@ -106,8 +104,8 @@ User.exists = async (username) => {
  * @returns {String} The encrypted password
  */
 User.encryptPassword = (password) => {
-  return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-};
+  return bcrypt.hashSync(password, bcrypt.genSaltSync(10))
+}
 
 /**
  * Compare the password with the received password
@@ -116,5 +114,5 @@ User.encryptPassword = (password) => {
  * @returns {Boolean} True if the password is correct, false otherwise
  */
 User.comparePassword = (password, receivedPassword) => {
-  return bcrypt.compareSync(password, receivedPassword);
-};
+  return bcrypt.compareSync(password, receivedPassword)
+}
