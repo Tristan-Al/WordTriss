@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar/Navbar'
 
 const DefaultLayout = ({ children }) => {
   return (
-    <div className='wrapper'>
+    <div className='wrapper dark:bg-gray-900'>
       <Navbar />
       <main>{children}</main>
     </div>

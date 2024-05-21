@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import useAlertToast from '../../../hooks/useToast'
 import useAuth from '../../../hooks/useAuth'
-import AdminHeader from '../../../components/AdminHeader/AdminHeader'
+import AdminHeader from '../../../components/Headers/AdminHeader'
 
 const Dashboard = () => {
   const { toast } = useAlertToast()

@@ -2,13 +2,11 @@ import React, { useEffect, useState } from 'react'
 import postService from '../../../services/postService'
 import useAlertToast from '../../../hooks/useToast'
 import useAuth from '../../../hooks/useAuth'
-import AdminHeader from '../../../components/AdminHeader/AdminHeader'
+import AdminHeader from '../../../components/Headers/AdminHeader'
 import TableAdmin from '../../../components/Tables/TableAdmin'
 
 const PostsDashboard = () => {
-  const { toast } = useAlertToast()
-  const { userId, displayName, username, email, roleId, isAdmin, picture } =
-    useAuth()
+  const { displayName, picture } = useAuth()
 
   const [posts, setPosts] = useState([])
 

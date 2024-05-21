@@ -1,7 +1,7 @@
 import React from 'react'
 import useAlertToast from '../../../hooks/useToast'
 import useAuth from '../../../hooks/useAuth'
-import AdminHeader from '../../../components/AdminHeader/AdminHeader'
+import AdminHeader from '../../../components/Headers/AdminHeader'
 import CardProfile from '../../../components/Cards/CardProfile'
 import CardSettings from '../../../components/Cards/CardSettings'
 

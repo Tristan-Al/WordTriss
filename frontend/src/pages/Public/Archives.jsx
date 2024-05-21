@@ -27,8 +27,9 @@ function Archives() {
     }
 
     fetchPosts()
-  }, [])
+  }, [topic, id])
 
+  console.log(`Topic ${topic}, Posts found: ${posts.length}`, posts)
   return (
     <main className='container px-4 mx-auto'>
       <h2 className='text-3xl font-semibold text-gray-800 capitalize my-4'>

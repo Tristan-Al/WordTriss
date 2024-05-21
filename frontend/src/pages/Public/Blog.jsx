@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import CardPost from '../../components/Cards/CardPost'
+import BlogPostCard from '../../components/Cards/BlogPostCard'
 import postService from '../../services/postService'
 
 function Blog() {
@@ -27,10 +27,10 @@ function Blog() {
   }, [])
 
   return (
-    <div className='container mx-auto py-5'>
+    <div className='container mx-auto py-5 px-3 sm:px-2 flex flex-col gap-2'>
       {posts.map((post) => (
-        <div id={post.id} key={post.id}>
-          <CardPost post={post} />
+        <div id={'post-' + post.id} key={post.id}>
+          <BlogPostCard post={post} />
         </div>
       ))}
     </div>

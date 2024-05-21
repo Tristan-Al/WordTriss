@@ -35,8 +35,6 @@ function Login() {
 
     // Call the signIn function
     try {
-      // console.log(`Trying to send login to api...`)
-
       // Make the request to api
       const response = await fetch(
         `${process.env.REACT_APP_API_BASE_URL}/login`,
@@ -58,9 +56,6 @@ function Login() {
 
       // Parse the response body as JSON
       const data = await response.json()
-
-      // console.log(`Login successfully: ${data.message}`)
-      // console.log(`\t Token: ${data.token}`)
 
       // Call the signIn function with the token and user state, then save it in cookies
       signIn({
@@ -84,28 +79,34 @@ function Login() {
   }
 
   return (
-    <div className='min-h-screen bg-gray-100 flex flex-col justify-center sm:py-12'>
+    <div className='min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col justify-center sm:py-12'>
       <div className='p-10 xs:p-0 mx-auto md:w-full md:max-w-md'>
-        <h1 className='font-bold text-center text-2xl mb-5'>Logo</h1>
+        <h1 className='font-bold text-center text-2xl mb-5 text-gray-800 dark:text-gray-200'>
+          Logo
+        </h1>
         <form
-          className='bg-white shadow w-full rounded-lg'
+          className='bg-white dark:bg-gray-800 shadow w-full rounded-lg'
           onSubmit={handleSubmit}
         >
           <div className='px-5 py-7'>
-            <label className='text-sm text-gray-800 pb-1 block'>Username</label>
+            <label className='text-sm text-gray-800 dark:text-gray-300 pb-1 block'>
+              Username
+            </label>
             <input
               type='text'
-              className='text-gray-600 rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full outline-none bg-gray-100 drop-shadow focus:shadow focus:bg-gray-200'
+              className='text-gray-600 dark:text-gray-300 rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full outline-none bg-gray-100 dark:bg-gray-700 drop-shadow focus:shadow focus:bg-gray-200 dark:focus:bg-gray-600'
               name='username'
               value={inputs.username}
               onChange={handleInputChange}
               placeholder='Username'
               required
             />
-            <label className='text-sm text-gray-800 pb-1 block'>Password</label>
+            <label className='text-sm text-gray-800 dark:text-gray-300 pb-1 block'>
+              Password
+            </label>
             <input
               type='password'
-              className='text-gray-600 rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full outline-none bg-gray-100 drop-shadow focus:shadow focus:bg-gray-200'
+              className='text-gray-600 dark:text-gray-300 rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full outline-none bg-gray-100 dark:bg-gray-700 drop-shadow focus:shadow focus:bg-gray-200 dark:focus:bg-gray-600'
               name='password'
               value={inputs.password}
               onChange={handleInputChange}
@@ -114,7 +115,7 @@ function Login() {
             />
             <button
               type='submit'
-              className='transition duration-200 bg-blue-500 hover:bg-blue-600 focus:bg-blue-700 focus:shadow-sm focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 text-white w-full p-4 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block'
+              className='transition duration-200 bg-blue-500 hover:bg-blue-600  focus:bg-blue-700 focus:shadow-sm focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 text-white w-full p-4 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block'
             >
               <span className='inline-block mr-2'>Login</span>
               <svg
@@ -122,7 +123,7 @@ function Login() {
                 fill='none'
                 viewBox='0 0 24 24'
                 stroke='currentColor'
-                className='w-4 h-4 inline-block'
+                className='w-4 h-4 inline-block text-white dark:text-gray-300'
               >
                 <path
                   strokeLinecap='round'
@@ -135,37 +136,37 @@ function Login() {
           </div>
 
           <div className='flex items-center px-5 py-2'>
-            <hr className='h-0 border-b border-solid border-grey-500 grow' />
-            <p className='mx-4 text-gray-400'>or</p>
-            <hr className='h-0 border-b border-solid border-grey-500 grow' />
+            <hr className='h-0 border-b border-solid  dark:border-gray-700 grow' />
+            <p className='mx-4 text-gray-400 dark:text-gray-300'>or</p>
+            <hr className='h-0 border-b border-solid  dark:border-gray-700 grow' />
           </div>
 
-          {/*<div className='p-5'>*/}
-          {/*  <div className='grid grid-cols-3 gap-1'>*/}
-          {/*    <button*/}
-          {/*      type='button'*/}
-          {/*      className='transition duration-200 border border-gray-200 text-gray-500 w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-normal text-center inline-block'*/}
-          {/*    >*/}
-          {/*      MailUp*/}
-          {/*    </button>*/}
-          {/*    <button*/}
-          {/*      type='button'*/}
-          {/*      className='transition duration-200 border border-gray-200 text-gray-500 w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-normal text-center inline-block'*/}
-          {/*    >*/}
-          {/*      Google*/}
-          {/*    </button>*/}
-          {/*    <button*/}
-          {/*      type='button'*/}
-          {/*      className='transition duration-200 border border-gray-200 text-gray-500 w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-normal text-center inline-block'*/}
-          {/*    >*/}
-          {/*      Github*/}
-          {/*    </button>*/}
-          {/*  </div>*/}
-          {/*</div>*/}
+          <div className='p-5'>
+            <div className='grid grid-cols-3 gap-1'>
+              <button
+                type='button'
+                className='transition duration-200 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-300 w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md dark:hover:shadow-sm dark:hover:shadow-gray-400 font-normal text-center inline-block'
+              >
+                Facebook
+              </button>
+              <button
+                type='button'
+                className='transition duration-200 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-300 w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md dark:hover:shadow-sm dark:hover:shadow-gray-400 font-normal text-center inline-block'
+              >
+                Google
+              </button>
+              <button
+                type='button'
+                className='transition duration-200 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-300 w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md dark:hover:shadow-sm dark:hover:shadow-gray-400 font-normal text-center inline-block'
+              >
+                Github
+              </button>
+            </div>
+          </div>
 
           <Link
             to={''}
-            className='flex items-center justify-center mx-5 my-2 p-4 text-sm font-medium transition duration-300 rounded-lg text-gray-900 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:ring-gray-300'
+            className='flex items-center justify-center mx-5 my-2 p-4 text-sm font-medium transition duration-300 rounded-lg text-gray-900 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-700'
           >
             <img
               className='h-5 mr-2'
@@ -178,13 +179,13 @@ function Login() {
           <div className='py-5'>
             <div className='grid grid-cols-2 gap-1'>
               <div className='text-center sm:text-left whitespace-nowrap'>
-                <button className='transition duration-200 mx-5 px-5 py-4 cursor-pointer font-normal text-sm rounded-lg text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-200 focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 ring-inset'>
+                <button className='transition duration-200 mx-5 px-5 py-4 cursor-pointer font-normal text-sm rounded-lg text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-200 dark:focus:bg-gray-600 focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 ring-inset'>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
                     viewBox='0 0 24 24'
                     stroke='currentColor'
-                    className='w-4 h-4 inline-block align-text-top'
+                    className='w-4 h-4 inline-block align-text-top text-white dark:text-gray-300'
                   >
                     <path
                       strokeLinecap='round'
@@ -197,13 +198,13 @@ function Login() {
                 </button>
               </div>
               <div className='text-center sm:text-right  whitespace-nowrap'>
-                <button className='transition duration-200 mx-5 px-5 py-4 cursor-pointer font-normal text-sm rounded-lg text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-200 focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 ring-inset'>
+                <button className='transition duration-200 mx-5 px-5 py-4 cursor-pointer font-normal text-sm rounded-lg text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-200 dark:focus:bg-gray-600 focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50 ring-inset'>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
                     viewBox='0 0 24 24'
                     stroke='currentColor'
-                    className='w-4 h-4 inline-block align-text-bottom	'
+                    className='w-4 h-4 inline-block align-text-bottom	text-white dark:text-gray-300'
                   >
                     <path
                       strokeLinecap='round'
@@ -220,11 +221,11 @@ function Login() {
         </form>
         <div className='py-5'>
           <div className='grid grid-cols-2 gap-1'>
-            <div className='text-center sm:text-left whitespace-nowrap font-normal text-sm text-gray-500 mx-5'>
+            <div className='text-center sm:text-left whitespace-nowrap font-normal text-sm text-gray-500 dark:text-gray-300 mx-5'>
               <span className='inline-block'>Don't have an account?</span>
               <Link
                 to='/register'
-                className='font-bold ml-2 hover:text-gray-600'
+                className='font-bold ml-2 hover:text-gray-600 dark:hover:text-gray-400'
               >
                 Register
               </Link>
