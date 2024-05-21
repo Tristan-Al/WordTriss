@@ -52,3 +52,16 @@ Comment.belongsTo(Comment, {
   onDelete: 'SET NULL',
   onUpdate: 'CASCADE'
 })
+
+/**
+ * Validate comment fields
+ * @param {string} content The comment content
+ * @param {string} status The comment status
+ * @param {number} userId The user ID
+ * @param {number} postId The post ID
+ * @param {number} parentId The parent comment ID
+ * @returns {boolean} Returns true if all fields are valid
+ */
+Comment.validateAllFields = (content, status, userId, postId, parentId) => {
+  return content && status && userId && postId && parentId
+}

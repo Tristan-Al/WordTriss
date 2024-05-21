@@ -5,6 +5,8 @@ import postRoutes from './post.routes.js'
 import pageRoutes from './pages.routes.js'
 import userRoutes from './user.routes.js'
 import authRoutes from './auth.routes.js'
+import commentRoutes from './comment.routes.js'
+
 import { checkToken } from '../middlewares/auth.middlewares.js'
 
 const router = express.Router()
@@ -14,6 +16,8 @@ router.use('/categories', categoryRoutes)
 router.use('/tags', tagRoutes)
 router.use('/posts', postRoutes)
 router.use('/pages', checkToken, pageRoutes)
+router.use('/comments', commentRoutes)
+// router.use('/roles', roleRoutes)
 router.use('/', authRoutes)
 // router.use("/roles", checkToken, roleRoutes);
 

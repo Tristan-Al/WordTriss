@@ -4,7 +4,7 @@ import { Post } from '../models/post.model.js'
 import { Category } from '../models/category.model.js'
 import { Tag } from '../models/tag.model.js'
 import { Comment } from '../models/comment.model.js'
-import { formatPost } from '../utils/utils.js'
+import { formatPost, formatUser } from '../utils/utils.js'
 
 /**
  * Get all users from database
@@ -13,7 +13,7 @@ import { formatPost } from '../utils/utils.js'
  */
 export const getAllUsers = async (req, res) => {
   User.findAll()
-    .then((users) => res.json(users))
+    .then((users) => res.json(users.map(formatUser)))
     .catch((error) => res.status(500).json({ message: error.message }))
 }
 
@@ -31,7 +31,7 @@ export const getUserById = async (req, res) => {
     .then((user) =>
       !user
         ? res.status(404).json({ message: 'User not found' })
-        : res.json(user)
+        : res.json(formatUser(user))
     )
     .catch((error) => res.status(500).json({ message: error.message }))
 }

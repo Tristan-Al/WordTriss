@@ -12,12 +12,7 @@ import { formatPost } from '../utils/utils.js'
  */
 export const getAllPosts = async (req, res) => {
   Post.findAll({
-    include: [
-      { model: Category },
-      { model: Tag },
-      { model: User },
-      { model: Comment }
-    ]
+    include: [{ model: Category }, { model: Tag }, { model: Comment }]
   })
     .then((posts) => {
       // Format post
@@ -39,12 +34,7 @@ export const getPostById = async (req, res) => {
 
   // Get post by ID from DB
   Post.findByPk(postId, {
-    include: [
-      { model: Category },
-      { model: Tag },
-      { model: User },
-      { model: Comment }
-    ]
+    include: [{ model: Category }, { model: Tag }, { model: Comment }]
   })
     .then((post) => {
       // Check if a post was founded

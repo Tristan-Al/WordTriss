@@ -28,47 +28,55 @@ export const formatPost = (post) => {
     content: post.content,
     thumbnail: post.thumbnail,
     status: post.status,
-    user: {
-      id: post.user.id,
-      displayName: post.user.display_name,
-      username: post.user.username,
-      email: post.user.email,
-      biography: post.user.biography,
-      picture: post.user.picture,
-      roleId: post.user.role_id
-    },
+    userId: post.user_id,
     categories: [],
     tags: [],
     comments: [],
     createdAt: post.created_at,
     updatedAt: post.updated_at
   }
+
   if (post.categories && post.categories.length > 0) {
-    formattedPost.categories = post.categories.map((category) => ({
-      id: category.id,
-      name: category.name
-    }))
+    formattedPost.categories = post.categories.map((category) => category.id)
   }
 
   if (post.tags && post.tags.length > 0) {
-    formattedPost.tags = post.tags.map((tag) => ({
-      id: tag.id,
-      name: tag.name
-    }))
+    formattedPost.tags = post.tags.map((tag) => tag.id)
   }
 
   if (post.comments && post.comments.length > 0) {
-    formattedPost.comments = post.comments.map((comment) => ({
-      id: comment.id,
-      content: comment.content,
-      date: comment.updated_at,
-      status: comment.status,
-      userId: comment.user_id,
-      postId: comment.post_id,
-      parentId: comment.parent_id
-    }))
-    // formattedPost.comments = post.comments
+    formattedPost.comments = post.comments.map((comment) => comment.id)
   }
 
   return formattedPost
+}
+
+// Format user as JSON response
+export const formatUser = (user) => {
+  const formattedUser = {
+    id: user.id,
+    displayName: user.display_name,
+    username: user.username,
+    email: user.email,
+    roleId: user.role_id,
+    picture: user.picture
+  }
+
+  return formattedUser
+}
+
+// Format comment as JSON response
+export const formatComment = (comment) => {
+  const formattedComment = {
+    id: comment.id,
+    content: comment.content,
+    status: comment.status,
+    userId: comment.user_id,
+    postId: comment.post_id,
+    parentId: comment.parent_id,
+    createdAt: comment.created_at,
+    updatedAt: comment.updated_at
+  }
+
+  return formattedComment
 }
