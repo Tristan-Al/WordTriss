@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+import { Editor } from '@tinymce/tinymce-react'
 
 import Loading from '../../../components/Loading/Loading'
 import { useParams } from 'react-router-dom'
@@ -27,15 +27,6 @@ export default function EditPost() {
   const [categoriesSelected, setCategoriesSelected] = useState([])
 
   useEffect(() => {
-    async function instanceClassicEditor() {
-      // Create a new instance of CKEditor
-      ClassicEditor.create(editorRef.current)
-        .then((editor) => {})
-        .catch((error) => {
-          toast.showError('Error initializing CKEditor:', error)
-        })
-    }
-
     async function getPost() {
       try {
         const post = await postService.getPostById(id)
@@ -56,7 +47,6 @@ export default function EditPost() {
     }
 
     async function loadPage() {
-      // await instanceClassicEditor()
       await getPost()
       await getCategories()
       setIsLoading(false)
@@ -120,16 +110,31 @@ export default function EditPost() {
                 <label className='text-xl text-gray-600'>Content</label>
                 <br />
                 {isLoading && <Loading />}
-                <textarea
-                  id='content'
+                <Editor
+                  apiKey={process.env.REACT_APP_TINY_MCE_API_KEY}
+                  onInit={(evt, editor) => (editorRef.current = editor)}
                   name='content'
-                  rows='10'
-                  cols='80'
-                  ref={editorRef}
-                  className='rounded'
-                  onChange={handleInputChange}
                   value={post.content}
-                ></textarea>
+                  init={{
+                    height: 500,
+                    menubar: true,
+                    plugins: [
+                      'advlist autolink lists link image charmap print preview anchor',
+                      'visualblocks code fullscreen',
+                      'searchreplace insertdatetime media table paste code help wordcount'
+                    ],
+                    toolbar:
+                      'undo redo | formatselect | styles |' +
+                      'bold italic backcolor | alignleft aligncenter ' +
+                      'alignright alignjustify | bullist numlist outdent indent | ' +
+                      'removeformat | help'
+                  }}
+                  onEditorChange={(content) =>
+                    handleInputChange({
+                      target: { name: 'content', value: content }
+                    })
+                  }
+                />
               </div>
               <div className='flex p-1'>
                 <select
