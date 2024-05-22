@@ -16,6 +16,18 @@ const userService = {
       console.log(`Error getting user by id: ${id}`)
       throw error
     }
+  },
+
+  getPosts: async (id) => {
+    try {
+      return await api.get(`users/${id}/posts`)
+    } catch (error) {
+      console.error(
+        `Error getting posts of the author with id: ${id}. `,
+        error.message
+      )
+      throw error
+    }
   }
 }
 
