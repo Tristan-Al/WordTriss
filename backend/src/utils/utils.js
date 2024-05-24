@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken'
-import dayjs from 'dayjs'
 
 export const createToken = (user) => {
   console.log(
@@ -16,7 +15,7 @@ export const createToken = (user) => {
       picture: user.picture,
       isAdmin: user.isAdmin
     },
-    exp: dayjs().add(24, 'hours').unix()
+    exp: process.env.JWT_EXPIRATION_TIME
   }
 
   return jwt.sign(obj, process.env.JWT_SECRET_KEY)
