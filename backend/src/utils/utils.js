@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 
 export const createToken = (user) => {
   console.log(
-    `\t --> Creating token User { ID: ${user.id}, displayName: ${user.display_name}, email: ${user.email}`
+    `\t --> Creating token User { ID: ${user.id}, displayName: ${user.display_name}, email: ${user.email}, username: ${user.username}, roleId: ${user.role_id}, roleName: ${user.role_name} picture: ${user.picture}, isAdmin: ${user.isAdmin} }`
   )
   const obj = {
     user: {
@@ -12,7 +12,9 @@ export const createToken = (user) => {
       username: user.username,
       email: user.email,
       roleId: user.role_id,
-      picture: user.picture
+      roleName: user.role_name,
+      picture: user.picture,
+      isAdmin: user.isAdmin
     },
     exp: dayjs().add(24, 'hours').unix()
   }
@@ -53,7 +55,7 @@ export const formatPost = (post) => {
 
 // Format user as JSON response
 export const formatUser = (user) => {
-  const formattedUser = {
+  return {
     id: user.id,
     displayName: user.display_name,
     username: user.username,
@@ -61,13 +63,11 @@ export const formatUser = (user) => {
     roleId: user.role_id,
     picture: user.picture
   }
-
-  return formattedUser
 }
 
 // Format comment as JSON response
 export const formatComment = (comment) => {
-  const formattedComment = {
+  return {
     id: comment.id,
     content: comment.content,
     status: comment.status,
@@ -77,6 +77,4 @@ export const formatComment = (comment) => {
     createdAt: comment.created_at,
     updatedAt: comment.updated_at
   }
-
-  return formattedComment
 }
