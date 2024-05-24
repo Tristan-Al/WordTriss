@@ -14,11 +14,12 @@ export const createToken = (user) => {
       roleName: user.role_name,
       picture: user.picture,
       isAdmin: user.isAdmin
-    },
-    exp: process.env.JWT_EXPIRATION_TIME
+    }
   }
 
-  return jwt.sign(obj, process.env.JWT_SECRET_KEY)
+  return jwt.sign(obj, process.env.JWT_SECRET_KEY, {
+    expiresIn: process.env.JWT_EXPIRATION_TIME
+  })
 }
 
 // Format post as JSON response
