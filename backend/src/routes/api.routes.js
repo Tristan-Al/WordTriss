@@ -15,10 +15,8 @@ router.use('/users', userRoutes)
 router.use('/categories', categoryRoutes)
 router.use('/tags', tagRoutes)
 router.use('/posts', postRoutes)
-router.use('/pages', checkToken, pageRoutes)
+router.use('/pages', checkToken, pageRoutes) // Pending
 router.use('/comments', commentRoutes)
-// router.use('/roles', roleRoutes)
 router.use('/', authRoutes)
-// router.use("/roles", checkToken, roleRoutes);
 
 export default router
