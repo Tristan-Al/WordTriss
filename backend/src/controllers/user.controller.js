@@ -1,5 +1,4 @@
 import { User } from '../models/user.model.js'
-import { Role } from '../models/role.model.js'
 import { Post } from '../models/post.model.js'
 import { Category } from '../models/category.model.js'
 import { Tag } from '../models/tag.model.js'
@@ -78,26 +77,54 @@ export const updateUser = async (req, res) => {
   // Get user ID from request params
   const { userId } = req.params
 
-  // Destructure request body to get values
-  const { displayName, username, password, confirmPassword, email } = req.body
+  // Get current user from request
+  const curUser = req.user
+
+  // Get updated fields from request body
+  const updatedUser = req.body
 
   // Validate the fields
-  if (
-    !User.validateAllFields(
-      displayName,
-      username,
-      password,
-      confirmPassword,
-      email
-    )
-  ) {
-    return res.status(400).json({ message: 'Invalid fields' })
+  if (!User.validateSomeFields(updatedUser)) {
+    return res.status(400).json({ message: 'All fields are required' })
   }
 
-  const { roleId } = req.params
-  let role = null
-  if (roleId) {
-    role = await Role.findByPk(roleId)
+  // Check if user is updating his own profile or is an admin
+  if (curUser.id != userId && curUser.roleName !== 'ADMIN') {
+    return res
+      .status(403)
+      .json({ message: 'You can only update your own profile' })
+  }
+
+  // Check if user is updating his role and is not an admin
+  if (updatedUser.role_id && curUser.roleName !== 'ADMIN') {
+    return res
+      .status(403)
+      .json({ message: 'You are not allowed to update your role' })
+  }
+
+  // Check if user is updating his password
+  if (updatedUser.password) {
+    // Check if confirm password is not empty
+    if (!updatedUser.confirm_password) {
+      return res
+        .status(400)
+        .json({ message: 'Password and Confirm Password are required' })
+    }
+    // Check if password is valid
+    if (!User.validatePassword(updatedUser.password)) {
+      return res.status(400).json({ message: 'Invalid password format' })
+    }
+    // Check if password and confirm password match
+    if (updatedUser.password !== updatedUser.confirm_password) {
+      return res.status(400).json({ message: 'Passwords do not match' })
+    }
+    // Encrypt password
+    updatedUser.password = User.encryptPassword(updatedUser.password)
+  }
+
+  // If user is updating his id
+  if (updatedUser.id || updatedUser.user_id) {
+    return res.status(403).json({ message: 'You can not to update your id' })
   }
 
   // Update user
@@ -108,17 +135,13 @@ export const updateUser = async (req, res) => {
       }
 
       // Update user data
-      user.set({
-        displayName,
-        username,
-        password,
-        confirmPassword,
-        email,
-        role_id: roleId
-      })
+      user.set(updatedUser)
 
       // Save it in DB
-      user.save().then((updatedUser) => res.json(updatedUser))
+      user.save().then((updatedUser) => {
+        delete updatedUser.password
+        res.json(updatedUser)
+      })
     })
     .catch((error) => res.status(500).json({ message: error.message }))
 }
@@ -131,6 +154,16 @@ export const updateUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   // Get user ID from params
   const { userId } = req.params
+
+  // Get current user from request
+  const curUser = req.user
+
+  // Check if user is deleting his own profile or is an admin
+  if (curUser.id != userId && curUser.roleName !== 'ADMIN') {
+    return res
+      .status(403)
+      .json({ message: 'You can only delete your own profile' })
+  }
 
   // Delete user from DB
   User.destroy({ where: { id: userId } })

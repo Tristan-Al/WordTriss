@@ -23,17 +23,17 @@ export const checkToken = async (req, res, next) => {
   // Verify the token with secret key
   let obj
   try {
-    obj = jwt.verify(token, process.env.SECRET_KEY)
+    obj = jwt.verify(token, process.env.JWT_SECRET_KEY)
   } catch (error) {
     return res.json({ error: error.message })
   }
 
-  const user = await User.findByPk(obj.user_id)
+  const user = await User.findByPk(obj.user.id)
   if (!user) {
     return res.status(404).json({ message: 'User not found' })
   }
 
-  // If the user is found, save to req variable and continue
-  req.user = user
+  // Save user to req variable and continue
+  req.user = obj.user
   next()
 }

@@ -1,9 +1,6 @@
 import jwt from 'jsonwebtoken'
 
 export const createToken = (user) => {
-  console.log(
-    `\t --> Creating token User { ID: ${user.id}, displayName: ${user.display_name}, email: ${user.email}, username: ${user.username}, roleId: ${user.role_id}, roleName: ${user.role_name} picture: ${user.picture}, isAdmin: ${user.isAdmin} }`
-  )
   const obj = {
     user: {
       id: user.id,
@@ -12,8 +9,7 @@ export const createToken = (user) => {
       email: user.email,
       roleId: user.role_id,
       roleName: user.role_name,
-      picture: user.picture,
-      isAdmin: user.isAdmin
+      picture: user.picture
     }
   }
 

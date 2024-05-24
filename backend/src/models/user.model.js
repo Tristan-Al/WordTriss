@@ -38,6 +38,7 @@ export const User = db.define(
     },
     role_id: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       defaultValue: 5
     }
   },
@@ -87,6 +88,37 @@ User.validateAllFields = (
   const passwordsMatch = password === confirmPassword
 
   return isValid && passwordsMatch
+}
+
+/**
+ * Validate some fields are not null or empty
+ * @param {Object} params The parameters to validate
+ * @return {Boolean} True if all fields are valid
+ */
+User.validateSomeFields = (params) => {
+  for (const key in params) {
+    if (key === 'id') continue
+    if (
+      params[key] === null ||
+      params[key] === undefined ||
+      params[key]?.trim().length === 0
+    ) {
+      return false
+    }
+  }
+  return true
+}
+
+/**
+ * Validate password with regular expression
+ * @param {String} password The password to validate
+ * @returns {Boolean} True if the password is valid
+ */
+User.validatePassword = (password) => {
+  // At least one uppercase letter, one lowercase letter,
+  // one number and at least 8 characters
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
+  return regex.test(password)
 }
 
 /**
