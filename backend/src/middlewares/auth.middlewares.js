@@ -1,5 +1,6 @@
 import { User } from '../models/user.model.js'
 import jwt from 'jsonwebtoken'
+import { Role } from '../models/role.model.js'
 
 /**
  * Verify the JWT token.
@@ -35,34 +36,4 @@ export const checkToken = async (req, res, next) => {
   // If the user is found, save to req variable and continue
   req.user = user
   next()
-}
-
-/**
- * Verify username and password for authentication.
- * - If the credentials are invalid, send a 400 status code and a message.
- * @param {*} req The request object
- * @param {*} res The response object
- * @param {*} next The next middleware function
- */
-export const authenticateUser = async (req, res, next) => {
-  // Get the username and password from the request body
-  const { username, password } = req.body
-
-  try {
-    // Find the user in the database
-    const user = await User.findOne({ where: { username } })
-
-    // If the user does not exist, or the password is incorrect, send a 400 status code and a message
-    if (!user || !User.comparePassword(password, user.password)) {
-      return res.status(400).json({ message: 'Incorrect username/password' })
-    }
-
-    // Attach the user to the request object to use in the method signIn to generate the token
-    req.user = user
-
-    next() // Call the next middleware
-  } catch (error) {
-    console.error('Error during authentication:', error)
-    res.status(500).json({ error: 'Server error' })
-  }
 }

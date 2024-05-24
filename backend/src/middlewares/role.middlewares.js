@@ -1,5 +1,3 @@
-import { ROLES } from '../models/role.model.js'
-
 /**
  * Verify if the user has the admin role.
  * @param {*} req The request object
@@ -8,7 +6,7 @@ import { ROLES } from '../models/role.model.js'
  */
 export const isAdmin = async (req, res, next) => {
   const user = req.user
-  if (user.role_id !== ROLES.ADMIN) {
+  if (user.roleName !== 'ADMIN') {
     return res.status(403).json({ message: 'Unauthorized admin required' })
   }
 
@@ -23,7 +21,7 @@ export const isAdmin = async (req, res, next) => {
  */
 export const isEditor = async (req, res, next) => {
   const user = req.user
-  if (user.role_id !== ROLES.EDITOR) {
+  if (user.roleName !== 'EDITOR') {
     return res.status(403).json({ message: 'Unauthorized editor required' })
   }
 
@@ -38,7 +36,7 @@ export const isEditor = async (req, res, next) => {
  */
 export const isAuthor = async (req, res, next) => {
   const user = req.user
-  if (user.role_id !== ROLES.AUTHOR) {
+  if (user.roleName !== 'AUTHOR') {
     return res.status(403).json({ message: 'Unauthorized author required' })
   }
 
@@ -53,7 +51,7 @@ export const isAuthor = async (req, res, next) => {
  */
 export const isContributor = async (req, res, next) => {
   const user = req.user
-  if (user.role_id !== ROLES.CONTRIBUTOR) {
+  if (user.roleName !== 'CONTRIBUTOR') {
     return res
       .status(403)
       .json({ message: 'Unauthorized contributor required' })
@@ -70,7 +68,7 @@ export const isContributor = async (req, res, next) => {
  */
 export const isSubscriber = async (req, res, next) => {
   const user = req.user
-  if (user.role_id !== ROLES.CONTRIBUTOR) {
+  if (user.roleName !== 'SUBSCRIBER') {
     return res.status(403).json({ message: 'Unauthorized subscriber required' })
   }
 

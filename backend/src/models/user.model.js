@@ -9,50 +9,50 @@ export const User = db.define(
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true,
+      autoIncrement: true
     },
     display_name: {
       type: DataTypes.STRING(100),
-      allowNull: false,
+      allowNull: false
     },
     username: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      unique: true,
+      unique: true
     },
     password: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: false
     },
     email: {
       type: DataTypes.STRING(100),
-      allowNull: false,
+      allowNull: false
     },
     biography: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: true
     },
     picture: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: true
     },
     role_id: {
       type: DataTypes.INTEGER,
-      defaultValue: 1,
-    },
+      defaultValue: 5
+    }
   },
   {
     timestamps: true, // Enable timestamps
     createdAt: 'created_at', // Modify name for createdAt column
-    updatedAt: 'updated_at', // Modify name for updatedAt column
-  },
+    updatedAt: 'updated_at' // Modify name for updatedAt column
+  }
 )
 
 // N:1 Relationship between User and Role
 User.belongsTo(Role, {
   foreignKey: 'role_id',
   onDelete: 'SET DEFAULT',
-  onUpdate: 'CASCADE',
+  onUpdate: 'CASCADE'
 })
 
 /** ------------------------------------------------------
@@ -72,7 +72,7 @@ User.validateAllFields = (
   username,
   password,
   confirmPassword,
-  email,
+  email
 ) => {
   // Check if any field is null or empty
   const isValid = [
@@ -80,7 +80,7 @@ User.validateAllFields = (
     username,
     password,
     confirmPassword,
-    email,
+    email
   ].every((field) => field?.trim().length > 0)
 
   // Check if passwords match
