@@ -1,10 +1,21 @@
-import { Role, ROLES } from '../models/role.model.js'
+import { Role } from '../models/role.model.js'
 import { User } from '../models/user.model.js'
 import { Post } from '../models/post.model.js'
 import { Category } from '../models/category.model.js'
 import { Tag } from '../models/tag.model.js'
 import { Comment } from '../models/comment.model.js'
 
+// Configure environment variables
+import dotenv from 'dotenv'
+dotenv.config()
+
+/**
+ * Create the initial setup for the application
+ * This function creates the necessary roles, the admin user, categories, tags, comments and posts
+ * - If there is no data in the database, create it
+ * - If there is data in the database, does nothing
+ * @returns {Promise<void>}
+ */
 export const initialSetup = async () => {
   await createRoles()
   await createAdminUser()
@@ -16,9 +27,6 @@ export const initialSetup = async () => {
 
 /**
  * Create then necessary roles in the database
- * ROLES: User, Admin
- * - If there are roles in the database, do nothing
- * - If there are no roles in the database, create them
  */
 export const createRoles = async () => {
   // Check if there are roles in the database
@@ -29,12 +37,12 @@ export const createRoles = async () => {
 
   // If there are no roles, create them
   const roles = [
-    { name: 'USER' },
-    { name: 'ADMIN' },
-    { name: 'EDITOR' },
-    { name: 'AUTHOR' },
-    { name: 'CONTRIBUTOR' },
-    { name: 'SUBSCRIBER' }
+    { id: 1, name: 'ADMIN' },
+    { id: 2, name: 'EDITOR' },
+    { id: 3, name: 'AUTHOR' },
+    { id: 4, name: 'CONTRIBUTOR' },
+    { id: 5, name: 'SUBSCRIBER' },
+    { id: 6, name: 'USER' }
   ]
 
   // Create roles
@@ -53,10 +61,10 @@ export const createAdminUser = async () => {
   // If there are no users, create the admin user
   const adminUser = {
     display_name: 'Administrator',
-    username: 'admin',
-    password: User.encryptPassword('admin'),
+    username: process.env.WT_ADMIN_PASSWORD,
+    password: User.encryptPassword(process.env.WT_ADMIN_PASSWORD),
     email: 'admin@wordtriss.com',
-    role_id: ROLES.ADMIN
+    role_id: 1
   }
 
   // Create the admin user
