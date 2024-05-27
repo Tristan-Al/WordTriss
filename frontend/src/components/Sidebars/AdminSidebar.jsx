@@ -15,7 +15,7 @@ const SidebarContext = createContext(null)
 
 export default function AdminSidebar({ expanded, onClick }) {
   return (
-    <aside className='h-screen p-2 sticky top-0'>
+    <aside className='h-screen p-2 sticky top-0 z-50'>
       <nav className='h-full flex flex-col bg-white border-r shadow-sm rounded-lg'>
         <div className='p-4 pb-2 flex justify-between items-center'>
           <Link

@@ -3,9 +3,9 @@ import { Route, Navigate } from 'react-router-dom'
 import RequireAuth from '@auth-kit/react-router/RequireAuth'
 import AdminLayout from '../layouts/AdminLayout'
 import Dashboard from '../pages/Admin/Dashboard/Dashboard'
-import Profile from '../pages/Admin/Profile/Profile'
 import PostsDashboard from '../pages/Admin/Posts/PostsDashboard'
 import EditPost from '../pages/Admin/Posts/EditPost'
+import Profile from '../pages/Admin/Profile/Profile'
 
 export default function AdminRoutes() {
   return (

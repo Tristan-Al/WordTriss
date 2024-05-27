@@ -1,22 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react'
-import useAlertToast from '../../../hooks/useToast'
-import useAuth from '../../../hooks/useAuth'
-import AdminHeader from '../../../components/Headers/AdminHeader'
-
-const Dashboard = () => {
-  const { toast } = useAlertToast()
-  const { userId, displayName, username, email, roleId, isAdmin, picture } =
-    useAuth()
-
+import React from 'react'
+export default function Dashboard() {
   return (
     <>
-      <AdminHeader
-        path={'dashboard'}
-        userDisplayName={displayName}
-        userPic={picture}
-      />
+      <div className='container'>
+        <h1 className='text-center'>Dashboard</h1>
+      </div>
     </>
   )
 }
-
-export default Dashboard

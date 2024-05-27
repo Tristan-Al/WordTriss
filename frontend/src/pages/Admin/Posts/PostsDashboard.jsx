@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import postService from '../../../services/postService'
-import useAlertToast from '../../../hooks/useToast'
-import useAuth from '../../../hooks/useAuth'
-import AdminHeader from '../../../components/Headers/AdminHeader'
 import TableAdmin from '../../../components/Tables/TableAdmin'
 
 const PostsDashboard = () => {
-  const { displayName, picture } = useAuth()
-
   const [posts, setPosts] = useState([])
 
   useEffect(() => {
@@ -21,11 +16,6 @@ const PostsDashboard = () => {
 
   return (
     <>
-      <AdminHeader
-        path={'posts'}
-        userDisplayName={displayName}
-        userPic={picture}
-      />
       <TableAdmin posts={posts} />
     </>
   )

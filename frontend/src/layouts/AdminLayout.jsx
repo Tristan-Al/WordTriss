@@ -1,10 +1,5 @@
 import React, { useState } from 'react'
-import AdminSidebar, { SidebarItem } from '../components/Sidebar/AdminSidebar'
-import {
-  ComputerDesktopIcon,
-  DocumentTextIcon,
-  UserCircleIcon
-} from '@heroicons/react/24/outline'
+import AdminSidebar from '../components/Sidebars/AdminSidebar'
 
 const AdminAreaLayout = ({ children }) => {
   const [expanded, setExpanded] = useState(true)
@@ -15,7 +10,7 @@ const AdminAreaLayout = ({ children }) => {
         expanded={expanded}
         onClick={() => setExpanded((curr) => !curr)}
       />
-      <main className={`w-full p-1`}>{children}</main>
+      <main className={`w-full py-2 pr-2`}>{children}</main>
     </div>
   )
 }
