@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useAlertToast from '../../hooks/useToast.jsx'
+import { IconButton, Input } from '@material-tailwind/react'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 
-function Login() {
+export default function Login() {
   const { toast } = useAlertToast()
   const navigate = useNavigate()
   const signIn = useSignIn()
@@ -11,6 +13,7 @@ function Login() {
     username: '',
     password: ''
   })
+  const [pVisible, setPVisible] = useState(false)
 
   /**
    * Handle the input change event and update the state
@@ -33,6 +36,7 @@ function Login() {
       return
     }
 
+    console.log(inputs)
     // Call the signIn function
     try {
       // Make the request to api
@@ -89,30 +93,35 @@ function Login() {
           onSubmit={handleSubmit}
         >
           <div className='px-5 py-7'>
-            <label className='text-sm text-gray-800 dark:text-gray-300 pb-1 block'>
-              Username
-            </label>
-            <input
-              type='text'
-              className='text-gray-600 dark:text-gray-300 rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full outline-none bg-gray-100 dark:bg-gray-700 drop-shadow focus:shadow focus:bg-gray-200 dark:focus:bg-gray-600'
-              name='username'
-              value={inputs.username}
-              onChange={handleInputChange}
-              placeholder='Username'
-              required
-            />
-            <label className='text-sm text-gray-800 dark:text-gray-300 pb-1 block'>
-              Password
-            </label>
-            <input
-              type='password'
-              className='text-gray-600 dark:text-gray-300 rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full outline-none bg-gray-100 dark:bg-gray-700 drop-shadow focus:shadow focus:bg-gray-200 dark:focus:bg-gray-600'
-              name='password'
-              value={inputs.password}
-              onChange={handleInputChange}
-              placeholder='Password'
-              required
-            />
+            <div className='mb-5'>
+              <CustomLoginInput
+                label='Username'
+                name='username'
+                value={inputs.username}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className='relative flex justify-between w-full mb-5'>
+              <CustomLoginInput
+                label={'Password'}
+                type={pVisible ? 'text' : 'password'}
+                name={'password'}
+                value={inputs.password}
+                onChange={handleInputChange}
+              />
+              <IconButton
+                variant='text'
+                onClick={() => setPVisible(!pVisible)}
+                color={inputs.password ? 'gray' : 'blue-gray'}
+                className='!absolute right-0 bottom-0'
+              >
+                {pVisible ? (
+                  <EyeIcon width={20} />
+                ) : (
+                  <EyeSlashIcon width={20} />
+                )}
+              </IconButton>
+            </div>
             <button
               type='submit'
               className='transition duration-200 bg-blue-500 hover:bg-blue-600  focus:bg-blue-700 focus:shadow-sm focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 text-white w-full p-4 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block'
@@ -237,4 +246,26 @@ function Login() {
   )
 }
 
-export default Login
+function CustomLoginInput({
+  label,
+  name,
+  value,
+  onChange,
+  placeholder,
+  type = 'text',
+  className = ''
+}) {
+  return (
+    <div className='relative w-full'>
+      <Input
+        label={label}
+        type={type}
+        name={name}
+        placeholder={placeholder}
+        className={`p-3 placeholder-gray-500 text-gray-600 text-sm shadow-md shadow-gray-300 focus:shadow-xl w-full ease-linear transition-all duration-150 ${className}`}
+        value={value}
+        onChange={onChange}
+      />
+    </div>
+  )
+}
