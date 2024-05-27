@@ -4,6 +4,7 @@ import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useAlertToast from '../../hooks/useToast.jsx'
 import { IconButton, Input } from '@material-tailwind/react'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import authService from '../../services/authService.js'
 
 export default function Login() {
   const { toast } = useAlertToast()
@@ -40,31 +41,19 @@ export default function Login() {
     // Call the signIn function
     try {
       // Make the request to api
-      const response = await fetch(
-        `${process.env.REACT_APP_API_BASE_URL}/login`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(inputs)
-        }
-      )
+      const response = await authService.login(inputs.username, inputs.password)
 
       // If the response isn't ok, throw an error
-      if (!response.ok) {
+      if (!response) {
         const error = await response.json()
         toast.showError(error.message || 'Error in request')
         return
       }
 
-      // Parse the response body as JSON
-      const data = await response.json()
-
       // Call the signIn function with the token and user state, then save it in cookies
       signIn({
         auth: {
-          token: data.token,
+          token: response.token,
           type: 'Bearer'
         },
         userState: {
