@@ -1,6 +1,7 @@
-// import useAuth from '../hooks/useAuth'
+import Cookies from 'js-cookie'
+import useAuth from '../hooks/useAuth'
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL
+const BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 const api = {
   handleResponse: async (response) => {
@@ -22,27 +23,44 @@ const api = {
       console.error('Error fetching data:', error)
       throw error
     }
+  },
+
+  post: async (endpoint, body) => {
+    try {
+      const response = await fetch(`${BASE_URL}/${endpoint}`, {
+        method: 'POST',
+        // Pass the token in the Authorization header
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+      return api.handleResponse(response)
+    } catch (error) {
+      console.error('Error posting data:', error)
+      throw error
+    }
+  },
+
+  put: async (endpoint, body) => {
+    try {
+      console.log('Body:', JSON.stringify(body))
+      const response = await fetch(`${BASE_URL}/${endpoint}`, {
+        method: 'PUT',
+        // Pass the token in the Authorization header
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: Cookies.get('_auth') // Add token in header
+        },
+        body: JSON.stringify(body)
+      })
+      return api.handleResponse(response)
+    } catch (error) {
+      console.error('Error updating data:', error)
+      throw error
+    }
   }
 
-  // post: async (endpoint, body) => {
-  //   const { token } = useAuth()
-  //   try {
-  //     const response = await fetch(`${BASE_URL}/${endpoint}`, {
-  //       method: 'POST',
-  //       // Pass the token in the Authorization header
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'x-access-token': token // Add token in header
-  //       },
-  //       body: JSON.stringify(body)
-  //     })
-  //     return api.handleResponse(response)
-  //   } catch (error) {
-  //     console.error('Error posting data:', error)
-  //     throw error
-  //   }
-  // },
-  //
   // delete: async (endpoint) => {
   //   const { token } = useAuth()
   //   try {
@@ -61,24 +79,6 @@ const api = {
   //   }
   // },
   //
-  // put: async (endpoint, body) => {
-  //   const { token } = useAuth()
-  //   try {
-  //     const response = await fetch(`${BASE_URL}/${endpoint}`, {
-  //       method: 'PUT',
-  //       // Pass the token in the Authorization header
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'x-access-token': token // Add token in header
-  //       },
-  //       body: JSON.stringify(body)
-  //     })
-  //     return api.handleResponse(response)
-  //   } catch (error) {
-  //     console.error('Error updating data:', error)
-  //     throw error
-  //   }
-  // }
 }
 
 export default api

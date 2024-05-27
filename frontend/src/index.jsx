@@ -8,6 +8,7 @@ import PublicRoutes from './routes/PublicRoutes'
 import AdminRoutes from './routes/AdminRoutes'
 import { ToastContainer } from 'react-toastify'
 import { ThemeProvider } from './providers/ThemeProvider'
+import './assets/css/styles.css'
 
 const store = createStore({
   authName: '_auth',

@@ -143,7 +143,7 @@ export default function EditPost() {
                   <br />
                   {isLoading && <Loading />}
                   <Editor
-                    apiKey={process.env.REACT_APP_TINY_MCE_API_KEY}
+                    apiKey={import.meta.env.VITE_TINY_MCE_API_KEY}
                     onInit={(evt, editor) => (editorRef.current = editor)}
                     name='content'
                     value={post.content}
