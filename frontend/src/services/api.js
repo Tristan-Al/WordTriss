@@ -1,5 +1,4 @@
 import Cookies from 'js-cookie'
-import useAuth from '../hooks/useAuth'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL
 
@@ -14,10 +13,10 @@ const api = {
 
     return data
   },
-
   get: async (endpoint) => {
     try {
       const response = await fetch(`${BASE_URL}/${endpoint}`)
+
       return api.handleResponse(response)
     } catch (error) {
       console.error('Error fetching data:', error)
@@ -31,10 +30,12 @@ const api = {
         method: 'POST',
         // Pass the token in the Authorization header
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: Cookies.get('_auth') // Add token in header
         },
         body: JSON.stringify(body)
       })
+
       return api.handleResponse(response)
     } catch (error) {
       console.error('Error posting data:', error)
@@ -44,10 +45,8 @@ const api = {
 
   put: async (endpoint, body) => {
     try {
-      console.log('Body:', JSON.stringify(body))
       const response = await fetch(`${BASE_URL}/${endpoint}`, {
         method: 'PUT',
-        // Pass the token in the Authorization header
         headers: {
           'Content-Type': 'application/json',
           Authorization: Cookies.get('_auth') // Add token in header

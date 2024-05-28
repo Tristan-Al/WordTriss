@@ -40,13 +40,8 @@ const userService = {
         }
       }
 
-      // Change format of the fields
-      user.display_name = user.displayName
-      delete user.displayName
-      delete user.roleId
-
-      //Check if any field is empty
-      if (!user.display_name || !user.username || !user.email) {
+      //Check if any necessary field is empty
+      if (!user.displayName || !user.username || !user.email) {
         return {
           ok: false,
           message: 'Necessary fields are required'
@@ -54,7 +49,7 @@ const userService = {
       }
 
       // Check if the user is updating password
-      if (user.password === '') {
+      if (user.password !== '') {
         // Check if confirm password is empty
         if (user.confirmPassword === '') {
           return {
@@ -62,7 +57,6 @@ const userService = {
             message: 'Confirm password is required'
           }
         }
-
         // Check if the password and confirm password match
         if (user.password !== user.confirmPassword) {
           return {
@@ -70,14 +64,18 @@ const userService = {
             message: 'Passwords do not match'
           }
         }
-
-        // Change the format of the password
-        user.confirm_password = user.confirmPassword
-        delete user.confirmPassword
       }
 
+      // Create updateUser object with only defined properties
+      const updateUser = {
+        ...Object.fromEntries(
+          Object.entries(user).map(([key, value]) => [key, value])
+        )
+      }
+
+      console.log('Request to api Update user:', updateUser)
       // Make the request to the api
-      return await api.put(`users/${user.id}`, user)
+      return await api.put(`users/${user.id}`, updateUser)
     } catch (error) {
       console.error('Error updating user:', error.message)
       throw error
