@@ -4,6 +4,10 @@ import { User } from '../models/user.model.js'
 import { Category } from '../models/category.model.js'
 import { formatPost } from '../utils/utils.js'
 import { Comment } from '../models/comment.model.js'
+import {
+  errorHandler,
+  successHandler
+} from '../middlewares/response.middlewares.js'
 
 /**
  * Get all tags from database
@@ -13,8 +17,14 @@ import { Comment } from '../models/comment.model.js'
 export const getAllTags = async (req, res) => {
   // Get all tags from DB
   Tag.findAll()
-    .then((tag) => res.json(tag))
-    .catch((error) => res.status(500).json({ message: error.message }))
+    .then((tag) => successHandler(tag, req, res))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }
 
 /**
@@ -29,9 +39,17 @@ export const getTagById = async (req, res) => {
   // Get tag by ID from DB
   Tag.findByPk(tagId)
     .then((tag) =>
-      !tag ? res.status(404).json({ message: 'Tag not found' }) : res.json(tag)
+      !tag
+        ? errorHandler({ statusCode: 404, message: 'No tag found' }, req, res)
+        : successHandler(tag, req, res)
     )
-    .catch((error) => res.status(500).json({ message: error.message }))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }
 
 /**
@@ -45,13 +63,23 @@ export const createTag = async (req, res) => {
 
   // Validate the fields
   if (!Tag.isTagFieldsValid(name)) {
-    return res.status(400).json({ message: 'Invalid fields' })
+    return errorHandler(
+      { statusCode: 400, message: 'Invalid fields' },
+      req,
+      res
+    )
   }
 
   // Insert tag in DB
   Tag.create({ name })
-    .then((newTag) => res.json(newTag)) // Send tag to response as JSON
-    .catch((error) => res.status(500).json({ message: error.message })) // Send error message
+    .then((newTag) => successHandler(newTag, req, res)) // Send tag to response as JSON
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    ) // Send error message
 }
 
 /**
@@ -68,7 +96,11 @@ export const updateTag = async (req, res) => {
 
   // Validate the fields
   if (!Tag.isTagFieldsValid(name)) {
-    return res.status(500).json({ message: 'Invalid fields' })
+    return errorHandler(
+      { statusCode: 400, message: 'Invalid fields' },
+      req,
+      res
+    )
   }
 
   // Update tag
@@ -76,16 +108,26 @@ export const updateTag = async (req, res) => {
     .then((tag) => {
       // Check if tag exists
       if (!tag) {
-        return res.status(404).json({ message: 'Tag not found' })
+        return errorHandler(
+          { statusCode: 404, message: 'No tag found' },
+          req,
+          res
+        )
       }
 
       // Update tag data
       tag.set({ name })
 
       // Save it in DB
-      tag.save().then((updatedTag) => res.json(updatedTag))
+      tag.save().then((updatedTag) => successHandler(updatedTag, req, res))
     })
-    .catch((error) => res.status(500).json({ message: error.message }))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }
 
 /**
@@ -102,13 +144,19 @@ export const deleteTag = async (req, res) => {
     .then((num) => {
       if (num === 0) {
         // Send error message
-        res.status(404).json({ message: 'Tag not found' })
+        errorHandler({ statusCode: 404, message: 'No tag found' }, req, res)
       } else {
         // Send success message
-        res.json({ message: 'Tag deleted successfully!' })
+        successHandler('Tag deleted successfully!', req, res)
       }
     })
-    .catch((error) => res.status(500).json({ message: error.message }))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }
 
 /**
@@ -141,14 +189,24 @@ export const getPosts = async (req, res) => {
       // Check if posts was founded
       if (!posts) {
         // Return error
-        return res.status(404).json({ message: 'No posts found' })
+        return errorHandler(
+          { statusCode: 404, message: 'No posts found' },
+          req,
+          res
+        )
       }
 
       // Format response as JSON
       const formattedPosts = posts.map(formatPost)
 
       // Send post in response as JSON
-      res.json(formattedPosts)
+      return successHandler(formattedPosts, req, res)
     })
-    .catch((error) => res.status(500).json({ message: error.message }))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }

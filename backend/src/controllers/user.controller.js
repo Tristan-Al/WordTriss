@@ -4,6 +4,10 @@ import { Category } from '../models/category.model.js'
 import { Tag } from '../models/tag.model.js'
 import { Comment } from '../models/comment.model.js'
 import { formatPost, formatUser } from '../utils/utils.js'
+import {
+  errorHandler,
+  successHandler
+} from '../middlewares/response.middlewares.js'
 
 /**
  * Get all users from database
@@ -12,8 +16,14 @@ import { formatPost, formatUser } from '../utils/utils.js'
  */
 export const getAllUsers = async (req, res) => {
   User.findAll()
-    .then((users) => res.json(users.map(formatUser)))
-    .catch((error) => res.status(500).json({ message: error.message }))
+    .then((users) => successHandler(users.map(formatUser), req, res))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }
 
 /**
@@ -29,10 +39,16 @@ export const getUserById = async (req, res) => {
   User.findByPk(userId)
     .then((user) =>
       !user
-        ? res.status(404).json({ message: 'User not found' })
-        : res.json(formatUser(user))
+        ? errorHandler({ statusCode: 404, message: 'No user found' }, req, res)
+        : successHandler(formatUser(user), req, res)
     )
-    .catch((error) => res.status(500).json({ message: error.message }))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }
 
 /**
@@ -54,7 +70,11 @@ export const createUser = async (req, res) => {
       email
     )
   ) {
-    return res.status(400).json({ message: 'Invalid fields' })
+    return errorHandler(
+      { statusCode: 400, message: 'Invalid fields' },
+      req,
+      res
+    )
   }
 
   // Insert user in DB
@@ -64,8 +84,14 @@ export const createUser = async (req, res) => {
     password: User.encryptPassword(password),
     email
   })
-    .then((newUser) => res.json(newUser)) // Send user to response as JSON
-    .catch((error) => res.status(500).json({ message: error.message })) // Send error message
+    .then((newUser) => successHandler(formatUser(newUser), req, res)) // Send user to response as JSON
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    ) // Send error message
 }
 
 /**
@@ -87,38 +113,64 @@ export const updateUser = async (req, res) => {
     console.log('Updating user:', updatedUser)
     // Validate the fields
     if (!User.validateSomeFields(updatedUser)) {
-      return res.status(400).json({ message: 'All fields are required' })
+      errorHandler(
+        { statusCode: 400, message: 'All fields must be not empty' },
+        req,
+        res
+      )
     }
 
     // Check if user is updating his own profile or is an admin
     if (curUser.id != userId && curUser.roleName !== 'ADMIN') {
-      return res
-        .status(403)
-        .json({ message: 'You can only update your own profile' })
+      return errorHandler(
+        { statusCode: 403, message: 'You can only update your own profile' },
+        req,
+        res
+      )
     }
 
     // Check if user is updating his role and is not an admin
     if (updatedUser.role_id && curUser.roleName !== 'ADMIN') {
-      return res
-        .status(403)
-        .json({ message: 'You are not allowed to update your role' })
+      return errorHandler(
+        { statusCode: 403, message: 'You are not allowed to update your role' },
+        req,
+        res
+      )
     }
 
     // Check if user is updating his password
     if (updatedUser.password) {
       // Check if confirm password is not empty
       if (!updatedUser.confirm_password) {
-        return res
-          .status(400)
-          .json({ message: 'Password and Confirm Password are required' })
+        return errorHandler(
+          {
+            statusCode: 403,
+            message: 'Password and Confirm Password are required'
+          },
+          req,
+          res
+        )
       }
       // Check if password is valid
       if (!User.validatePassword(updatedUser.password)) {
-        return res.status(400).json({ message: 'Invalid password format' })
+        return errorHandler(
+          {
+            statusCode: 403,
+            message: 'Invalid password format',
+            details:
+              'Password must have at least 8 characters, 1 uppercase letter, 1 lowercase letter and 1 number.'
+          },
+          req,
+          res
+        )
       }
       // Check if password and confirm password match
       if (updatedUser.password !== updatedUser.confirm_password) {
-        return res.status(400).json({ message: 'Passwords do not match' })
+        return errorHandler(
+          { statusCode: 400, message: 'Passwords do not match' },
+          req,
+          res
+        )
       }
       // Encrypt password
       updatedUser.password = User.encryptPassword(updatedUser.password)
@@ -126,13 +178,21 @@ export const updateUser = async (req, res) => {
 
     // If user is updating his id
     if (updatedUser.id || updatedUser.user_id) {
-      return res.status(403).json({ message: 'You can not to update your id' })
+      return errorHandler(
+        { statusCode: 403, message: 'You can not to update your id' },
+        req,
+        res
+      )
     }
 
     // Update user
     User.findByPk(userId).then((user) => {
       if (!user) {
-        return res.status(404).json({ message: 'User not found' })
+        return errorHandler(
+          { statusCode: 404, message: 'No user found' },
+          req,
+          res
+        )
       }
 
       // Update user data
@@ -140,12 +200,15 @@ export const updateUser = async (req, res) => {
 
       // Save it in DB
       user.save().then((updatedUser) => {
-        delete updatedUser.password
-        res.json(updatedUser)
+        successHandler(formatUser(updatedUser), req, res)
       })
     })
   } catch (error) {
-    return res.status(500).json({ message: error.message })
+    return errorHandler(
+      { message: error.message, details: 'Internal Server Error' },
+      req,
+      res
+    )
   }
 }
 
@@ -163,9 +226,11 @@ export const deleteUser = async (req, res) => {
 
   // Check if user is deleting his own profile or is an admin
   if (curUser.id != userId && curUser.roleName !== 'ADMIN') {
-    return res
-      .status(403)
-      .json({ message: 'You can only delete your own profile' })
+    return errorHandler(
+      { statusCode: 403, message: 'You can only delete your own profile' },
+      req,
+      res
+    )
   }
 
   // Delete user from DB
@@ -173,13 +238,23 @@ export const deleteUser = async (req, res) => {
     .then((num) => {
       if (num === 0) {
         // Send error message
-        res.status(404).json({ message: 'User not found' })
+        return errorHandler(
+          { statusCode: 404, message: 'No user found' },
+          req,
+          res
+        )
       } else {
         // Send success message
-        res.json({ message: 'User deleted successfully!' })
+        return successHandler('User deleted successfully', req, res)
       }
     })
-    .catch((error) => res.status(500).json({ message: error.message }))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }
 
 /**
@@ -205,14 +280,24 @@ export const getPosts = async (req, res) => {
       // Check if posts was founded
       if (!posts) {
         // Return error
-        return res.status(404).json({ message: 'No posts found' })
+        return errorHandler(
+          { statusCode: 404, message: 'No posts found' },
+          req,
+          res
+        )
       }
 
       // Format response as JSON
       const formattedPosts = posts.map(formatPost)
 
       // Send post in response as JSON
-      res.json(formattedPosts)
+      return successHandler(formattedPosts, req, res)
     })
-    .catch((error) => res.status(500).json({ message: error.message }))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }

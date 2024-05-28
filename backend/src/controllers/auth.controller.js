@@ -1,6 +1,10 @@
 import { User } from '../models/user.model.js'
 import { createToken } from '../utils/utils.js'
 import { Role } from '../models/role.model.js'
+import {
+  errorTokenHandler,
+  successTokenHandler
+} from '../middlewares/response.middlewares.js'
 
 /**
  * Login and generate the token for the user.
@@ -19,43 +23,46 @@ export const login = async (req, res) => {
 
     // Check if we have a user
     if (!user) {
-      console.error(`User not found: ${username}`)
-      // Send error message
-      return res
-        .status(404)
-        .json({ message: 'Incorrect username or password', token: null })
+      console.error(`\t User not found: ${username}`)
+      // Return error with errorHandler middleware
+      return errorTokenHandler(
+        { statusCode: 404, message: 'Incorrect username or password' },
+        req,
+        res
+      )
     }
-
-    console.log(
-      `\t User found {ID: ${user.id}, displayName: ${user.display_name}, email: ${user.email}`
-    )
 
     // Check password
     if (!User.comparePassword(password, user.password)) {
       console.error(`\t Password doesn't match : ${password}`)
-      return res
-        .status(401)
-        .json({ message: 'Incorrect username or password', token: null })
+      // Return error with errorHandler middleware
+      return errorTokenHandler(
+        { statusCode: 404, message: 'Incorrect username or password' },
+        req,
+        res
+      )
     }
 
     // Check the role
     const role = await Role.findByPk(user.role_id)
     if (!role) {
       console.error(`Role not found: ${user.role_id}`)
-      return res.status(404).json({ message: 'Role not found', token: null })
+      // Return error with errorHandler middleware
+      return errorTokenHandler(
+        { statusCode: 404, message: 'Role not found' },
+        req,
+        res
+      )
     }
 
     // Role found add to user object
     user.role_name = role.name
 
-    // Success
-    res.json({
-      message: 'Login successfully!',
-      token: createToken(user)
-    })
+    // Success response with successTokenHandler middleware
+    return successTokenHandler(createToken(user), req, res)
   } catch (error) {
     console.error(`Error in login function: `, error.message)
-    res.status(500).json({ message: error.message, token: null })
+    return errorTokenHandler(error, req, res)
   }
 }
 
@@ -68,13 +75,10 @@ export const refreshToken = async (req, res) => {
   try {
     const { username } = req.body
     const user = req.user
-    // Success
-    res.json({
-      message: 'Refresh token successfully!',
-      token: createToken(user)
-    })
+
+    return successTokenHandler(createToken(user), req, res)
   } catch (error) {
     console.error(`Error in refresh token function: `, error.message)
-    res.status(500).json({ message: error.message, token: null })
+    return errorTokenHandler(error, req, res)
   }
 }

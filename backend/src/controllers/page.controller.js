@@ -1,4 +1,8 @@
-import { Page } from "../models/page.model.js";
+import { Page } from '../models/page.model.js'
+import {
+  errorHandler,
+  successHandler
+} from '../middlewares/response.middlewares.js'
 
 /**
  * Get all pages from database
@@ -8,9 +12,15 @@ import { Page } from "../models/page.model.js";
 export const getAllPages = async (req, res) => {
   // Get all pages from DB
   Page.findAll()
-    .then((page) => res.json(page))
-    .catch((error) => res.status(500).json({ message: error.message }));
-};
+    .then((page) => successHandler(page, req, res))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
+}
 
 /**
  * Get page from database by id
@@ -19,17 +29,23 @@ export const getAllPages = async (req, res) => {
  */
 export const getPageById = async (req, res) => {
   // Get page ID from request params
-  const { pageId } = req.params; // Same as: pageId = req.params.pageId;
+  const { pageId } = req.params // Same as: pageId = req.params.pageId;
 
   // Get page by ID from DB
   Page.findByPk(pageId)
     .then((page) =>
       !page
-        ? res.status(404).json({ message: "Page not found" })
-        : res.json(page),
+        ? errorHandler({ statusCode: 404, message: 'No page found' }, req, res)
+        : successHandler(page, req, res)
     )
-    .catch((error) => res.status(500).json({ message: error.message }));
-};
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
+}
 
 /**
  * Create new page in database
@@ -38,18 +54,29 @@ export const getPageById = async (req, res) => {
  */
 export const createPage = async (req, res) => {
   // Destructure request body to get values
-  const { name } = req.body;
+  const { name } = req.body
 
   // Validate the fields
   if (!Page.isPageFieldsValid(name)) {
-    return res.status(400).json({ message: "Invalid fields" });
+    return errorHandler(
+      { statusCode: 400, message: 'Invalid fields' },
+      req,
+      res
+    )
   }
 
   // Insert page in DB
   Page.create({ name })
-    .then((newPage) => res.json(newPage)) // Send page to response as JSON
-    .catch((error) => res.status(500).json({ message: error.message })); // Send error message
-};
+    .then((newPage) => successHandler(newPage, req, res)) // Send page to response as JSON
+    .catch((error) =>
+      // Send error message
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
+}
 
 /**
  * Update a page in database by id
@@ -58,14 +85,18 @@ export const createPage = async (req, res) => {
  */
 export const updatePage = async (req, res) => {
   // Get page ID from request params
-  const { pageId } = req.params;
+  const { pageId } = req.params
 
   // Destructure request body to get values
-  const { name } = req.body;
+  const { name } = req.body
 
   // Validate the fields
   if (!Page.isPageFieldsValid(name)) {
-    return res.status(400).json({ message: "Invalid fields" });
+    return errorHandler(
+      { statusCode: 400, message: 'Invalid fields' },
+      req,
+      res
+    )
   }
 
   // Update page
@@ -73,17 +104,27 @@ export const updatePage = async (req, res) => {
     .then((page) => {
       // Check if page exists
       if (!page) {
-        return res.status(404).json({ message: "Page not found" });
+        return errorHandler(
+          { statusCode: 404, message: 'No page found' },
+          req,
+          res
+        )
       }
 
       // Update page data
-      page.set({ name });
+      page.set({ name })
 
       // Save it in DB
-      page.save().then((updatedPage) => res.json(updatedPage));
+      page.save().then((updatedPage) => successHandler(updatedPage, req, res))
     })
-    .catch((error) => res.status(500).json({ message: error.message }));
-};
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
+}
 
 /**
  * Delete a page from database by id
@@ -92,18 +133,24 @@ export const updatePage = async (req, res) => {
  */
 export const deletePage = async (req, res) => {
   // Get page ID from params
-  const { pageId } = req.params;
+  const { pageId } = req.params
 
   // Delete page from DB
   Page.destroy({ where: { id: pageId } })
     .then((num) => {
       if (num === 0) {
         // Send error message
-        res.status(404).json({ message: "Page not found" });
+        errorHandler({ statusCode: 404, message: 'No page found' }, req, res)
       } else {
         // Send success message
-        res.json({ message: "Page deleted successfully!" });
+        successHandler('Page deleted successfully', req, res)
       }
     })
-    .catch((error) => res.status(500).json({ message: error.message }));
-};
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
+}

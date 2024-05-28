@@ -1,6 +1,10 @@
 import { Comment } from '../models/comment.model.js'
 import { User } from '../models/user.model.js'
 import { formatComment } from '../utils/utils.js'
+import {
+  errorHandler,
+  successHandler
+} from '../middlewares/response.middlewares.js'
 
 /**
  * Get all comments from database
@@ -9,8 +13,14 @@ import { formatComment } from '../utils/utils.js'
  */
 export const getAllComments = async (req, res) => {
   Comment.findAll()
-    .then((comments) => res.json(comments.map(formatComment)))
-    .catch((error) => res.status(500).json({ message: error.message }))
+    .then((comments) => successHandler(comments.map(formatComment), req, res))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }
 
 /**
@@ -26,10 +36,20 @@ export const getCommentById = async (req, res) => {
   Comment.findByPk(commentId)
     .then((comment) =>
       !comment
-        ? res.status(404).json({ message: 'Comment not found' })
-        : res.json(formatComment(comment))
+        ? errorHandler(
+            { statusCode: 404, message: 'No comment found' },
+            req,
+            res
+          )
+        : successHandler(formatComment(comment), req, res)
     )
-    .catch((error) => res.status(500).json({ message: error.message }))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }
 
 /**
@@ -43,14 +63,18 @@ export const createComment = async (req, res) => {
 
   // Validate the fields
   if (!Comment.validateAllFields(content, status, userId, postId, parentId)) {
-    return res.status(400).json({ message: 'Invalid fields' })
+    return errorHandler(
+      { statusCode: 400, message: 'Invalid fields' },
+      req,
+      res
+    )
   }
 
   // Check if user exists
   const user = await User.findByPk(userId)
 
   if (!user) {
-    return res.status(404).json({ message: 'User not found' })
+    return errorHandler({ statusCode: 404, message: 'No user found' }, req, res)
   }
 
   // Insert comment in DB
@@ -61,8 +85,14 @@ export const createComment = async (req, res) => {
     post_id: postId,
     parent_id: parentId
   })
-    .then((comment) => res.json(formatComment(comment)))
-    .catch((error) => res.status(503).json({ error: error.message }))
+    .then((comment) => successHandler(formatComment(comment), req, res))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }
 
 /**
@@ -79,21 +109,29 @@ export const updateComment = async (req, res) => {
 
   // Validate the fields
   if (!Comment.validateAllFields(content, status, userId, postId, parentId)) {
-    return res.status(400).json({ message: 'Invalid fields' })
+    return errorHandler(
+      { statusCode: 400, message: 'Invalid fields' },
+      req,
+      res
+    )
   }
 
   // Check if user exists
   const user = await User.findByPk(userId)
 
   if (!user) {
-    return res.status(404).json({ message: 'User not found' })
+    return errorHandler({ statusCode: 404, message: 'No user found' }, req, res)
   }
 
   // Update the comment
   Comment.findByPk(commentId)
     .then((comment) => {
       if (!comment) {
-        return res.status(404).json({ message: 'Comment not found' })
+        return errorHandler(
+          { statusCode: 404, message: 'No comment found' },
+          req,
+          res
+        )
       }
 
       return comment.update({
@@ -104,8 +142,14 @@ export const updateComment = async (req, res) => {
         parent_id: parentId
       })
     })
-    .then((comment) => res.json(formatComment(comment)))
-    .catch((error) => res.status(503).json({ error: error.message }))
+    .then((comment) => successHandler(formatComment(comment), req, res))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }
 
 /**
@@ -121,8 +165,18 @@ export const deleteComment = async (req, res) => {
   Comment.destroy({ where: { id: commentId } })
     .then((num) =>
       num === 1
-        ? res.json({ message: 'Comment was deleted successfully' })
-        : res.status(404).json({ message: 'Comment not found' })
+        ? successHandler('Comment was deleted successfully', req, res)
+        : errorHandler(
+            { statusCode: 404, message: 'No comment found' },
+            req,
+            res
+          )
     )
-    .catch((error) => res.status(503).json({ error: error.message }))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }

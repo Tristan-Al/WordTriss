@@ -4,6 +4,10 @@ import { Tag } from '../models/tag.model.js'
 import { User } from '../models/user.model.js'
 import { Comment } from '../models/comment.model.js'
 import { formatPost } from '../utils/utils.js'
+import {
+  errorHandler,
+  successHandler
+} from '../middlewares/response.middlewares.js'
 
 /**
  * Get all posts from database
@@ -18,9 +22,15 @@ export const getAllPosts = async (req, res) => {
       // Format post
       const formattedPosts = posts.map(formatPost)
 
-      res.json(formattedPosts)
+      return successHandler(formattedPosts, req, res)
     })
-    .catch((error) => res.status(500).json({ message: error.message }))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }
 
 /**
@@ -39,17 +49,27 @@ export const getPostById = async (req, res) => {
     .then((post) => {
       // Check if a post was founded
       if (!post) {
-        // Return error
-        return res.status(404).json({ message: 'No post found' })
+        // Return error with errorHandler middleware
+        return errorHandler(
+          { statusCode: 404, message: 'No post found' },
+          req,
+          res
+        )
       }
 
       // Format response as JSON
       const formattedPost = formatPost(post)
 
       // Send post in response as JSON
-      res.json(formattedPost)
+      return successHandler(formattedPost, req, res)
     })
-    .catch((error) => res.status(500).json({ message: error.message }))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
 }
 
 /**
@@ -61,13 +81,17 @@ export const createPost = async (req, res) => {
   try {
     // Insert post in DB
     const [result] = await insert(req.body)
+
     // Get the new post ( returns an array )
     const [posts] = await getById(result.insertId)
+
     // Get first occurrence and send it
-    res.json(posts[0])
+    const formattedPost = formatPost(posts[0])
+
+    return successHandler(formattedPost, req, res)
   } catch (error) {
     // Send error message
-    res.status(503).json({ error: error.message })
+    res.status(503).json({ ok: false, error: error.message })
   }
 }
 
@@ -85,10 +109,12 @@ export const updatePost = async (req, res) => {
     // Get updated post from DB ( returns an array )
     const [posts] = await getById(result.insertId)
     // Get first occurrence and send it
-    res.json(posts[0])
+    const formattedPost = formatPost(posts[0])
+
+    return successHandler(formattedPost, req, res)
   } catch (error) {
     // Send error message
-    res.status(503).json({ error: error.message })
+    res.status(503).json({ ok: false, error: error.message })
   }
 }
 
@@ -104,9 +130,13 @@ export const deletePost = async (req, res) => {
     // Delete post from DB
     await deleteById(postId)
     // Send success message
-    res.json({ success: 'Deleted successfully' })
+    return successHandler('Post deleted successfully', req, res)
   } catch (error) {
     // Send error message
-    res.json({ error: error.message })
+    errorHandler(
+      { message: error.message, details: 'Internal Server Error' },
+      req,
+      res
+    )
   }
 }
