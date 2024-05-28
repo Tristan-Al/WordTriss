@@ -6,6 +6,8 @@ import {
   CardHeader,
   IconButton,
   Input,
+  Option,
+  Select,
   Spinner,
   Textarea,
   Typography
@@ -14,32 +16,47 @@ import ProfilePictureCard from '../../../components/Cards/ProfilePictureCard'
 import userService from '../../../services/userService'
 import useAuth from '../../../hooks/useAuth'
 import useAlertToast from '../../../hooks/useToast'
-import {
-  EyeIcon,
-  EyeSlashIcon,
-  PencilSquareIcon
-} from '@heroicons/react/24/outline'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import authService from '../../../services/authService'
+import useSignIn from 'react-auth-kit/hooks/useSignIn'
 
 export default function Profile() {
   const { toast } = useAlertToast()
+  const signIn = useSignIn()
   const [loading, setLoading] = useState(true)
-  const [pVisible, setPVisible] = useState(false)
+
+  const [passwordVisible, setPasswordVisible] = useState(false)
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false)
+
   const [user, setUser] = useState({
     id: 0,
     displayName: '',
     email: '',
     username: '',
     password: '',
+    confirmPassword: '',
     biography: '',
-    picture: ''
+    picture: '',
+    roleId: 0
   })
   const { userId, roleName } = useAuth()
 
   useEffect(() => {
     async function getUser() {
       try {
-        const user = await userService.getUserById(userId)
-        setUser(user)
+        // Get the user by ID
+        const response = await userService.getUserById(userId)
+
+        // Check if the response is ok
+        if (!response.ok) {
+          // Show an error toast
+          toast.showError(response.message || 'Error getting user')
+          setLoading(false)
+          return
+        }
+
+        // Set the user state
+        setUser(response.body)
         setLoading(false)
       } catch (error) {
         console.error(error)
@@ -50,6 +67,33 @@ export default function Profile() {
 
     setTimeout(getUser, 1000)
   }, [])
+
+  /**
+   * Refresh the token
+   * @returns {Promise<void>}
+   */
+  const refreshToken = async (user) => {
+    try {
+      const response = await authService.refreshToken(user)
+
+      if (!response.ok) {
+        toast.showError(response.message || 'Error refreshing token')
+        return
+      }
+
+      // Set the new token
+      signIn({
+        auth: {
+          token: response.token,
+          type: 'Bearer'
+        },
+        user: user
+      })
+    } catch (error) {
+      console.error('Error refreshing token:', error)
+      toast.showError(error.message || 'Error refreshing token')
+    }
+  }
 
   /**
    * Handle the input change event and update the state
@@ -63,28 +107,50 @@ export default function Profile() {
     setUser({ ...user, [name]: value })
   }
 
+  /**
+   * Handle the form submission
+   * @param {Event} e The event object
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async (e) => {
     // Prevent the default form submission behavior
     e.preventDefault()
 
     // Check if the inputs are empty
-    if (user.username.trim() === '' || user.email.trim() === '') {
-      toast.showError('All fields are required')
+    if (
+      user.username.trim() === '' ||
+      user.email.trim() === '' ||
+      user.displayName.trim() === ''
+    ) {
+      toast.showError('Necessary fields are required')
       return
     }
 
     try {
-      const updatedUser = await userService.updateUser(user, userId, roleName)
+      if (roleName !== 'ADMIN') {
+        delete user.roleId
+      }
 
-      if (!updatedUser.ok) {
-        toast.showError(updatedUser.message || 'Error in request')
+      const response = await userService.updateUser(user, userId, roleName)
+
+      if (!response.ok) {
+        toast.showError(response.message || 'Error in request')
         return
       }
 
-      console.log('User updated successfully:', updatedUser)
-      toast.showSuccess(updatedUser.message)
+      console.log('User updated:', response.body)
+
+      // Refresh token
+      await refreshToken(response.body)
+
+      // Reload the page
+      window.location.reload()
+
+      // Show a success toast
+      toast.showSuccess(response.message)
     } catch (error) {
-      console.error(error)
+      console.error('Error updating user:', error)
+      toast.showError(error.message || 'Error updating user')
     }
   }
 
@@ -104,7 +170,7 @@ export default function Profile() {
             <Spinner />
           ) : (
             <form>
-              <ProfilePictureCard />
+              <ProfilePictureCard user={user} setUser={setUser} />
               <div>
                 <Typography
                   variant='h6'
@@ -112,7 +178,7 @@ export default function Profile() {
                 >
                   User Information
                 </Typography>
-                <div className='flex flex-wrap'>
+                <div className='flex flex-wrap items-center'>
                   <div className='w-full lg:w-1/2 px-4 mb-6'>
                     <CustomInput
                       label={'Username'}
@@ -131,7 +197,7 @@ export default function Profile() {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className='w-full lg:w-6/12 px-4 mb-6 lg:mb-0'>
+                  <div className='w-full lg:w-6/12 px-4 mb-6'>
                     <CustomInput
                       label={'Display Name'}
                       placeholder={'Display Name'}
@@ -140,10 +206,37 @@ export default function Profile() {
                       onChange={handleInputChange}
                     />
                   </div>
-                  <div className='relative flex justify-between w-full lg:w-6/12 px-4'>
+                  <div className='flex items-center h-full w-full lg:w-6/12 px-4 mb-6'>
+                    <div className='w-full'>
+                      <label
+                        className='block uppercase text-xs font-bold mb-2'
+                        htmlFor='roleId'
+                      >
+                        Role
+                      </label>
+                      <Select
+                        label={'Role'}
+                        name={'roleId'}
+                        onChange={(e) =>
+                          handleInputChange({
+                            target: { name: 'roleId', value: e }
+                          })
+                        }
+                        value={user.roleId.toString()}
+                        disabled={roleName !== 'ADMIN'}
+                      >
+                        <Option value='1'>Admin</Option>
+                        <Option value='2'>Editor</Option>
+                        <Option value='3'>Author</Option>
+                        <Option value='4'>Contributor</Option>
+                        <Option value='5'>Subscriber</Option>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className='relative w-full lg:w-6/12 px-4 mb-6 lg:mb-0'>
                     <CustomInput
                       label={'Password'}
-                      type={pVisible ? 'text' : 'password'}
+                      type={passwordVisible ? 'text' : 'password'}
                       placeholder={'Your password'}
                       name={'password'}
                       value={user.password}
@@ -151,58 +244,40 @@ export default function Profile() {
                     />
                     <IconButton
                       variant='text'
-                      onClick={() => setPVisible(!pVisible)}
+                      onClick={() => setPasswordVisible(!passwordVisible)}
                       color={user.password ? 'gray' : 'blue-gray'}
                       className='!absolute right-5 bottom-0'
                     >
-                      {pVisible ? (
+                      {passwordVisible ? (
                         <EyeIcon width={20} />
                       ) : (
                         <EyeSlashIcon width={20} />
                       )}
                     </IconButton>
                   </div>
-                </div>
-              </div>
-
-              <hr className='my-8 border-b-1 border-gray-300' />
-
-              <div>
-                <Typography
-                  variant='h6'
-                  className='uppercase font-bold text-sm mb-2'
-                >
-                  Contact Information
-                </Typography>
-
-                <div className='flex flex-wrap'>
-                  <div className='w-full lg:w-12/12 px-4 mb-6'>
+                  <div className='relative flex justify-between w-full lg:w-6/12 px-4'>
                     <CustomInput
-                      label={'Address'}
-                      name={'address'}
-                      placeholder={'Address'}
+                      label={'Confirm Password'}
+                      type={confirmPasswordVisible ? 'text' : 'password'}
+                      placeholder={'Repeat password'}
+                      name={'confirmPassword'}
+                      value={user.confirmPassword}
+                      onChange={handleInputChange}
                     />
-                  </div>
-                  <div className='w-full lg:w-4/12 px-4 mb-6 lg:mb-0'>
-                    <CustomInput
-                      label={'City'}
-                      name={'city'}
-                      placeholder={'City'}
-                    />
-                  </div>
-                  <div className='w-full lg:w-4/12 px-4 mb-6 lg:mb-0'>
-                    <CustomInput
-                      label={'Country'}
-                      name={'country'}
-                      placeholder={'Country'}
-                    />
-                  </div>
-                  <div className='w-full lg:w-4/12 px-4'>
-                    <CustomInput
-                      label={'Postal code'}
-                      name={'postcode'}
-                      placeholder={'Postal Code'}
-                    />
+                    <IconButton
+                      variant='text'
+                      onClick={() =>
+                        setConfirmPasswordVisible(!confirmPasswordVisible)
+                      }
+                      color={user.confirmPassword ? 'gray' : 'blue-gray'}
+                      className='!absolute right-5 bottom-0'
+                    >
+                      {confirmPasswordVisible ? (
+                        <EyeIcon width={20} />
+                      ) : (
+                        <EyeSlashIcon width={20} />
+                      )}
+                    </IconButton>
                   </div>
                 </div>
               </div>
@@ -226,7 +301,7 @@ export default function Profile() {
                         }}
                         placeholder='Your description'
                         name='biography'
-                        value={user.biography}
+                        defaultValue={user.biography}
                         onChange={handleInputChange}
                       />
                     </div>
@@ -263,7 +338,6 @@ function CustomInput({
           className: 'before:content-none after:content-none'
         }}
         defaultValue={value}
-        value={value}
         onChange={onChange}
       />
     </div>
