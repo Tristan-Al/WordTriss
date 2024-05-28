@@ -106,22 +106,57 @@ export const updateUser = async (req, res) => {
   // Get current user from request
   const curUser = req.user
 
-  // Get updated fields from request body
-  const updatedUser = req.body
+  // Destructure request body to get values
+  const {
+    displayName,
+    username,
+    roleId,
+    picture,
+    password,
+    confirmPassword,
+    email
+  } = req.body
+
+  // Get current user from request
+  const updatedUser = {
+    ...Object.fromEntries(
+      Object.entries(req.body)
+        .map(([key, value]) => [
+          key === 'displayName'
+            ? 'display_name'
+            : key === 'username'
+            ? 'username'
+            : key === 'email'
+            ? 'email'
+            : key === 'roleId'
+            ? 'role_id'
+            : key === 'picture'
+            ? 'picture'
+            : key === 'biography'
+            ? 'biography'
+            : key === 'password'
+            ? 'password'
+            : key === 'confirmPassword'
+            ? 'confirm_password'
+            : null,
+          value
+        ])
+        .filter(([key]) => key !== null)
+    )
+  }
 
   try {
-    console.log('Updating user:', updatedUser)
     // Validate the fields
-    if (!User.validateSomeFields(updatedUser)) {
-      errorHandler(
-        { statusCode: 400, message: 'All fields must be not empty' },
+    if (!User.validateNecessaryFields(updatedUser)) {
+      return errorHandler(
+        { statusCode: 400, message: 'Necessary fields are required' },
         req,
         res
       )
     }
 
     // Check if user is updating his own profile or is an admin
-    if (curUser.id != userId && curUser.roleName !== 'ADMIN') {
+    if (updatedUser.id != curUser.id && curUser.roleName !== 'ADMIN') {
       return errorHandler(
         { statusCode: 403, message: 'You can only update your own profile' },
         req,
@@ -132,7 +167,7 @@ export const updateUser = async (req, res) => {
     // Check if user is updating his role and is not an admin
     if (updatedUser.role_id && curUser.roleName !== 'ADMIN') {
       return errorHandler(
-        { statusCode: 403, message: 'You are not allowed to update your role' },
+        { statusCode: 403, message: 'You are not allowed to update roles' },
         req,
         res
       )
@@ -194,6 +229,8 @@ export const updateUser = async (req, res) => {
           res
         )
       }
+
+      console.log('Updating user:', updatedUser)
 
       // Update user data
       user.set(updatedUser)
