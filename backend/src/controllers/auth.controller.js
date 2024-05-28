@@ -49,7 +49,7 @@ export const login = async (req, res) => {
       console.error(`Role not found: ${user.role_id}`)
       // Return error with errorHandler middleware
       return errorTokenHandler(
-        { statusCode: 404, message: 'Role not found' },
+        { statusCode: 404, message: 'No role found' },
         req,
         res
       )
@@ -62,7 +62,11 @@ export const login = async (req, res) => {
     return successTokenHandler(createToken(user), req, res)
   } catch (error) {
     console.error(`Error in login function: `, error.message)
-    return errorTokenHandler(error, req, res)
+    return errorHandler(
+      { message: error.message, details: 'Internal Server Error' },
+      req,
+      res
+    )
   }
 }
 
@@ -73,12 +77,31 @@ export const login = async (req, res) => {
  */
 export const refreshToken = async (req, res) => {
   try {
-    const { username } = req.body
-    const user = req.user
+    const curUser = req.user
+    const user = req.body
+
+    // Check the role
+    const role = await Role.findByPk(user.roleId)
+    if (!role) {
+      console.error(`Role not found: ${user.roleId}`)
+      // Return error with errorHandler middleware
+      return errorTokenHandler(
+        { statusCode: 404, message: 'No role found' },
+        req,
+        res
+      )
+    }
+
+    // Role found add to user object
+    user.roleName = role.name
 
     return successTokenHandler(createToken(user), req, res)
   } catch (error) {
     console.error(`Error in refresh token function: `, error.message)
-    return errorTokenHandler(error, req, res)
+    return errorHandler(
+      { message: error.message, details: 'Internal Server Error' },
+      req,
+      res
+    )
   }
 }

@@ -108,6 +108,7 @@ export const updateUser = async (req, res) => {
 
   // Destructure request body to get values
   const {
+    id,
     displayName,
     username,
     roleId,
@@ -122,7 +123,9 @@ export const updateUser = async (req, res) => {
     ...Object.fromEntries(
       Object.entries(req.body)
         .map(([key, value]) => [
-          key === 'displayName'
+          key === 'id'
+            ? 'id'
+            : key === 'displayName'
             ? 'display_name'
             : key === 'username'
             ? 'username'
@@ -212,12 +215,8 @@ export const updateUser = async (req, res) => {
     }
 
     // If user is updating his id
-    if (updatedUser.id || updatedUser.user_id) {
-      return errorHandler(
-        { statusCode: 403, message: 'You can not to update your id' },
-        req,
-        res
-      )
+    if (updatedUser.id) {
+      delete updatedUser.id
     }
 
     // Update user

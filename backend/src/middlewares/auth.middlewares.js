@@ -1,6 +1,7 @@
 import { User } from '../models/user.model.js'
 import jwt from 'jsonwebtoken'
 import { Role } from '../models/role.model.js'
+import { errorTokenHandler } from './response.middlewares.js'
 
 /**
  * Verify the JWT token.
@@ -15,9 +16,11 @@ export const checkToken = async (req, res, next) => {
   // Check token
   if (!token) {
     // If there isn't token, send 403 status code and message
-    return res
-      .status(403)
-      .json({ message: 'You must include authorization header' })
+    return errorHandler(
+      { statusCode: 403, message: 'You must include authorization header' },
+      req,
+      res
+    )
   }
 
   // Verify the token with secret key
@@ -25,12 +28,17 @@ export const checkToken = async (req, res, next) => {
   try {
     obj = jwt.verify(token, process.env.JWT_SECRET_KEY)
   } catch (error) {
-    return res.json({ error: error.message })
+    // If token is invalid, send 403 status code and message
+    return errorHandler({ statusCode: 403, message: error.message }, req, res)
   }
 
   const user = await User.findByPk(obj.user.id)
   if (!user) {
-    return res.status(404).json({ message: 'User not found' })
+    return errorTokenHandler(
+      { statusCode: 404, message: 'No user found' },
+      req,
+      res
+    )
   }
 
   // Save user to req variable and continue

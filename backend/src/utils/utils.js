@@ -4,11 +4,12 @@ export const createToken = (user) => {
   const obj = {
     user: {
       id: user.id,
-      displayName: user.display_name,
+      displayName: user.display_name ?? user.displayName,
       username: user.username,
       email: user.email,
-      roleId: user.role_id,
-      roleName: user.role_name,
+      biography: user.biography,
+      roleId: user.role_id ?? user.roleId,
+      roleName: user.role_name ?? user.roleName,
       picture: user.picture
     }
   }
