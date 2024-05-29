@@ -1,9 +1,23 @@
 import api from './api'
 
 const postService = {
-  getAllPosts: async () => {
+  getAllPosts: async (
+    page = null,
+    order = null,
+    status = null,
+    limit = null
+  ) => {
     try {
-      return await api.get('posts')
+      const queryParams = new URLSearchParams({
+        page,
+        order,
+        status,
+        limit
+      }).toString()
+
+      const url = `posts?${queryParams.toString()}`
+
+      return await api.get(url)
     } catch (error) {
       console.log('Error getting posts:', error.message)
       throw error

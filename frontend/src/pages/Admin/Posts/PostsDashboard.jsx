@@ -1,23 +1,219 @@
 import React, { useEffect, useState } from 'react'
 import postService from '../../../services/postService'
 import TableAdmin from '../../../components/Tables/TableAdmin'
+import AdminPostsPagination from '../../../components/Pagination/AdminPostsPagination'
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Input,
+  Spinner,
+  Tab,
+  Tabs,
+  TabsHeader,
+  Typography
+} from '@material-tailwind/react'
+import {
+  ChevronUpDownIcon,
+  MagnifyingGlassIcon,
+  UserPlusIcon
+} from '@heroicons/react/24/outline'
 
 const PostsDashboard = () => {
   const [posts, setPosts] = useState([])
+  const [url, setUrl] = useState({
+    page: 1,
+    order: 'desc',
+    status: 'all',
+    limit: 10
+  })
+  const [pagination, setPagination] = useState({})
+  const [loading, setLoading] = useState(true)
 
+  /**
+   * Function that executes when the url changes
+   * Fetch posts from the server
+   * @param {Object} url - URL object
+   */
   useEffect(() => {
     async function fetchPosts() {
-      let posts = await postService.getAllPosts()
-      setPosts(posts)
+      try {
+        const response = await postService.getAllPosts(
+          url.page,
+          url.order,
+          url.status,
+          url.limit
+        )
+        if (!response.ok) {
+          console.log('Failed to get posts')
+          return
+        }
+
+        const posts = response.body.posts
+        setPosts(posts)
+        setPagination(response.body.pagination)
+        setLoading(false)
+      } catch (error) {
+        console.error(error)
+        setLoading(false)
+        toast.showError('Error getting user')
+      }
     }
 
+    // setTimeout(fetchPosts, 1000)
     fetchPosts()
-  }, [])
+  }, [url])
+
+  const handleTabClick = (value) => {
+    setLoading(true)
+    setUrl({ ...url, status: value })
+  }
 
   return (
-    <>
-      <TableAdmin posts={posts} />
-    </>
+    <Card className='w-full'>
+      <CardHeader floated={false} shadow={false} className='rounded-none'>
+        <div className='mb-8 flex items-center justify-between gap-8'>
+          <div>
+            <Typography variant='h5' color='blue-gray'>
+              Posts list
+            </Typography>
+            <Typography color='gray' className='mt-1 font-normal'>
+              See and manage all posts
+            </Typography>
+          </div>
+          <div className='flex shrink-0 flex-col gap-2 sm:flex-row'>
+            <Button variant='outlined' size='sm'>
+              view all
+            </Button>
+            <Button className='flex items-center gap-3' size='sm'>
+              <UserPlusIcon strokeWidth={2} className='h-4 w-4' /> Add post
+            </Button>
+          </div>
+        </div>
+        <div className='flex flex-col items-center justify-between gap-4 md:flex-row'>
+          <Tabs value='all' className='w-full md:w-max'>
+            <TabsHeader>
+              <Tab
+                value='all'
+                className='px-5'
+                onClick={() => handleTabClick('all')}
+              >
+                All
+              </Tab>
+              <Tab
+                value='published'
+                className='px-5'
+                onClick={() => handleTabClick('published')}
+              >
+                Published
+              </Tab>
+              <Tab
+                value='draft'
+                className='px-5'
+                onClick={() => handleTabClick('draft')}
+              >
+                Draft
+              </Tab>
+            </TabsHeader>
+          </Tabs>
+          <div className='w-full md:w-72'>
+            <Input
+              label='Search'
+              icon={<MagnifyingGlassIcon className='h-5 w-5' />}
+            />
+          </div>
+        </div>
+      </CardHeader>
+      <CardBody className='overflow-scroll px-0'>
+        <table className='mt-4 w-full min-w-max table-auto text-left'>
+          <thead>
+            <tr>
+              <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+                <Typography
+                  variant='small'
+                  color='blue-gray'
+                  className='font-normal leading-none opacity-70'
+                >
+                  Thumbnail
+                </Typography>
+              </th>
+              <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+                <Typography
+                  variant='small'
+                  color='blue-gray'
+                  className='flex items-center justify-between gap-2 font-normal leading-none opacity-70'
+                >
+                  Title
+                </Typography>
+              </th>
+              <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+                <Typography
+                  variant='small'
+                  color='blue-gray'
+                  className='font-normal leading-none opacity-70'
+                >
+                  Author
+                </Typography>
+              </th>
+              <th
+                className='cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50'
+                onClick={() => {
+                  const urlDate = url.order === 'DESC' ? 'ASC' : 'DESC'
+                  setUrl({ ...url, order: urlDate })
+                }}
+              >
+                <Typography
+                  variant='small'
+                  color='blue-gray'
+                  className='flex items-center justify-between gap-2 font-normal leading-none opacity-70'
+                >
+                  Date
+                  <ChevronUpDownIcon strokeWidth={2} className='h-4 w-4' />
+                </Typography>
+              </th>
+              <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+                <Typography
+                  variant='small'
+                  color='blue-gray'
+                  className='font-normal leading-none opacity-70'
+                >
+                  Status
+                </Typography>
+              </th>
+              <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+                <Typography
+                  variant='small'
+                  color='blue-gray'
+                  className='font-normal leading-none opacity-70'
+                >
+                  Actions
+                </Typography>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={6} className='h-20'>
+                  <Spinner className='mx-auto' />
+                </td>
+              </tr>
+            ) : (
+              <TableAdmin posts={posts} />
+            )}
+          </tbody>
+        </table>
+      </CardBody>
+      <CardFooter className='flex items-center justify-between border-t border-blue-gray-50 p-4'>
+        {loading ? (
+          <Spinner size='sm' />
+        ) : (
+          <AdminPostsPagination {...pagination} url={url} setUrl={setUrl} />
+        )}
+      </CardFooter>
+    </Card>
   )
 }
 
