@@ -15,16 +15,50 @@ import {
  * @param {*} res The response object from Express
  */
 export const getAllTags = async (req, res) => {
-  // Get all tags from DB
-  Tag.findAll()
-    .then((tag) => successHandler(tag, req, res))
-    .catch((error) =>
-      errorHandler(
-        { message: error.message, details: 'Internal Server Error' },
+  const {
+    page = 1,
+    limit = process.env.LIMIT || 10,
+    order = 'DESC'
+  } = req.query
+  const offset = (page - 1) * limit
+
+  try {
+    // Get the total count of tags
+    const { count, rows: tags } = await Tag.findAndCountAll({
+      offset,
+      limit: parseInt(limit),
+      order: [['created_at', order]]
+    })
+
+    // Check if tags were found
+    if (!tags || !tags.length) {
+      return errorHandler(
+        { statusCode: 404, message: 'No tags found' },
         req,
         res
       )
+    }
+
+    // Send tags in response as JSON
+    return successHandler(
+      {
+        tags,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(count / limit),
+          totalItems: count
+        }
+      },
+      req,
+      res
     )
+  } catch (error) {
+    return errorHandler(
+      { message: error.message, details: 'Internal Server Error' },
+      req,
+      res
+    )
+  }
 }
 
 /**
@@ -168,45 +202,78 @@ export const getPosts = async (req, res) => {
   // Get category from request params
   const { id } = req.params
 
-  // Get posts  from DB
-  Post.findAll({
-    include: [
-      {
-        model: Tag,
-        through: {
-          where: {
-            tag_id: id
-          }
-        },
-        required: true
-      },
-      { model: Category },
-      { model: User },
-      { model: Comment }
-    ]
-  })
-    .then((posts) => {
-      // Check if posts was founded
-      if (!posts) {
-        // Return error
-        return errorHandler(
-          { statusCode: 404, message: 'No posts found' },
-          req,
-          res
-        )
-      }
+  // Get query params
+  const {
+    page = 1,
+    limit = process.env.LIMIT || 10,
+    order = 'DESC'
+  } = req.query
+  const offset = (page - 1) * limit
 
-      // Format response as JSON
-      const formattedPosts = posts.map(formatPost)
-
-      // Send post in response as JSON
-      return successHandler(formattedPosts, req, res)
+  try {
+    const count = await Post.count({
+      include: [
+        {
+          model: Tag,
+          through: {
+            where: {
+              tag_id: id
+            }
+          },
+          required: true
+        }
+      ]
     })
-    .catch((error) =>
-      errorHandler(
-        { message: error.message, details: 'Internal Server Error' },
+
+    const posts = await Post.findAll({
+      include: [
+        {
+          model: Tag,
+          through: {
+            where: {
+              tag_id: id
+            }
+          },
+          required: true
+        },
+        { model: Category },
+        { model: User },
+        { model: Comment }
+      ],
+      offset,
+      limit: parseInt(limit),
+      order: [['created_at', order]]
+    })
+
+    if (!posts || posts.length === 0) {
+      return errorHandler(
+        { statusCode: 404, message: 'No posts found' },
         req,
         res
       )
+    }
+
+    // Format response as JSON
+    const formattedPosts = posts.map(formatPost)
+
+    // Send post in response as JSON
+    return successHandler(
+      {
+        posts: formattedPosts,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(count / limit),
+          totalItems: count
+        }
+      },
+      req,
+      res
     )
+  } catch (error) {
+    return errorHandler(
+      { message: error.message, details: 'Internal Server Error' },
+      req,
+      res
+    )
+  }
 }

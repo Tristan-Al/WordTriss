@@ -1,13 +1,13 @@
 import { Post } from '../models/post.model.js'
 import { Category } from '../models/category.model.js'
 import { Tag } from '../models/tag.model.js'
-import { User } from '../models/user.model.js'
 import { Comment } from '../models/comment.model.js'
 import { formatPost } from '../utils/utils.js'
 import {
   errorHandler,
   successHandler
 } from '../middlewares/response.middlewares.js'
+import { Op } from 'sequelize'
 
 /**
  * Get all posts from database
@@ -15,22 +15,73 @@ import {
  * @param {*} res The response object from Express
  */
 export const getAllPosts = async (req, res) => {
-  Post.findAll({
-    include: [{ model: Category }, { model: Tag }, { model: Comment }]
-  })
-    .then((posts) => {
-      // Format post
-      const formattedPosts = posts.map(formatPost)
+  const {
+    page = 1,
+    limit = process.env.LIMIT || 10,
+    order = 'DESC',
+    status = 'all'
+  } = req.query
+  const offset = (page - 1) * limit
 
-      return successHandler(formattedPosts, req, res)
+  // Filter status
+  const statusFilter =
+    status === 'all' ? { [Op.in]: ['published', 'draft'] } : status
+
+  try {
+    // Get the total count of posts
+    const totalCount = await Post.count({
+      where: {
+        status: statusFilter
+      }
     })
-    .catch((error) =>
-      errorHandler(
-        { message: error.message, details: 'Internal Server Error' },
+
+    // Get all posts from DB
+    const posts = await Post.findAll({
+      include: [{ model: Category }, { model: Tag }, { model: Comment }],
+      offset,
+      limit: parseInt(limit),
+      where: {
+        status: statusFilter
+      },
+      order: [['created_at', order]]
+    })
+
+    // Check if posts were found
+    if (!posts || posts.length === 0) {
+      // Return error
+      return errorHandler(
+        { statusCode: 404, message: 'No posts found' },
         req,
         res
       )
+    }
+
+    // Format post
+    const formattedPosts = posts.map(formatPost)
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalCount / limit)
+
+    // Send posts in response as JSON
+    return successHandler(
+      {
+        posts: formattedPosts,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages,
+          totalItems: totalCount
+        }
+      },
+      req,
+      res
     )
+  } catch (error) {
+    return errorHandler(
+      { message: error.message, details: 'Internal Server Error' },
+      req,
+      res
+    )
+  }
 }
 
 /**

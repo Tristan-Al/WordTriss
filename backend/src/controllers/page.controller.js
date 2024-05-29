@@ -10,16 +10,51 @@ import {
  * @param {*} res The response object from Express
  */
 export const getAllPages = async (req, res) => {
-  // Get all pages from DB
-  Page.findAll()
-    .then((page) => successHandler(page, req, res))
-    .catch((error) =>
-      errorHandler(
-        { message: error.message, details: 'Internal Server Error' },
+  const {
+    page = 1,
+    limit = process.env.LIMIT || 10,
+    order = 'DESC'
+  } = req.query
+  const offset = (page - 1) * limit
+
+  try {
+    // Get all pages from DB
+    const { count, rows: pages } = await Page.findAndCountAll({
+      offset,
+      limit: parseInt(limit),
+      order: [['created_at', order]]
+    })
+
+    // Check if pages were found
+    if (!pages || pages.length === 0) {
+      // Return error
+      return errorHandler(
+        { statusCode: 404, message: 'No pages found' },
         req,
         res
       )
+    }
+
+    // Send pages in response as JSON
+    return successHandler(
+      {
+        pages,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(count / limit),
+          totalItems: count
+        }
+      },
+      req,
+      res
     )
+  } catch (error) {
+    return errorHandler(
+      { message: error.message, details: 'Internal Server Error' },
+      req,
+      res
+    )
+  }
 }
 
 /**

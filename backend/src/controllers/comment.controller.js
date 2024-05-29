@@ -12,15 +12,50 @@ import {
  * @param {*} res The response object from Express
  */
 export const getAllComments = async (req, res) => {
-  Comment.findAll()
-    .then((comments) => successHandler(comments.map(formatComment), req, res))
-    .catch((error) =>
-      errorHandler(
-        { message: error.message, details: 'Internal Server Error' },
+  const {
+    page = 1,
+    limit = process.env.LIMIT || 10,
+    order = 'DESC'
+  } = req.query
+  const offset = (page - 1) * limit
+
+  try {
+    // Get all comments from DB
+    const { count, rows: comments } = await Comment.findAndCountAll({
+      offset,
+      limit: parseInt(limit),
+      order: [['created_at', order]]
+    })
+
+    // Check if comments were found
+    if (!comments || !comments.length) {
+      return errorHandler(
+        { statusCode: 404, message: 'No comments found' },
         req,
         res
       )
+    }
+
+    // Send comments in response as JSON
+    return successHandler(
+      {
+        comments: comments.map(formatComment),
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(count / limit),
+          totalItems: count
+        }
+      },
+      req,
+      res
     )
+  } catch (error) {
+    return errorHandler(
+      { message: error.message, details: 'Internal Server Error' },
+      req,
+      res
+    )
+  }
 }
 
 /**

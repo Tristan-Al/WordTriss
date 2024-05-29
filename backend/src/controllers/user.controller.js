@@ -15,15 +15,53 @@ import {
  * @param {*} res The response object from Express
  */
 export const getAllUsers = async (req, res) => {
-  User.findAll()
-    .then((users) => successHandler(users.map(formatUser), req, res))
-    .catch((error) =>
-      errorHandler(
-        { message: error.message, details: 'Internal Server Error' },
+  const {
+    page = 1,
+    limit = process.env.LIMIT || 10,
+    order = 'DESC'
+  } = req.query
+  const offset = (page - 1) * limit
+
+  try {
+    // Get all users from DB
+    const { count, rows: users } = await User.findAndCountAll({
+      offset,
+      limit: parseInt(limit),
+      order: [['created_at', order]]
+    })
+
+    // Check if users were found
+    if (!users || !users.length) {
+      return errorHandler(
+        { statusCode: 404, message: 'No users found' },
         req,
         res
       )
+    }
+
+    // Format users
+    const formattedUsers = users.map(formatUser)
+
+    // Send users in response as JSON
+    return successHandler(
+      {
+        users: formattedUsers,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(count / limit),
+          totalItems: count
+        }
+      },
+      req,
+      res
     )
+  } catch (error) {
+    return errorHandler(
+      { message: error.message, details: 'Internal Server Error' },
+      req,
+      res
+    )
+  }
 }
 
 /**
@@ -302,38 +340,60 @@ export const getPosts = async (req, res) => {
   // Get author id from request params
   const { id } = req.params
 
-  // Get posts from DB
-  Post.findAll({
-    where: { user_id: id },
-    include: [
-      { model: User },
-      { model: Tag },
-      { model: Category },
-      { model: Comment }
-    ]
-  })
-    .then((posts) => {
-      // Check if posts was founded
-      if (!posts) {
-        // Return error
-        return errorHandler(
-          { statusCode: 404, message: 'No posts found' },
-          req,
-          res
-        )
-      }
+  // Get query params
+  const {
+    page = 1,
+    limit = process.env.LIMIT || 10,
+    order = 'DESC'
+  } = req.query
+  const offset = (page - 1) * limit
 
-      // Format response as JSON
-      const formattedPosts = posts.map(formatPost)
+  try {
+    const count = await Post.count({ where: { user_id: id } })
 
-      // Send post in response as JSON
-      return successHandler(formattedPosts, req, res)
+    const posts = await Post.findAll({
+      where: { user_id: id },
+      include: [
+        { model: User },
+        { model: Tag },
+        { model: Category },
+        { model: Comment }
+      ],
+      offset,
+      limit: parseInt(limit),
+      order: [['created_at', order]]
     })
-    .catch((error) =>
-      errorHandler(
-        { message: error.message, details: 'Internal Server Error' },
+
+    // Check if posts were found
+    if (!posts || posts.length === 0) {
+      return errorHandler(
+        { statusCode: 404, message: 'No posts found' },
         req,
         res
       )
+    }
+
+    // Format response as JSON
+    const formattedPosts = posts.map(formatPost)
+
+    // Send post in response as JSON
+    return successHandler(
+      {
+        posts: formattedPosts,
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(count / limit),
+          totalItems: count
+        }
+      },
+      req,
+      res
     )
+  } catch (error) {
+    return errorHandler(
+      { message: error.message, details: 'Internal Server Error' },
+      req,
+      res
+    )
+  }
 }
