@@ -1,21 +1,23 @@
 import multer from 'multer'
 import path from 'path'
 
-// Set the storage engine
-const storage = multer.diskStorage({
+// Allowed extensions
+const filetypes = /jpeg|jpg|png|gif/
+
+// Define file stogare configuration
+const filestorageconfig = {
   destination: (req, file, cb) => {
-    cb(null, 'src/uploads/avatars')
+    const uploadDir =
+      file.fieldname === 'avatar' ? 'src/uploads/avatars' : 'src/uploads/posts'
+    cb(null, uploadDir)
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname)
   }
-})
+}
 
 // Check file type
 const checkFileType = (file, cb) => {
-  // Allowed extensions
-  const filetypes = /jpeg|jpg|png|gif/
-
   // Check the extension
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase())
 
@@ -29,13 +31,17 @@ const checkFileType = (file, cb) => {
   }
 }
 
-// Init upload
+// Create multer instance
 const upload = multer({
-  storage,
+  storage: multer.diskStorage(filestorageconfig),
   limits: { fileSize: 1000000 },
   fileFilter: (req, file, cb) => {
     checkFileType(file, cb)
   }
-}).single('avatar')
+})
 
-export default upload
+// Init upload avatar
+export const uploadAvatar = upload.single('avatar')
+
+// Init upload post thumbnail
+export const uploadPostThumbnail = upload.single('thumbnail')
