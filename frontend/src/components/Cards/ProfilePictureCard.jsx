@@ -23,7 +23,9 @@ export default function ProfilePictureCard({ user, setUser }) {
 
   useEffect(() => {
     if (user.picture) {
-      setPreview(`${import.meta.env.VITE_API_BASE_URL}/avatars/${user.picture}`)
+      setPreview(
+        `${import.meta.env.VITE_API_BASE_URL}/images/avatars/${user.picture}`
+      )
     }
   }, [])
 
@@ -59,7 +61,7 @@ export default function ProfilePictureCard({ user, setUser }) {
       // Send the file to the server
       const formData = new FormData()
       formData.append('avatar', newFile)
-      const response = await imageService.uploadImage(formData)
+      const response = await imageService.uploadAvatar(formData)
 
       if (response.ok) {
         setOpen(false)
