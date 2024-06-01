@@ -98,7 +98,7 @@ export const getPostById = async (req, res) => {
     include: [{ model: Category }, { model: Tag }, { model: Comment }]
   })
     .then((post) => {
-      // Check if a post was founded
+      // Check if a post was found
       if (!post) {
         // Return error with errorHandler middleware
         return errorHandler(
@@ -142,7 +142,11 @@ export const createPost = async (req, res) => {
     return successHandler(formattedPost, req, res)
   } catch (error) {
     // Send error message
-    res.status(503).json({ ok: false, error: error.message })
+    return errorHandler(
+      { message: error.message, details: 'Internal Server Error' },
+      req,
+      res
+    )
   }
 }
 
@@ -152,20 +156,141 @@ export const createPost = async (req, res) => {
  * @param {*} res The response object from Express
  */
 export const updatePost = async (req, res) => {
-  try {
-    // Get post ID from request params
-    const { postId } = req.params // Same as: postId = req.params.postId;
-    // Update the post
-    const [result] = await updateById(postId, req.body)
-    // Get updated post from DB ( returns an array )
-    const [posts] = await getById(result.insertId)
-    // Get first occurrence and send it
-    const formattedPost = formatPost(posts[0])
+  // Get post ID from request params
+  const { postId } = req.params // Same as: postId = req.params.postId;
 
+  // Desctructure post object from request body
+  const {
+    id,
+    title,
+    content,
+    status,
+    thumbnail,
+    userId,
+    categories,
+    comments,
+    tags
+  } = req.body
+
+  // Get current user from request
+  const curUser = req.user
+
+  try {
+    // Find the post by its ID
+    let curPost = await Post.findByPk(postId)
+
+    // Check if the post exists
+    if (!curPost) {
+      return errorHandler(
+        { statusCode: 404, message: 'Post not found' },
+        req,
+        res
+      )
+    }
+
+    // Check if any necessary field is empty
+    if (!title || !content || !status || !userId) {
+      return errorHandler(
+        { statusCode: 400, message: 'Necessary fields are required' },
+        req,
+        res
+      )
+    }
+
+    switch (curUser.roleName) {
+      case 'CONTRIBUTOR':
+        console.log('User is a contributor')
+
+        // Check if the user is the author of the post
+        if (curUser.id !== userId) {
+          return errorHandler(
+            {
+              statusCode: 403,
+              message: 'You are not authorized to update this post'
+            },
+            req,
+            res
+          )
+        }
+
+        // Check if the post is published
+        if (status === 'published') {
+          return errorHandler(
+            {
+              statusCode: 403,
+              message: 'You are not authorized to publish this post'
+            },
+            req,
+            res
+          )
+        }
+
+        break
+      case 'AUTHOR':
+        console.log('User is an author')
+
+        // Check if the user is the author of the post
+        if (curUser.id !== userId) {
+          return errorHandler(
+            {
+              statusCode: 403,
+              message: 'You are not authorized to update this post'
+            },
+            req,
+            res
+          )
+        }
+    }
+
+    // Update the post fields
+    curPost.title = title
+    curPost.content = content
+    curPost.status = status
+    curPost.thumbnail = thumbnail || curPost.thumbnail
+    curPost.user_id = userId
+
+    // Handle categories
+    await curPost.setCategories([]) // Remove all categories
+    for (const category of categories) {
+      // Find category by name
+      const [cat, created] = await Category.findOrCreate({
+        where: { name: category.name },
+        defaults: category
+      })
+      await curPost.addCategory(cat)
+    }
+
+    // Handle tags
+    await curPost.setTags([]) // Remove all tags
+    for (const tag of tags) {
+      const [tg, created] = await Tag.findOrCreate({
+        where: { name: tag.name },
+        defaults: tag
+      })
+      await curPost.addTag(tg)
+    }
+
+    // Save the post
+    await curPost.save()
+
+    // Get updated post
+    const updatedPostData = await Post.findByPk(postId, {
+      include: [{ model: Category }, { model: Tag }, { model: Comment }]
+    })
+
+    // Format response as JSON
+    const formattedPost = formatPost(updatedPostData.dataValues)
+
+    console.log('Post updated successfully')
     return successHandler(formattedPost, req, res)
   } catch (error) {
+    console.error('Error updating post:', error.message)
     // Send error message
-    res.status(503).json({ ok: false, error: error.message })
+    return errorHandler(
+      { message: error.message, details: 'Internal Server Error' },
+      req,
+      res
+    )
   }
 }
 
