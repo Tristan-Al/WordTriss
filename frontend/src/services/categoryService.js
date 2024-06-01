@@ -1,9 +1,14 @@
 import api from './api'
 
 const categoryService = {
-  getAllCategories: async () => {
+  getAllCategories: async (options = {}) => {
     try {
-      return await api.get('categories')
+      const queryParams = new URLSearchParams({
+        ...defaultQueryParams,
+        ...options
+      })
+
+      return await api.get(`categories?${queryParams.toString()}`)
     } catch (error) {
       console.error('Error getting all categories', error.message)
       throw error
@@ -46,9 +51,16 @@ const categoryService = {
     }
   },
 
-  getPosts: async (categoryId) => {
+  getPosts: async (categoryId, options = {}) => {
     try {
-      return await api.get(`categories/${categoryId}/posts`)
+      const queryParams = new URLSearchParams({
+        ...defaultQueryParams,
+        ...options
+      })
+
+      return await api.get(
+        `categories/${categoryId}/posts?${queryParams.toString()}`
+      )
     } catch (error) {
       console.error(
         `Error getting post of category with id: ${categoryId}`,

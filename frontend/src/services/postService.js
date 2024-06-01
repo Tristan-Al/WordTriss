@@ -1,19 +1,16 @@
-import api from './api'
+import api, { defaultQueryParams } from './api'
 
 const postService = {
-  getAllPosts: async (
-    page = null,
-    order = null,
-    status = null,
-    limit = null
-  ) => {
+  getAllPosts: async (options = {}) => {
+    const { page, order, status, limit } = options
     try {
       const queryParams = new URLSearchParams({
-        page,
-        order,
-        status,
-        limit
-      }).toString()
+        ...defaultQueryParams,
+        page: page || defaultQueryParams.page,
+        order: order || defaultQueryParams.order,
+        status: status || defaultQueryParams.status,
+        limit: limit || defaultQueryParams.limit
+      })
 
       const url = `posts?${queryParams.toString()}`
 
@@ -44,7 +41,7 @@ const postService = {
 
   updatePost: async (post) => {
     try {
-      return await api.post('posts', post)
+      return await api.put(`posts/${post.id}`, post)
     } catch (error) {
       console.error('Error updating post:', error.message)
       throw error

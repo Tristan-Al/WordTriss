@@ -1,9 +1,14 @@
 import api from './api'
 
 const commentService = {
-  getAllComments: async () => {
+  getAllComments: async (options = {}) => {
     try {
-      return await api.get('comments')
+      const queryParams = new URLSearchParams({
+        ...defaultQueryParams,
+        ...options
+      })
+
+      return await api.get(`comments?${queryParams.toString()}`)
     } catch (error) {
       console.error('Error getting all comments', error.message)
       throw error

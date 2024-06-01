@@ -1,29 +1,40 @@
-import api from './api'
+import api, { defaultQueryParams } from './api'
 
 const userService = {
-  getAllUsers: async () => {
+  getAllUsers: async (options = {}) => {
     try {
-      return await api.get('users')
+      const queryParams = new URLSearchParams({
+        ...defaultQueryParams,
+        ...options
+      })
+
+      return await api.get(`users?${queryParams.toString()}`)
     } catch (error) {
-      console.log('Error getting users:', error.message)
+      console.error('Error getting users:', error.message)
       throw error
     }
   },
+
   getUserById: async (id) => {
     try {
       return await api.get(`users/${id}`)
     } catch (error) {
-      console.log(`Error getting user by id: ${id}`)
+      console.error(`Error getting user by id: ${id}`)
       throw error
     }
   },
 
-  getPosts: async (id) => {
+  getPosts: async (userId, options = {}) => {
     try {
-      return await api.get(`users/${id}/posts`)
+      const queryParams = new URLSearchParams({
+        ...defaultQueryParams,
+        ...options
+      })
+
+      return await api.get(`users/${userId}/posts?${queryParams.toString()}`)
     } catch (error) {
       console.error(
-        `Error getting posts of the author with id: ${id}. `,
+        `Error getting posts of the author with userId: ${userId}. `,
         error.message
       )
       throw error

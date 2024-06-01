@@ -80,4 +80,11 @@ const api = {
   //
 }
 
+export const defaultQueryParams = {
+  page: 1,
+  order: 'DESC',
+  status: 'all',
+  limit: 10
+}
+
 export default api

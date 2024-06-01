@@ -1,9 +1,14 @@
 import api from './api'
 
 const tagService = {
-  getAllTags: async () => {
+  getAllTags: async (options = {}) => {
     try {
-      return await api.get('tags')
+      const queryParams = new URLSearchParams({
+        ...defaultQueryParams,
+        ...options
+      })
+
+      return await api.get(`tags?${queryParams.toString()}`)
     } catch (error) {
       console.error('Error getting all tags', error.message)
       throw error
@@ -45,11 +50,19 @@ const tagService = {
     }
   },
 
-  getPosts: async (id) => {
+  getPosts: async (tagId, options = {}) => {
     try {
-      return await api.get(`tags/${id}/posts`)
+      const queryParams = new URLSearchParams({
+        ...defaultQueryParams,
+        ...options
+      })
+
+      return await api.get(`tags/${tagId}/posts?${queryParams.toString()}`)
     } catch (error) {
-      console.error(`Error getting posts of tag with id ${id}`, error.message)
+      console.error(
+        `Error getting posts of tag with tagId ${tagId}`,
+        error.message
+      )
       throw error
     }
   }
