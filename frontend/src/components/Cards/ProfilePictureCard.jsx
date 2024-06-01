@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { PencilSquareIcon } from '@heroicons/react/24/outline'
 import {
   Button,
   Card,
@@ -8,26 +8,17 @@ import {
   IconButton,
   Typography
 } from '@material-tailwind/react'
-import { PencilSquareIcon } from '@heroicons/react/24/outline'
-import CustomInput from '../Inputs/CustomInput'
+import React, { useState } from 'react'
+import { useAvatarPreview } from '../../hooks/useImagePreview'
 import useAlertToast from '../../hooks/useToast'
-import defaultAvatar from '../../assets/img/default-avatar.jpg'
-import { useEffect } from 'react'
 import imageService from '../../services/imageService'
+import CustomInput from '../Inputs/CustomInput'
 
 export default function ProfilePictureCard({ user, setUser }) {
   const [open, setOpen] = useState(false)
   const [file, setFile] = useState(null)
-  const [preview, setPreview] = useState(null)
+  const preview = useAvatarPreview(user.picture)
   const { toast } = useAlertToast()
-
-  useEffect(() => {
-    if (user.picture) {
-      setPreview(
-        `${import.meta.env.VITE_API_BASE_URL}/images/avatars/${user.picture}`
-      )
-    }
-  }, [])
 
   const handleOpen = () => {
     setOpen((cur) => !cur)
@@ -69,9 +60,6 @@ export default function ProfilePictureCard({ user, setUser }) {
         // Update the user object
         setUser({ ...user, picture: newFile.name })
 
-        // Update the preview
-        setPreview(URL.createObjectURL(newFile))
-
         // Show a success message
         toast.showSuccess('File uploaded successfully')
       } else {
@@ -102,7 +90,7 @@ export default function ProfilePictureCard({ user, setUser }) {
       <div className='relative'>
         <img
           className='h-80 w-80 rounded-full object-cover object-center'
-          src={preview ? preview : defaultAvatar}
+          src={preview}
           alt='nature image'
         />
         <IconButton
