@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import postService from '../../../services/postService'
 import TableAdmin from '../../../components/Tables/TableAdmin'
 import AdminPostsPagination from '../../../components/Pagination/AdminPostsPagination'
+import useAlertToast from '../../../hooks/useToast'
 import {
   Button,
   Card,
@@ -22,12 +23,14 @@ import {
 } from '@heroicons/react/24/outline'
 
 const PostsDashboard = () => {
+  const { toast } = useAlertToast()
+
   const [posts, setPosts] = useState([])
   const [url, setUrl] = useState({
-    page: 1,
-    order: 'desc',
-    status: 'all',
-    limit: 10
+    page: null,
+    order: null,
+    status: null,
+    limit: null
   })
   const [pagination, setPagination] = useState({})
   const [loading, setLoading] = useState(true)
@@ -40,12 +43,7 @@ const PostsDashboard = () => {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const response = await postService.getAllPosts(
-          url.page,
-          url.order,
-          url.status,
-          url.limit
-        )
+        const response = await postService.getAllPosts(url)
         if (!response.ok) {
           console.log('Failed to get posts')
           return
@@ -58,7 +56,7 @@ const PostsDashboard = () => {
       } catch (error) {
         console.error(error)
         setLoading(false)
-        toast.showError('Error getting user')
+        toast.showError('Error getting posts')
       }
     }
 

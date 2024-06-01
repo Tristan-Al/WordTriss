@@ -1,25 +1,498 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Editor } from '@tinymce/tinymce-react'
 
-import Loading from '../../../components/Loading/Loading'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import postService from '../../../services/postService'
 import categoryService from '../../../services/categoryService'
-import useAlertToast from '../../../hooks/useToast'
-
-import { Button, Option, Select, Typography } from '@material-tailwind/react'
-import EditSidebarItemCard from '../../../components/Cards/EditSidebarItemCard'
 import tagService from '../../../services/tagService'
+import imageService from '../../../services/imageService'
+import useAlertToast from '../../../hooks/useToast'
+import useAuth from '../../../hooks/useAuth'
+
+import defaultImage from '../../../assets/img/default-image.png'
+
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Dialog,
+  DialogBody,
+  IconButton,
+  Input,
+  List,
+  ListItem,
+  ListItemSuffix,
+  Option,
+  Select,
+  Typography
+} from '@material-tailwind/react'
 import userService from '../../../services/userService'
+import {
+  PencilSquareIcon,
+  PlusIcon,
+  TrashIcon
+} from '@heroicons/react/24/outline'
+
+function EditPostThumbnail({ post, setPost }) {
+  const [open, setOpen] = useState(false)
+  const [file, setFile] = useState(null)
+  const [preview, setPreview] = useState(null)
+  const { toast } = useAlertToast()
+
+  useEffect(() => {
+    if (post.thumbnail) {
+      if (post.thumbnail.startsWith('http')) {
+        setPreview(post.thumbnail)
+      } else {
+        setPreview(
+          `${import.meta.env.VITE_API_BASE_URL}/images/post-thumbnails/${
+            post.thumbnail
+          }`
+        )
+      }
+    } else {
+      setPreview(defaultImage)
+    }
+  }, [post.thumbnail])
+
+  const handleOpen = () => {
+    setOpen((cur) => !cur)
+  }
+
+  const handleFileChange = (e) => {
+    try {
+      const uploadedFile = e.target.files[0]
+      if (!uploadedFile) {
+        console.log('No file selected')
+        return
+      }
+
+      // Update the state
+      setFile(uploadedFile)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handleUpload = async () => {
+    if (!file) {
+      console.log('No file selected')
+      return
+    }
+
+    try {
+      // Rename the file
+      const newFile = renameFile(file, `post-${post.id}-thumbnail`)
+      // Send the file to the server
+      const formData = new FormData()
+      formData.append('thumbnail', newFile)
+
+      const response = await imageService.uploadThumbnail(formData)
+
+      if (response.ok) {
+        setOpen(false)
+
+        // Update the post object
+        setPost({ ...post, thumbnail: newFile.name })
+
+        // Update the preview
+
+        setPreview(URL.createObjectURL(newFile))
+
+        // Show a success message
+        toast.showSuccess('File uploaded successfully')
+      } else {
+        setOpen(false)
+        toast.showError('Error uploading file')
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const renameFile = (originalFile, newName) => {
+    // Extract the file extension
+    const extension = originalFile.name.split('.').pop()
+
+    // Create a new file object
+    const newFile = new File([originalFile], `${newName}.${extension}`, {
+      type: originalFile.type
+    })
+
+    return newFile
+  }
+
+  return (
+    <Card className='w-full p-2 drop-shadow-sm'>
+      <div className='flex justify-between items-center pb-2 mb-2 border-b border-gray-300 '>
+        <Typography variant='h5' color='blue-gray' className=''>
+          Thumbnail
+        </Typography>
+        <IconButton variant='text' onClick={handleOpen}>
+          <PencilSquareIcon width={20} />
+        </IconButton>
+      </div>
+      <div className='mb-2 flex gap-1'>
+        <img
+          className='h-auto max-h-32 w-full rounded-lg object-cover object-center'
+          src={preview}
+          alt='nature image'
+        />
+      </div>
+      <Dialog
+        open={open}
+        handler={handleOpen}
+        className='bg-transparent shadow-none'
+      >
+        <DialogBody className='bg-transparent'>
+          <Card className='mx-auto w-full max-w-[24rem]'>
+            <CardBody className='flex flex-col items-center gap-4'>
+              <Typography variant='h4'>Change Thumbnail</Typography>
+              <input name='picture' type='file' onChange={handleFileChange} />
+              <div className='flex gap-4'>
+                <Button variant='outlined' onClick={handleOpen}>
+                  Cancel
+                </Button>
+                <Button onClick={handleUpload}>Upload</Button>
+              </div>
+            </CardBody>
+          </Card>
+        </DialogBody>
+      </Dialog>
+    </Card>
+  )
+}
+
+function Sidebar({ post, setPost }) {
+  const { toast } = useAlertToast()
+  const { roleName } = useAuth()
+  const [category, setCategory] = useState('')
+  const [tag, setTag] = useState('')
+  const [authors, setAuthors] = useState([])
+
+  useEffect(() => {
+    async function getAuthors() {
+      try {
+        const response = await userService.getAllUsers({ limit: 100 })
+
+        if (!response.ok) {
+          console.log('Failed to get authors')
+          return
+        }
+
+        const authors = await response.body.users
+
+        setAuthors(authors)
+      } catch (error) {
+        toast.showError('Error getting authors:', error)
+      }
+    }
+
+    getAuthors()
+  }, [])
+
+  const handleNewCategory = (evt) => {
+    // Check if the category is empty
+    if (!category) {
+      toast.showError('Category name cannot be empty')
+      return
+    }
+
+    // Check if the category already exists
+    const exists = post.categories.find(
+      (cat) => cat.name.toLowerCase() === category.toLowerCase()
+    )
+
+    if (exists) {
+      toast.showError('Category already exists')
+      return
+    }
+
+    // Add the category to the post
+    setPost({
+      ...post,
+      categories: [...post.categories, { name: category }]
+    })
+  }
+
+  const handleDeleteCategory = (category) => {
+    setPost({
+      ...post,
+      categories: post.categories.filter((cat) => cat.name !== category.name)
+    })
+  }
+
+  const handleNewTag = (evt) => {
+    // Check if the tag is empty
+    if (!tag) {
+      toast.showError('Tag name cannot be empty')
+      return
+    }
+
+    // Check if the tag already exists
+    const exists = post.tags.find(
+      (ta) => ta.name.toLowerCase() === tag.toLowerCase()
+    )
+
+    if (exists) {
+      toast.showError('Tag already exists')
+      return
+    }
+
+    // Add the tag to the post
+    setPost({
+      ...post,
+      tags: [...post.tags, { name: tag }]
+    })
+  }
+
+  const handleDeleteTag = (tag) => {
+    setPost({
+      ...post,
+      tags: post.tags.filter((ta) => ta.name !== tag.name)
+    })
+  }
+
+  return (
+    <aside className='min-h-screen min-w-72 m-2 p-2 sticky top-0 z-50 overflow-hidden flex flex-col gap-2 bg-gray-50 border-r shadow rounded-lg'>
+      <Typography
+        variant='h5'
+        color='gray'
+        className='w-full p-2 bg-gray-300 shadow rounded-lg uppercase'
+      >
+        Sidebar
+      </Typography>
+
+      <ul className='flex flex-col gap-2'>
+        <li className='my-1'>
+          <Card className='w-full p-2 drop-shadow-sm'>
+            <Typography
+              variant='h5'
+              color='blue-gray'
+              className='border-b border-gray-300 pb-2 mb-2'
+            >
+              Categories
+            </Typography>
+            <div className='mb-2 flex gap-1'>
+              <Input
+                type='text'
+                placeholder='Category Name'
+                className='!p-2 !border !border-gray-300 bg-white text-gray-900 shadow-none focus:shadow-md shadow-gray-900/5 placeholder:text-gray-500 placeholder:opacity-100'
+                labelProps={{
+                  className: 'hidden'
+                }}
+                containerProps={{ className: 'min-w-[100px]' }}
+                onChange={(e) => setCategory(e.target.value)}
+              />
+              <IconButton
+                variant='text'
+                color='blue-gray'
+                onClick={() => handleNewCategory(category)}
+              >
+                <PlusIcon width={20} />
+              </IconButton>
+            </div>
+            <List className='min-w-full p-0'>
+              {post.categories.map((category) => (
+                <ListItem key={category.name} className='p-1'>
+                  {category.name}
+                  <ListItemSuffix>
+                    <IconButton
+                      variant='text'
+                      color='blue-gray'
+                      onClick={() => handleDeleteCategory(category)}
+                    >
+                      <TrashIcon width={20} />
+                    </IconButton>
+                  </ListItemSuffix>
+                </ListItem>
+              ))}
+            </List>
+          </Card>
+        </li>
+
+        <li className='my-1'>
+          <Card className='w-full p-2 drop-shadow-sm'>
+            <Typography
+              variant='h5'
+              color='blue-gray'
+              className='border-b border-gray-300 pb-2 mb-2'
+            >
+              Tags
+            </Typography>
+            <div className='mb-2 flex gap-1'>
+              <Input
+                type='text'
+                placeholder='Tag Name'
+                className='!p-2 !border !border-gray-300 bg-white text-gray-900 shadow-none focus:shadow-md shadow-gray-900/5 placeholder:text-gray-500 placeholder:opacity-100'
+                labelProps={{
+                  className: 'hidden'
+                }}
+                containerProps={{ className: 'min-w-[100px]' }}
+                onChange={(e) => setTag(e.target.value)}
+              />
+              <IconButton
+                variant='text'
+                color='blue-gray'
+                onClick={() => handleNewTag(tag)}
+              >
+                <PlusIcon width={20} />
+              </IconButton>
+            </div>
+            <List className='min-w-full p-0'>
+              {post.tags.map((tag) => (
+                <ListItem key={tag.name} className='p-1'>
+                  {tag.name}
+                  <ListItemSuffix>
+                    <IconButton
+                      variant='text'
+                      color='blue-gray'
+                      onClick={() => handleDeleteTag(tag)}
+                    >
+                      <TrashIcon width={20} />
+                    </IconButton>
+                  </ListItemSuffix>
+                </ListItem>
+              ))}
+            </List>
+          </Card>
+        </li>
+
+        <li className='my-1'>
+          <Card className='w-full p-2 drop-shadow-sm z-10'>
+            <Typography
+              variant='h5'
+              color='blue-gray'
+              className='border-b border-gray-300 pb-2 mb-2'
+            >
+              Author
+            </Typography>
+            <div className='mb-2 flex gap-1'>
+              <Select
+                placeholder='Select author'
+                className='!border !border-gray-300 text-gray-900 focus:shadow-md shadow-gray-900/5 placeholder:text-gray-500 placeholder:opacity-100'
+                value={post.userId.toString()}
+                labelProps={{
+                  className: 'hidden'
+                }}
+                onChange={(value) => {
+                  console.log('Value:', value)
+                  setPost({ ...post, userId: parseInt(value) })
+                }}
+                disabled={
+                  (roleName === 'CONTRIBUTOR' && true) ||
+                  (roleName === 'AUTHOR' && true) ||
+                  false
+                }
+              >
+                {authors.map((author) => (
+                  <Option key={author.id} value={author.id.toString()}>
+                    {author.id} {author.displayName}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+          </Card>
+        </li>
+
+        <li className='my-1'>
+          <EditPostThumbnail post={post} setPost={setPost} />
+        </li>
+      </ul>
+
+      {/* <AdminAuthorSidebarCard expanded={expanded} /> */}
+    </aside>
+  )
+}
+
+function PostForm({ post, setPost, handleSubmit, handleInputChange }) {
+  const navigate = useNavigate()
+  const editorRef = useRef(null)
+
+  return (
+    <form onSubmit={handleSubmit} className='flex items-start bg-gray-200'>
+      <Card className='w-full ml-2 my-2'>
+        <CardHeader
+          floated={false}
+          shadow={false}
+          className='m-0 p-3 rounded-b-none bg-gray-300 flex justify-between items-center'
+        >
+          <Typography variant='h3'>Edit post</Typography>
+          <div className='flex gap-2'>
+            <Button
+              variant='outlined'
+              onClick={() => navigate('/wt-content/posts')}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleSubmit}>Save</Button>
+          </div>
+        </CardHeader>
+        <CardBody className='container mx-auto h-auto bg-white flex flex-col gap-5'>
+          <Input
+            variant='static'
+            placeholder='Title'
+            className='text-xl'
+            name='title'
+            labelProps={{
+              className: 'before:content-none after:content-none'
+            }}
+            value={post.title}
+            onChange={handleInputChange}
+          />
+          <Editor
+            apiKey={import.meta.env.VITE_TINY_MCE_API_KEY}
+            onInit={(evt, editor) => (editorRef.current = editor)}
+            name='content'
+            value={post.content}
+            init={{
+              height: 500,
+              menubar: true,
+              theme: 'silver',
+              plugins: [
+                'image',
+                'code',
+                'table',
+                'link',
+                'media',
+                'codesample'
+              ],
+              // plugins: [
+              //   'advlist autolink lists link image charmap print preview anchor',
+              //   'visualblocks code fullscreen',
+              //   'searchreplace insertdatetime media table paste code help wordcount'
+              // ],
+              toolbar:
+                'undo redo | formatselect | styles |' +
+                'bold italic backcolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | help'
+            }}
+            onEditorChange={(content) =>
+              handleInputChange({
+                target: {
+                  name: 'content',
+                  value: content
+                }
+              })
+            }
+          />
+        </CardBody>
+      </Card>
+      <Sidebar post={post} setPost={setPost} />
+    </form>
+  )
+}
 
 export default function EditPost() {
   let { id } = useParams()
-  const [expanded, setExpanded] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
-  const editorRef = useRef(null)
   const { toast } = useAlertToast()
+  const { userId, roleName } = useAuth()
 
   const [post, setPost] = useState({
+    id: '',
     title: '',
     content: '',
     thumbnail: '',
@@ -28,57 +501,74 @@ export default function EditPost() {
     categories: [],
     tags: []
   })
-  const [categories, setCategories] = useState([])
-  const [categoriesSelected, setCategoriesSelected] = useState([])
-
-  const [tags, setTags] = useState([])
-  const [tagsSelected, setTagsSelected] = useState([])
-
-  const [authors, setAuthors] = useState([])
-  const [authorSelected, setAuthorSelected] = useState({})
 
   useEffect(() => {
     async function getPost() {
       try {
-        const post = await postService.getPostById(id)
-        setCategoriesSelected(post.categories)
+        const response = await postService.getPostById(id)
+
+        if (!response.ok) {
+          console.log('Failed to get posts')
+          return
+        }
+
+        const post = await response.body
+
+        // Get categories
+        const categories = await getCategoriesOfPost(post)
+        post.categories = categories
+
+        // Get tags
+        const tags = await getTagsOfPost(post)
+        post.tags = tags
+
         setPost(post)
       } catch (error) {
         toast.showError('Error getting post:', error)
       }
     }
 
-    async function getCategories() {
+    async function getCategoriesOfPost(post) {
       try {
-        const categories = await categoryService.getAllCategories()
-        setCategories(categories)
+        const categoryPromises = post.categories.map(async (category) => {
+          const response = await categoryService.getCategoryById(category)
+          if (!response.ok) {
+            console.log('Failed to get category')
+            return null // Return null
+          }
+          return response.body
+        })
+
+        const categories = await Promise.all(categoryPromises)
+
+        return categories
       } catch (error) {
         toast.showError('Error getting categories:', error)
       }
     }
 
-    async function getTags() {
+    async function getTagsOfPost(post) {
       try {
-        const tags = await tagService.getAllTags()
-        setTags(tags)
+        const tagsPromises = post.tags.map(async (tag) => {
+          const response = await tagService.getTagById(tag)
+          if (!response.ok) {
+            console.log('Failed to get tag')
+            return null // Return null
+          }
+          return response.body
+        })
+
+        const tags = await Promise.all(tagsPromises)
+
+        return tags
       } catch (error) {
         toast.showError('Error getting tags:', error)
       }
     }
 
-    async function getAuthors() {
-      try {
-        const authors = await userService.getAllUsers()
-        setAuthors(authors)
-      } catch (error) {
-        toast.showError('Error getting authors:', error)
-      }
-    }
     async function loadPage() {
       await getPost()
-      await getCategories()
-      await getTags()
-      await getAuthors()
+
       setIsLoading(false)
     }
 
@@ -86,9 +576,60 @@ export default function EditPost() {
   }, [])
 
   // Function to handle form submission
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
+
+    // Check if main fields are empty
+    if (!post.title || !post.content) {
+      toast.showError('Title and content are required')
+      return
+    }
+
+    switch (roleName) {
+      case 'CONTRIBUTOR':
+        // Check if user is editing their own post
+        if (post.userId !== parseInt(userId)) {
+          toast.showError('You are not allowed to edit posts by other authors')
+          return
+        }
+
+        // Check if the post is published
+        if (post.status === 'published') {
+          toast.showError('You are not allowed to publish posts')
+          return
+        }
+
+        break
+      case 'AUTHOR':
+        // Check if user is editing their own post
+        if (post.userId !== parseInt(userId)) {
+          toast.showError('You are not allowed to edit posts by other authors')
+          return
+        }
+
+        break
+      default:
+        break
+    }
+
+    // Call the update post service
+    const response = await postService.updatePost(post)
+
+    if (!response.ok) {
+      console.error('Error updating post:', response)
+      toast.showError(`Error updating post ${response.message}`)
+      return
+    }
+
+    // Show a success message
+    toast.showSuccess('Post updated successfully')
+
+    setPost(response.body)
+
     console.log('Post:', post)
+
+    // Force a reload of the page
+    window.location.reload()
   }
 
   /**
@@ -104,235 +645,11 @@ export default function EditPost() {
   }
 
   return (
-    <main>
-      <form
-        onSubmit={handleSubmit}
-        className='min-h-screen bg-gray-200 overflow-hidden flex'
-      >
-        <div
-          className={`p-4 transition-all transform duration-600 pr-5 flex-1 ${
-            expanded ? 'mrr-80' : 'mrr-20'
-          }`}
-        >
-          <div className='max-w-7xl mx-auto sm:px-6 lg:px-8'>
-            <div className='bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg'>
-              <div className='p-6 bg-white border-b border-gray-200'>
-                <div className='mb-4'>
-                  <input
-                    type='text'
-                    className=' text-2xl text-gray-800 font-bold py-2 w-full rounded'
-                    name='title'
-                    id='title'
-                    value={post.title}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className='mb-4'>
-                  <label className='text-xl text-gray-600'>Description</label>
-                  <br />
-                  <input
-                    type='text'
-                    className='text-gray-600 border-2 border-gray-300 p-2 w-full rounded'
-                    name='description'
-                    id='description'
-                    placeholder='(Optional)'
-                  />
-                </div>
-                <div className='mb-8'>
-                  <label className='text-xl text-gray-600'>Content</label>
-                  <br />
-                  {isLoading && <Loading />}
-                  <Editor
-                    apiKey={import.meta.env.VITE_TINY_MCE_API_KEY}
-                    onInit={(evt, editor) => (editorRef.current = editor)}
-                    name='content'
-                    value={post.content}
-                    init={{
-                      height: 500,
-                      menubar: true,
-                      plugins: [
-                        'advlist autolink lists link image charmap print preview anchor',
-                        'visualblocks code fullscreen',
-                        'searchreplace insertdatetime media table paste code help wordcount'
-                      ],
-                      toolbar:
-                        'undo redo | formatselect | styles |' +
-                        'bold italic backcolor | alignleft aligncenter ' +
-                        'alignright alignjustify | bullist numlist outdent indent | ' +
-                        'removeformat | help'
-                    }}
-                    onEditorChange={(content) =>
-                      handleInputChange({
-                        target: { name: 'content', value: content }
-                      })
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <aside
-          className={`flex-2 relative bg-gradient-to-br from-gray-50 dark:from-gray-800 to-gray-100 dark:to-gray-700 z-50 my-2 mr-2 p-2 rounded-xl transition-transform duration-300 ${
-            expanded ? 'w-72' : 'w-12'
-          }`}
-        >
-          <button
-            className={`z-50 middle none font-sans font-medium text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none w-10 max-w-[40px] h-10 max-h-[40px] rounded-lg text-xs text-white hover:bg-white/10 active:bg-white/30 absolute grid  ${
-              expanded
-                ? 'top-0 right-0 rounded-br-none rounded-tl-none'
-                : 'top-1 left-1 right-1'
-            }`}
-            type='button'
-            onClick={() => setExpanded((curr) => !curr)}
-          >
-            <span className='absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2'>
-              {expanded ? (
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  width='32'
-                  height='32'
-                  viewBox='0 0 32 32'
-                  fill='none'
-                  stroke='currentColor'
-                  strokeWidth='3'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                >
-                  <line x1='22' y1='6' x2='6' y2='22' />
-                  <line x1='22' y1='22' x2='6' y2='6' />
-                </svg>
-              ) : (
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  width='32'
-                  height='32'
-                  viewBox='0 0 32 32'
-                  fill='none'
-                  stroke='currentColor'
-                  strokeWidth='3'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                >
-                  <line x1='26' y1='22' x2='4' y2='22' />
-                  <line x1='26' y1='14' x2='4' y2='14' />
-                  <line x1='26' y1='6' x2='4' y2='6' />
-                </svg>
-              )}
-            </span>
-          </button>
-          <div className='relative border-b border-white/20 mb-3'>
-            <h2 className='text-3xl text-white'>Edit posts </h2>
-          </div>
-          <div className='flex justify-end my-3'>
-            <Button type='submit' color='blue'>
-              Publish
-            </Button>
-          </div>
-          <div className='visibility flex justify-between items-center my-3'>
-            <label htmlFor='countries' className='text-lg text-white'>
-              Status:
-            </label>
-            <select
-              id='countries'
-              className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-blue-500 focus:border-blue-500 p-1'
-            >
-              <option value='published'>Published</option>
-              <option value='draft'>Draft</option>
-            </select>
-          </div>
-          <EditSidebarItemCard
-            title={'Categories'}
-            array={categories}
-            callbackfn={(category) => {
-              return (
-                <li className='flex' key={category.id}>
-                  <input
-                    type='checkbox'
-                    id={`category-${category.id}`}
-                    name={category.id}
-                    value={category.id}
-                    className='peer hidden'
-                    checked={post.categories.includes(category.id)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setPost({
-                          ...post,
-                          categories: [...post.categories, category.id]
-                        })
-                      } else {
-                        setPost({
-                          ...post,
-                          categories: post.categories.filter(
-                            (cat) => cat !== category.id
-                          )
-                        })
-                      }
-                    }}
-                  />
-                  <label
-                    htmlFor={`category-${category.id}`}
-                    className='select-none cursor-pointer rounded border border-gray-200
-   py-2 px-3 text-sm font-semibold text-gray-200 transition-colors duration-200 ease-in-out peer-checked:bg-gray-200 peer-checked:text-gray-900 peer-checked:border-gray-200 '
-                  >
-                    {category.name}
-                  </label>
-                </li>
-              )
-            }}
-          />
-          <EditSidebarItemCard
-            title={'Tags'}
-            array={tags}
-            callbackfn={(tag) => {
-              return (
-                <li className='flex' key={tag.id}>
-                  <input
-                    type='checkbox'
-                    id={`tag-${tag.id}`}
-                    name={tag.id}
-                    value={tag.id}
-                    className='peer hidden'
-                    checked={post.tags.includes(tag.id)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setPost({
-                          ...post,
-                          tags: [...post.tags, tag.id]
-                        })
-                      } else {
-                        setPost({
-                          ...post,
-                          tags: post.tags.filter((cat) => cat !== tag.id)
-                        })
-                      }
-                    }}
-                  />
-                  <label
-                    htmlFor={`tag-${tag.id}`}
-                    className='select-none cursor-pointer rounded border border-gray-200
-   py-2 px-3 text-sm font-semibold text-gray-200 transition-colors duration-200 ease-in-out peer-checked:bg-gray-200 peer-checked:text-gray-900 peer-checked:border-gray-200 '
-                  >
-                    {tag.name}
-                  </label>
-                </li>
-              )
-            }}
-          />
-          <div className='author'>
-            <Typography color='gray' className='text-white'>
-              Author
-            </Typography>
-            <div className={'text-white'}>
-              <Select label='Select Version' className={'text-gray-900'}>
-                {authors.map((author) => (
-                  <Option key={author.id}>{author.displayName}</Option>
-                ))}
-              </Select>
-            </div>
-          </div>
-        </aside>
-      </form>
-    </main>
+    <PostForm
+      post={post}
+      setPost={setPost}
+      handleSubmit={handleSubmit}
+      handleInputChange={handleInputChange}
+    />
   )
 }

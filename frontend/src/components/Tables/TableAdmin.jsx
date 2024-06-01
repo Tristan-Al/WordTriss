@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import { Link } from 'react-router-dom'
-import defaultProfile from '../../assets/img/default-avatar.jpg'
-import defaultImage from '../../assets/img/default-image.png'
 import userService from '../../services/userService'
+import {
+  usePostThumbnailPreview,
+  useAvatarPreview
+} from '../../hooks/useImagePreview'
 import {
   Avatar,
   Chip,
@@ -14,6 +16,64 @@ import {
 } from '@material-tailwind/react'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 
+const PostTumbnail = ({ thumbnail }) => {
+  const thumbnailPreview = usePostThumbnailPreview(thumbnail)
+
+  return (
+    <img
+      className='h-14 w-14 rounded-lg object-cover object-center mx-auto'
+      src={thumbnailPreview}
+      alt='Post image'
+    />
+  )
+}
+
+function AuthorCard({ authorId }) {
+  const [author, setAuthor] = useState({})
+  const avatarPreview = useAvatarPreview(author.picture)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function getAuthor() {
+      try {
+        const response = await userService.getUserById(authorId)
+
+        if (!response.ok) {
+          throw new Error('An error occurred while fetching the author')
+        }
+
+        setAuthor(response.body)
+        setLoading(false)
+      } catch (error) {
+        console.error(error)
+        setLoading(false)
+      }
+    }
+
+    getAuthor()
+  }, [authorId])
+
+  return loading ? (
+    <Spinner size='sm' color='blue-gray' />
+  ) : (
+    <div className='flex items-center gap-3'>
+      <Avatar src={avatarPreview} alt='Author picture' size='sm' />
+      <div className='flex flex-col'>
+        <Typography variant='small' color='blue-gray' className='font-normal'>
+          {author.displayName}
+        </Typography>
+        <Typography
+          variant='small'
+          color='blue-gray'
+          className='font-normal opacity-70'
+        >
+          {author.email}
+        </Typography>
+      </div>
+    </div>
+  )
+}
+
 export default function TableAdmin({ posts }) {
   return posts.map(
     ({ id, thumbnail, title, userId, createdAt, status }, index) => {
@@ -23,11 +83,7 @@ export default function TableAdmin({ posts }) {
       return (
         <tr key={title}>
           <td className={classes}>
-            <img
-              className='h-14 w-14 rounded-lg object-cover object-center mx-auto'
-              src={thumbnail ?? defaultImage}
-              alt='Post image'
-            />
+            <PostTumbnail thumbnail={thumbnail} />
           </td>
           <td className={classes}>
             <div className='flex flex-col'>
@@ -88,58 +144,5 @@ export default function TableAdmin({ posts }) {
         </tr>
       )
     }
-  )
-}
-
-function AuthorCard({ authorId }) {
-  const [author, setAuthor] = useState({})
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function getAuthor() {
-      try {
-        const response = await userService.getUserById(authorId)
-
-        if (!response.ok) {
-          throw new Error('An error occurred while fetching the author')
-        }
-
-        setAuthor(response.body)
-        setLoading(false)
-      } catch (error) {
-        console.error(error)
-        setLoading(false)
-      }
-    }
-
-    getAuthor()
-  }, [authorId])
-
-  return loading ? (
-    <Spinner size='sm' color='blue-gray' />
-  ) : (
-    <div className='flex items-center gap-3'>
-      <Avatar
-        src={
-          author.picture
-            ? `${import.meta.env.VITE_API_BASE_URL}/avatars/${author.picture}`
-            : defaultProfile
-        }
-        alt='Author picture'
-        size='sm'
-      />
-      <div className='flex flex-col'>
-        <Typography variant='small' color='blue-gray' className='font-normal'>
-          {author.displayName}
-        </Typography>
-        <Typography
-          variant='small'
-          color='blue-gray'
-          className='font-normal opacity-70'
-        >
-          {author.email}
-        </Typography>
-      </div>
-    </div>
   )
 }
