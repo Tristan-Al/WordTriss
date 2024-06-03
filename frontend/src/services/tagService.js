@@ -1,4 +1,4 @@
-import api from './api'
+import api, { defaultQueryParams } from './api'
 
 const tagService = {
   getAllTags: async (options = {}) => {
