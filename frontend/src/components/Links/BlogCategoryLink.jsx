@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import categoryService from '../../services/categoryService'
 import { Link } from 'react-router-dom'
+import { Button } from '@material-tailwind/react'
 
 export default function BlogCategoryLink({ categoryId }) {
   const [category, setCategory] = useState({})
@@ -8,7 +9,14 @@ export default function BlogCategoryLink({ categoryId }) {
   useEffect(() => {
     async function getCategory() {
       try {
-        const category = await categoryService.getCategoryById(categoryId)
+        const response = await categoryService.getCategoryById(categoryId)
+
+        if (!response.ok) {
+          console.error('Failed to get category')
+          return
+        }
+
+        const category = response.body
         setCategory(category)
       } catch (error) {
         console.error(error)
@@ -19,12 +27,8 @@ export default function BlogCategoryLink({ categoryId }) {
   }, [categoryId])
 
   return (
-    <Link
-      key={category.id}
-      className='mr-2 px-2 py-1 text-slate-600 bg-slate-200 rounded-sm text-sm transition hover:bg-slate-300 hover:shadow-md'
-      to={`/category/${category.id}`}
-    >
-      {category.name}
+    <Link to={`/category/${category.id}`}>
+      <Button size='sm'>{category.name || 'Category'}</Button>
     </Link>
   )
 }

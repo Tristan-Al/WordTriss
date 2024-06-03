@@ -1,8 +1,10 @@
 import React from 'react'
+import DefaultNavbar from '../../components/Navbar/DefaultNavbar'
 
 function Home() {
   return (
     <>
+      <DefaultNavbar />
       <div
         style={{
           // backgroundImage: `url(${require('../../images/home.jpg')
@@ -80,7 +82,6 @@ function Home() {
           </svg>
         </div>
       </div>
-      <div></div>
     </>
   )
 }

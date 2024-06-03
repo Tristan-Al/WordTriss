@@ -1,13 +1,15 @@
 import React from 'react'
-import Navbar from '../components/Navbar/Navbar'
+import DefaultNavbar from '../components/Navbar/DefaultNavbar'
+import DefaultSidebar from '../components/Sidebars/DefaultSidebar'
 
-const DefaultLayout = ({ children }) => {
+export default function DefaultLayout({ children }) {
   return (
-    <div className='wrapper dark:bg-gray-900'>
-      <Navbar />
-      <main>{children}</main>
+    <div className='flex flex-col bg-gray-200 dark:bg-gray-900'>
+      <DefaultNavbar />
+      <main className='flex container mx-auto p-2 '>
+        <div className='w-full mr-2'>{children}</div>
+        <DefaultSidebar />
+      </main>
     </div>
   )
 }
-
-export default DefaultLayout

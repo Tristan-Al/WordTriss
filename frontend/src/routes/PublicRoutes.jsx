@@ -11,18 +11,22 @@ import Archives from '../pages/Public/Archives'
 export default function PublicRoutes() {
   return (
     <>
-      <Route index element={<DefaultLayout children={<Home />} />} />
+      <Route index element={<Home />} />
 
       <Route path='/login' element={<DefaultLayout children={<Login />} />} />
+
       <Route
         path='/register'
         element={<DefaultLayout children={<Register />} />}
       />
+
       <Route path='/blog' element={<DefaultLayout children={<Blog />} />} />
+
       <Route
         path='/post/:id'
         element={<DefaultLayout children={<SinglePost />} />}
       />
+
       <Route
         path='/:topic/:id'
         element={<DefaultLayout children={<Archives />} />}
