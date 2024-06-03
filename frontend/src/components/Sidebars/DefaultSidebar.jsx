@@ -24,7 +24,7 @@ import { format } from 'date-fns'
 function PostCard({ post }) {
   const preview = usePostThumbnailPreview(post.thumbnail)
   return (
-    <Link to={`/post/${post.id}`}>
+    <Link to={`/posts/${post.id}`}>
       <ListItem>
         <div>
           <Typography variant='h6' color='gray'>
@@ -43,7 +43,7 @@ function AuthorCard({ author }) {
   const preview = useAvatarPreview(author.picture)
 
   return (
-    <Link to={`/author/${author.id}`}>
+    <Link to={`/authors/${author.id}`}>
       <ListItem>
         <ListItemPrefix>
           <Avatar src={preview} variant='circular' />
@@ -166,7 +166,7 @@ export default function DefaultSidebar() {
             </Typography>
             <div className='mb-2 flex flex-wrap gap-1'>
               {categories.map((category) => (
-                <Link key={category.id} to={`/category/${category.id}`}>
+                <Link key={category.id} to={`/categories/${category.id}`}>
                   <Chip
                     value={category.name}
                     size='sm'
@@ -189,7 +189,7 @@ export default function DefaultSidebar() {
             </Typography>
             <div className='mb-2 flex flex-wrap gap-1'>
               {tags.map((tag) => (
-                <Link key={tag.id} to={`/tag/${tag.id}`}>
+                <Link key={tag.id} to={`/tags/${tag.id}`}>
                   <Chip
                     value={tag.name}
                     size='sm'

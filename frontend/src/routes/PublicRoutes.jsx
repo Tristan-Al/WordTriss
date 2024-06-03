@@ -23,7 +23,7 @@ export default function PublicRoutes() {
       <Route path='/blog' element={<DefaultLayout children={<Blog />} />} />
 
       <Route
-        path='/post/:id'
+        path='/posts/:id'
         element={<DefaultLayout children={<SinglePost />} />}
       />
 

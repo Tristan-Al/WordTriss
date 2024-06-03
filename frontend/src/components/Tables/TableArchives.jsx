@@ -66,7 +66,7 @@ export default function TableArchives({ posts }) {
                       </td>
                       <td className='px-4 py-4 text-sm text-gray-500 whitespace-nowrap'>
                         <Link
-                          to={`/post/${post.id}`}
+                          to={`/posts/${post.id}`}
                           className='bg-gradient-to-r from-orange-300 to-amber-400 hover:scale-100 drop-shadow-md shadow-cla-violate px-4 py-2 rounded-lg text-gray-800'
                         >
                           Learn more

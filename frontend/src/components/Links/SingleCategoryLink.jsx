@@ -23,7 +23,7 @@ export default function SingleCategoryLink({ categoryId }) {
       <Link
         key={categoryId}
         className='px-4 py-1 mr-2 mb-2 bg-black text-gray-200 inline-flex items-center justify-center rounded-sm transition hover:bg-white hover:text-black'
-        to={`/category/${categoryId}`}
+        to={`/categories/${categoryId}`}
       >
         {category.name}
       </Link>

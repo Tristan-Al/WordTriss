@@ -50,7 +50,7 @@ export default function BlogPostCard({ post }) {
                 : post.content
           }}
         />
-        <Link to={`/post/${post.id}`}>
+        <Link to={`/posts/${post.id}`}>
           <Button variant='outlined' className='flex items-center gap-2'>
             <span>Read more</span>
             <ArrowLongRightIcon width={18} />

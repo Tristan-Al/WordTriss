@@ -27,7 +27,7 @@ export default function BlogCategoryLink({ categoryId }) {
   }, [categoryId])
 
   return (
-    <Link to={`/category/${category.id}`}>
+    <Link to={`/categories/${category.id}`}>
       <Button size='sm'>{category.name || 'Category'}</Button>
     </Link>
   )

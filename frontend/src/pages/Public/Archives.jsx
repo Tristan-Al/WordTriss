@@ -13,7 +13,7 @@ function Archives() {
     async function fetchPosts() {
       let posts = []
       switch (topic) {
-        case 'category':
+        case 'categories':
           posts = await categoryService.getPosts(id)
           break
         case 'tags':
