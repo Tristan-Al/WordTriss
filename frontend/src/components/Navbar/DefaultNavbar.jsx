@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import ColorModeSwitcher from '../Buttons/ColorModeSwitcher'
+import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 
 export default function DefaultNavbar() {
   const [open, setOpen] = useState(false)
+  const isAuthenticated = useIsAuthenticated()
 
   const linkClass = (isActive) => {
     return isActive
@@ -80,7 +82,7 @@ export default function DefaultNavbar() {
             className={(isActive) => linkClass(isActive.isActive)}
             onClick={() => setOpen(!open)}
           >
-            Admin
+            {isAuthenticated ? 'Admin' : 'Login'}
           </NavLink>
           <div className='flex justify-center'>
             <ColorModeSwitcher />
