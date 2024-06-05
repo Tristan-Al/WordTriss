@@ -70,6 +70,7 @@ export const formatComment = (comment) => {
     content: comment.content,
     status: comment.status,
     userId: comment.user_id,
+    userName: comment.user_name,
     postId: comment.post_id,
     parentId: comment.parent_id,
     createdAt: comment.created_at,

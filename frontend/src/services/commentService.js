@@ -24,6 +24,15 @@ const commentService = {
     }
   },
 
+  createAnonymousComment: async (comment) => {
+    try {
+      return await api.post('comments/anonymous', comment)
+    } catch (error) {
+      console.error('Error creating comment', error.message)
+      throw error
+    }
+  },
+
   createComment: async (comment) => {
     try {
       return await api.post('comments', comment)
