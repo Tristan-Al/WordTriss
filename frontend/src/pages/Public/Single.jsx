@@ -1,17 +1,39 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { format } from 'date-fns'
 import postService from '../../services/postService'
-import Loading from '../../components/Loading/Loading'
-import SingleCommentCard from '../../components/Cards/SingleCommentCard'
-import SingleCategoryLink from '../../components/Links/SingleCategoryLink'
-import SingleAuthorCard from '../../components/Cards/SingleAuthorCard'
-import SingleTagLink from '../../components/Links/SingleTagLink'
+import useAlertToast from '../../hooks/useToast.jsx'
+import { Spinner, Typography } from '@material-tailwind/react'
+import DefaultNavbar from '../../components/Navbar/DefaultNavbar.jsx'
+import DefaultSidebar from '../../components/Sidebars/DefaultSidebar.jsx'
+import { usePostThumbnailPreview } from '../../hooks/useImagePreview'
+import BlogCategoryLink from '../../components/Links/BlogCategoryLink'
+import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
 
-function SinglePost() {
+// Components
+import AuthenticatedUserCommentForm from '../../components/Forms/SinglePost/AuthenticatedUserCommentForm'
+import UnauthenticatedUserCommentForm from '../../components/Forms/SinglePost/UnauthenticatedUserCommentForm'
+import CommentCard from '../../components/Cards/Single/CommentCard'
+import AuthorCard from '../../components/Cards/AuthorCard'
+import PostsCard from '../../components/Cards/Single/PostsCard'
+
+function PostThumbnail({ thumbnail }) {
+  const preview = usePostThumbnailPreview(thumbnail)
+
+  return (
+    <img
+      src={preview}
+      alt='TemporalTrek'
+      className='absolute inset-0 w-full h-full object-cover'
+    />
+  )
+}
+export default function SinglePost() {
   let { id } = useParams()
-
+  const { toast } = useAlertToast()
   const [post, setPost] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const isAuthenticated = useIsAuthenticated()
 
   /**
    * This only runs once when the component mounts
@@ -21,82 +43,115 @@ function SinglePost() {
   useEffect(() => {
     async function getPost() {
       try {
-        // Fetch the post from the server by id
-        const post = await postService.getPostById(id)
+        // Fetch the post from the server
+        const response = await postService.getPostById(id)
 
+        if (!response.ok) {
+          console.log('Failed to get post: ', response.message)
+          toast.showError(response.message || 'Error in request')
+          return
+        }
+
+        // Extract the posts from the response
+        const post = response.body
         // Save the post in the state
         setPost(post)
+        // Set loading to false
+        setLoading(false)
       } catch (error) {
         // If there's an error, set the error message
         console.log(error)
+        toast.showError(error.message || 'Error in request')
+        setLoading(false)
       }
     }
 
     getPost()
-  }, [])
+  }, [id])
 
-  // Verify if post is not empty before render
-  if (!post) {
-    return <Loading />
-  }
-
-  console.log(post.comments)
-  return (
-    <div className='container mx-auto pb-10'>
-      {/* <-------- POST HEADER AND THUMBNAIL --------> */}
-      <div
-        className='mb-4 md:mb-0 w-full max-w-screen-md mx-auto relative'
-        style={{ height: '24em' }}
-      >
-        <div
-          className='absolute left-0 bottom-0 w-full h-full z-10'
-          style={{
-            backgroundImage:
-              'linear-gradient(180deg,transparent,rgba(0,0,0,.7))'
-          }}
-        />
-        <img
-          src={post.thumbnail}
-          className='absolute left-0 top-0 w-full h-full z-0 object-cover'
-          alt='Post thumbnail'
-        />
-        <div className='p-4 absolute bottom-0 left-0 z-20'>
-          {post.categories.map((categoryId) => (
-            <SingleCategoryLink categoryId={categoryId} />
-          ))}
-          <h2 className='text-4xl font-semibold text-gray-100 leading-tight'>
-            {post.title}
-          </h2>
-          <SingleAuthorCard
-            authorId={post.userId}
-            date={format(new Date(post.updatedAt), 'dd MMM yyyy')}
-          />
+  return loading ? (
+    <Spinner />
+  ) : (
+    <div className='flex flex-col bg-gray-200 dark:bg-gray-900'>
+      <DefaultNavbar />
+      <main>
+        <div className='w-full h-[40rem] relative'>
+          <PostThumbnail thumbnail={post.thumbnail} />
+          <div className='absolute inset-0 h-full w-full bg-black/50 z-0'></div>
+          <div className='relative container mx-auto h-full pb-20 flex items-end gap-2'>
+            {post.categories.map((categoryId) => (
+              <BlogCategoryLink categoryId={categoryId} key={categoryId} />
+            ))}
+          </div>
         </div>
-      </div>
+        <div className='relative container flex mx-auto -mt-16 pb-4'>
+          <div className='w-full h-full mr-2 flex flex-col gap-6'>
+            <div className='bg-white rounded-xl shadow-md'>
+              {/* <-------- POST TITLE --------> */}
+              <div className='p-4 flex flex-col gap-4'>
+                <Typography variant='h2'>{post.title}</Typography>
+                <div>
+                  <AuthorCard
+                    authorId={post.userId}
+                    subText={format(new Date(post.createdAt), 'MMMM dd, yyyy')}
+                  />
+                </div>
+              </div>
+              {/* <-------- POST CONTENT --------> */}
+              <div
+                className='p-4 text-gray-700 text-lg leading-relaxed'
+                dangerouslySetInnerHTML={{
+                  __html: post.content
+                }}
+              />
+            </div>
+            {/* <-------- RELATED POSTS --------> */}
+            <PostsCard
+              categories={post.categories}
+              title={'Related Posts'}
+              excludedPostId={post.id}
+            />
 
-      {/* <-------- POST CONTENT --------> */}
-      <div className='px-4 lg:px-0 my-12 text-gray-700 max-w-screen-md mx-auto text-lg leading-relaxed'>
-        {post.content}
-      </div>
+            {/* <-------- COMMENT FORM --------> */}
+            <div className='bg-white rounded-xl shadow-md'>
+              <div className='p-4'>
+                <Typography variant='h4'>Leave a comment</Typography>
+              </div>
+              <div className='p-4'>
+                {isAuthenticated ? (
+                  <AuthenticatedUserCommentForm post={post} setPost={setPost} />
+                ) : (
+                  <UnauthenticatedUserCommentForm
+                    post={post}
+                    setPost={setPost}
+                  />
+                )}
+              </div>
+            </div>
 
-      {/* <-------- POST TAGS --------> */}
-      <div className='px-4 lg:px-0 my-12 text-gray-700 max-w-screen-md mx-auto text-lg leading-relaxed'>
-        {post.tags.map((tagId) => (
-          <SingleTagLink tagId={tagId} />
-        ))}
-      </div>
+            {/* <-------- POST COMMENTS --------> */}
+            <div className='bg-white rounded-xl shadow-md'>
+              <div className='p-4'>
+                <Typography variant='h4'>Comments</Typography>
+              </div>
+              <div>
+                {post.comments.map((commentId) => (
+                  <CommentCard
+                    key={commentId}
+                    commentId={commentId}
+                    isLast={
+                      post.comments.indexOf(commentId) ===
+                      post.comments.length - 1
+                    }
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
 
-      {/* <-------- POST COMMENTS --------> */}
-      <div className='max-w-screen-md mx-auto min-w-screen'>
-        <p className='mt-1 text-xl font-bold text-left text-gray-800 sm:text-2xl md:text-3xl  sm:mx-0'>
-          All comments on this post
-        </p>
-        {post.comments.map((commentId) => (
-          <SingleCommentCard commentId={commentId} />
-        ))}
-      </div>
+          <DefaultSidebar />
+        </div>
+      </main>
     </div>
   )
 }
-
-export default SinglePost

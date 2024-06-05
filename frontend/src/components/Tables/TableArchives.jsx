@@ -1,8 +1,7 @@
 import React from 'react'
 import { format } from 'date-fns'
 import { Link } from 'react-router-dom'
-import BlogAuthorCard from '../Cards/BlogAuthorCard'
-
+import AuthorCard from '../Cards/AuthorCard'
 export default function TableArchives({ posts }) {
   return (
     <div className=''>
@@ -59,7 +58,7 @@ export default function TableArchives({ posts }) {
                         {post.title}
                       </td>
                       <td className='px-4 py-4 text-sm text-gray-500 whitespace-nowrap flex items-center'>
-                        <BlogAuthorCard authorId={post.userId} />
+                        <AuthorCard authorId={post.userId} />
                       </td>
                       <td className='px-4 py-4 text-sm text-gray-500 whitespace-nowrap'>
                         {format(new Date(post.updatedAt), 'MMM dd, yyyy')}

@@ -1,20 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import { Link } from 'react-router-dom'
-import userService from '../../services/userService'
-import {
-  usePostThumbnailPreview,
-  useAvatarPreview
-} from '../../hooks/useImagePreview'
-import {
-  Avatar,
-  Chip,
-  IconButton,
-  Spinner,
-  Tooltip,
-  Typography
-} from '@material-tailwind/react'
+import { usePostThumbnailPreview } from '../../hooks/useImagePreview'
+import { Chip, IconButton, Tooltip, Typography } from '@material-tailwind/react'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
+import AuthorCard from '../Cards/AuthorCard'
 
 const PostTumbnail = ({ thumbnail }) => {
   const thumbnailPreview = usePostThumbnailPreview(thumbnail)
@@ -25,52 +15,6 @@ const PostTumbnail = ({ thumbnail }) => {
       src={thumbnailPreview}
       alt='Post image'
     />
-  )
-}
-
-function AuthorCard({ authorId }) {
-  const [author, setAuthor] = useState({})
-  const avatarPreview = useAvatarPreview(author.picture)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function getAuthor() {
-      try {
-        const response = await userService.getUserById(authorId)
-
-        if (!response.ok) {
-          throw new Error('An error occurred while fetching the author')
-        }
-
-        setAuthor(response.body)
-        setLoading(false)
-      } catch (error) {
-        console.error(error)
-        setLoading(false)
-      }
-    }
-
-    getAuthor()
-  }, [authorId])
-
-  return loading ? (
-    <Spinner size='sm' color='blue-gray' />
-  ) : (
-    <div className='flex items-center gap-3'>
-      <Avatar src={avatarPreview} alt='Author picture' size='sm' />
-      <div className='flex flex-col'>
-        <Typography variant='small' color='blue-gray' className='font-normal'>
-          {author.displayName}
-        </Typography>
-        <Typography
-          variant='small'
-          color='blue-gray'
-          className='font-normal opacity-70'
-        >
-          {author.email}
-        </Typography>
-      </div>
-    </div>
   )
 }
 

@@ -12,82 +12,80 @@ export default function DefaultNavbar() {
   }
 
   return (
-    <div className='sticky top-0 w-full z-50 bg-gray-100 dark:bg-gray-900'>
-      <div className='text-gray-700 bg-white dark:text-gray-200 dark:bg-gray-800 shadow-sm'>
-        <div className='flex flex-col max-w-screen-xl px-4 mx-auto lg:items-center lg:justify-between lg:flex-row md:px-6 lg:px-8'>
-          <div className='flex flex-row items-center justify-between p-4'>
-            <NavLink
-              to='/'
-              className='text-lg font-semibold tracking-widest text-gray-900 uppercase rounded-lg dark:text-white focus:outline-none focus:shadow-outline'
-            >
-              TemporalTrek
-            </NavLink>
-            <button
-              className='rounded-lg lg:hidden focus:outline-none focus:shadow-outline'
-              onClick={() => setOpen(!open)}
-            >
-              <svg fill='currentColor' viewBox='0 0 20 20' className='w-6 h-6'>
-                {open ? (
-                  <path
-                    fillRule='evenodd'
-                    d='M4.293 4.293a1 1 0 011.414 0L10 8.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'
-                    clipRule='evenodd'
-                  />
-                ) : (
-                  <path
-                    fillRule='evenodd'
-                    d='M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z'
-                    clipRule='evenodd'
-                  />
-                )}
-              </svg>
-            </button>
-          </div>
-          <nav
-            className={`gap-3 flex-col flex-grow ${
-              open ? 'flex' : 'hidden'
-            } pb-4 lg:pb-0 lg:flex lg:justify-end lg:flex-row text-center`}
+    <div className='fixed top-0 w-full z-50 pt-2 px-2'>
+      <div className='flex flex-col lg:items-center lg:justify-between lg:flex-row container px-4 md:px-6 lg:px-8 mx-auto  text-gray-700 bg-white dark:text-gray-200 dark:bg-blue-gray-900 shadow-sm rounded-xl'>
+        <div className='flex flex-row items-center justify-between p-4'>
+          <NavLink
+            to='/'
+            className='text-lg font-semibold tracking-widest text-gray-900 uppercase rounded-lg dark:text-white focus:outline-none focus:shadow-outline'
           >
-            <NavLink
-              to='/'
-              className={(isActive) => linkClass(isActive.isActive)}
-              onClick={() => setOpen(!open)}
-            >
-              Home
-            </NavLink>
-            <NavLink
-              to='/blog'
-              className={(isActive) => linkClass(isActive.isActive)}
-              onClick={() => setOpen(!open)}
-            >
-              Blog
-            </NavLink>
-            <NavLink
-              to='/about'
-              className={(isActive) => linkClass(isActive.isActive)}
-              onClick={() => setOpen(!open)}
-            >
-              About
-            </NavLink>
-            <NavLink
-              to='/contact'
-              className={(isActive) => linkClass(isActive.isActive)}
-              onClick={() => setOpen(!open)}
-            >
-              Contact
-            </NavLink>
-            <NavLink
-              to='/wt-content'
-              className={(isActive) => linkClass(isActive.isActive)}
-              onClick={() => setOpen(!open)}
-            >
-              Admin
-            </NavLink>
-            <div className='flex justify-center'>
-              <ColorModeSwitcher />
-            </div>
-          </nav>
+            TemporalTrek
+          </NavLink>
+          <button
+            className='rounded-lg lg:hidden focus:outline-none focus:shadow-outline'
+            onClick={() => setOpen(!open)}
+          >
+            <svg fill='currentColor' viewBox='0 0 20 20' className='w-6 h-6'>
+              {open ? (
+                <path
+                  fillRule='evenodd'
+                  d='M4.293 4.293a1 1 0 011.414 0L10 8.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'
+                  clipRule='evenodd'
+                />
+              ) : (
+                <path
+                  fillRule='evenodd'
+                  d='M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z'
+                  clipRule='evenodd'
+                />
+              )}
+            </svg>
+          </button>
         </div>
+        <nav
+          className={`gap-3 flex-col flex-grow ${
+            open ? 'flex' : 'hidden'
+          } pb-4 lg:pb-0 lg:flex lg:justify-end lg:flex-row text-center`}
+        >
+          <NavLink
+            to='/'
+            className={(isActive) => linkClass(isActive.isActive)}
+            onClick={() => setOpen(!open)}
+          >
+            Home
+          </NavLink>
+          <NavLink
+            to='/blog'
+            className={(isActive) => linkClass(isActive.isActive)}
+            onClick={() => setOpen(!open)}
+          >
+            Blog
+          </NavLink>
+          <NavLink
+            to='/about'
+            className={(isActive) => linkClass(isActive.isActive)}
+            onClick={() => setOpen(!open)}
+          >
+            About
+          </NavLink>
+          <NavLink
+            to='/contact'
+            className={(isActive) => linkClass(isActive.isActive)}
+            onClick={() => setOpen(!open)}
+          >
+            Contact
+          </NavLink>
+          <NavLink
+            to='/wt-content'
+            className={(isActive) => linkClass(isActive.isActive)}
+            onClick={() => setOpen(!open)}
+          >
+            Admin
+          </NavLink>
+          <div className='flex justify-center'>
+            <ColorModeSwitcher />
+          </div>
+        </nav>
       </div>
     </div>
   )
