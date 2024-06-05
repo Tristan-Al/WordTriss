@@ -145,50 +145,39 @@ export const updateUser = async (req, res) => {
   const curUser = req.user
 
   // Destructure request body to get values
-  const {
+  let {
     id,
     displayName,
     username,
-    roleId,
-    picture,
     password,
     confirmPassword,
-    email
+    email,
+    biography,
+    picture,
+    roleId
   } = req.body
 
-  // Get current user from request
-  const updatedUser = {
-    ...Object.fromEntries(
-      Object.entries(req.body)
-        .map(([key, value]) => [
-          key === 'id'
-            ? 'id'
-            : key === 'displayName'
-            ? 'display_name'
-            : key === 'username'
-            ? 'username'
-            : key === 'email'
-            ? 'email'
-            : key === 'roleId'
-            ? 'role_id'
-            : key === 'picture'
-            ? 'picture'
-            : key === 'biography'
-            ? 'biography'
-            : key === 'password'
-            ? 'password'
-            : key === 'confirmPassword'
-            ? 'confirm_password'
-            : null,
-          value
-        ])
-        .filter(([key]) => key !== null)
-    )
-  }
-
   try {
-    // Validate the fields
-    if (!User.validateNecessaryFields(updatedUser)) {
+    // Find the user by its ID
+    let updatedUser = await User.findByPk(userId)
+
+    // Check if the user exists
+    if (!updateUser) {
+      return errorHandler(
+        { statusCode: 404, message: 'User not found' },
+        req,
+        res
+      )
+    }
+
+    // Check if any necessary field is empty and passwords match
+    if (
+      !User.validateNecessaryFields({
+        displayName,
+        username,
+        email
+      })
+    ) {
       return errorHandler(
         { statusCode: 400, message: 'Necessary fields are required' },
         req,
@@ -206,7 +195,7 @@ export const updateUser = async (req, res) => {
     }
 
     // Check if user is updating his role and is not an admin
-    if (updatedUser.role_id && curUser.roleName !== 'ADMIN') {
+    if (updatedUser.roleId && curUser.roleName !== 'ADMIN') {
       return errorHandler(
         { statusCode: 403, message: 'You are not allowed to update roles' },
         req,
@@ -215,9 +204,9 @@ export const updateUser = async (req, res) => {
     }
 
     // Check if user is updating his password
-    if (updatedUser.password) {
+    if (password) {
       // Check if confirm password is not empty
-      if (!updatedUser.confirm_password) {
+      if (!confirmPassword) {
         return errorHandler(
           {
             statusCode: 403,
@@ -228,7 +217,7 @@ export const updateUser = async (req, res) => {
         )
       }
       // Check if password is valid
-      if (!User.validatePassword(updatedUser.password)) {
+      if (!User.validatePassword(password)) {
         return errorHandler(
           {
             statusCode: 403,
@@ -241,43 +230,43 @@ export const updateUser = async (req, res) => {
         )
       }
       // Check if password and confirm password match
-      if (updatedUser.password !== updatedUser.confirm_password) {
+      if (password !== confirmPassword) {
         return errorHandler(
           { statusCode: 400, message: 'Passwords do not match' },
           req,
           res
         )
       }
-      // Encrypt password
-      updatedUser.password = User.encryptPassword(updatedUser.password)
+      // Encrypt password and update user
+      updatedUser.password = User.encryptPassword(password)
     }
 
-    // If user is updating his id
-    if (updatedUser.id) {
-      delete updatedUser.id
-    }
+    console.log('Updating user biography:', biography)
 
     // Update user
-    User.findByPk(userId).then((user) => {
-      if (!user) {
-        return errorHandler(
-          { statusCode: 404, message: 'No user found' },
-          req,
-          res
-        )
-      }
+    updatedUser.display_name = displayName
+    updatedUser.username = username
+    updatedUser.email = email
 
-      console.log('Updating user:', updatedUser)
+    if (biography) {
+      updatedUser.biography = biography
+    }
 
-      // Update user data
-      user.set(updatedUser)
+    if (picture) {
+      updatedUser.picture = picture
+    }
+    if (roleId) {
+      updatedUser.role_id = roleId
+    }
 
-      // Save it in DB
-      user.save().then((updatedUser) => {
-        successHandler(formatUser(updatedUser), req, res)
-      })
-    })
+    // Save user
+    const updatedUserData = await updatedUser.save()
+
+    const formattedUser = formatUser(updatedUserData.dataValues)
+    return successHandler(formattedUser, req, res)
   } catch (error) {
+    console.error('Error updating user:', error.message)
+    // Send error message
     return errorHandler(
       { message: error.message, details: 'Internal Server Error' },
       req,
@@ -285,7 +274,6 @@ export const updateUser = async (req, res) => {
     )
   }
 }
-
 /**
  * Delete a user from database by id
  * @param {*} req The request object from Express

@@ -92,23 +92,9 @@ User.validateAllFields = (
 
 User.validateNecessaryFields = (user) => {
   // Check if any necessary field is empty
-  if (!user.display_name || !user.username || !user.email) {
+  if (!user.displayName || !user.username || !user.email) {
     return false
   }
-
-  // Check if the user is updating password
-  if (user.password === '') {
-    // Check if confirm password is empty
-    if (user.confirm_password === '') {
-      return false
-    }
-
-    // Check if the password and confirm password match
-    if (user.password !== user.confirm_password) {
-      return false
-    }
-  }
-
   return true
 }
 
