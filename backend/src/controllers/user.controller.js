@@ -98,6 +98,7 @@ export const createUser = async (req, res) => {
   // Destructure request body to get values
   const { displayName, username, password, confirmPassword, email } = req.body
 
+  console.log('Creating user:', req.body)
   // Validate the fields
   if (
     !User.validateAllFields(
@@ -110,6 +111,20 @@ export const createUser = async (req, res) => {
   ) {
     return errorHandler(
       { statusCode: 400, message: 'Invalid fields' },
+      req,
+      res
+    )
+  }
+
+  // Check if password is valid
+  if (!User.validatePassword(password)) {
+    return errorHandler(
+      {
+        statusCode: 403,
+        message: 'Invalid password format',
+        details:
+          'Password must have at least 8 characters, 1 uppercase letter, 1 lowercase letter and 1 number.'
+      },
       req,
       res
     )

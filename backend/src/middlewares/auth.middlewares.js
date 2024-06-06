@@ -1,7 +1,7 @@
 import { User } from '../models/user.model.js'
 import jwt from 'jsonwebtoken'
 import { Role } from '../models/role.model.js'
-import { errorTokenHandler } from './response.middlewares.js'
+import { errorHandler, errorTokenHandler } from './response.middlewares.js'
 
 /**
  * Verify the JWT token.
