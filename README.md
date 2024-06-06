@@ -1,4 +1,6 @@
 # WordTriss
+![wordtriss-high-resolution-logo](https://github.com/Tristan-Al/WordTriss/assets/101890965/db26a828-1e5d-444d-83e3-058846317ada)
+
 A Full-Stack Blog CMS
 =====================
 
@@ -360,6 +362,7 @@ GET http://localhost:5000/api/users/1
 ```
 
 ### Database Schema
+![database-schema](https://github.com/Tristan-Al/WordTriss/assets/101890965/3f69e76b-f222-40aa-825c-019887dcae02)
 
 
 #### Automatic Schema Creation
