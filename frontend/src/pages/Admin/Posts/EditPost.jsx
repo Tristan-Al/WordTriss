@@ -8,7 +8,6 @@ import useAlertToast from '../../../hooks/useToast'
 import useAuth from '../../../hooks/useAuth'
 
 import PostForm from '../../../components/Forms/PostForm'
-import EditPostThumbnail from '../../../components/EditPostThumbnail'
 
 export default function EditPost() {
   let { id } = useParams()
@@ -139,24 +138,29 @@ export default function EditPost() {
         break
     }
 
-    // Call the update post service
-    const response = await postService.updatePost(post)
+    try {
+      // Call the update post service
+      const response = await postService.updatePost(post)
 
-    if (!response.ok) {
-      console.error('Error updating post:', response)
-      toast.showError(`Error updating post ${response.message}`)
-      return
+      if (!response.ok) {
+        console.error('Error updating post:', response)
+        toast.showError(`Error updating post ${response.message}`)
+        return
+      }
+
+      // Show a success message
+      toast.showSuccess('Post updated successfully')
+
+      setPost(response.body)
+
+      console.log('Post:', post)
+
+      // Force a reload of the page
+      window.location.reload()
+    } catch (error) {
+      console.error('Error updating post:', error)
+      toast.showError(`Error updating post ${error.message}`)
     }
-
-    // Show a success message
-    toast.showSuccess('Post updated successfully')
-
-    setPost(response.body)
-
-    console.log('Post:', post)
-
-    // Force a reload of the page
-    window.location.reload()
   }
 
   /**

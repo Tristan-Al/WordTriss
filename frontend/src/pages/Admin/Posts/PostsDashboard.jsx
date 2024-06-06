@@ -21,9 +21,12 @@ import {
   MagnifyingGlassIcon,
   UserPlusIcon
 } from '@heroicons/react/24/outline'
+import { Link } from 'react-router-dom'
+import useAuth from '../../../hooks/useAuth'
 
 const PostsDashboard = () => {
   const { toast } = useAlertToast()
+  const { roleName } = useAuth()
 
   const [posts, setPosts] = useState([])
   const [url, setUrl] = useState({
@@ -85,8 +88,13 @@ const PostsDashboard = () => {
             <Button variant='outlined' size='sm'>
               view all
             </Button>
-            <Button className='flex items-center gap-3' size='sm'>
-              <UserPlusIcon strokeWidth={2} className='h-4 w-4' /> Add post
+            <Button size='sm' disabled={roleName === 'SUBSCRIBER'}>
+              <Link
+                to='/wt-content/posts/create'
+                className='flex items-center gap-3'
+              >
+                <UserPlusIcon strokeWidth={2} className='h-4 w-4' /> Add post
+              </Link>
             </Button>
           </div>
         </div>

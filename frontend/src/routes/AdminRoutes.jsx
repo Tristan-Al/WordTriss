@@ -6,6 +6,7 @@ import Dashboard from '../pages/Admin/Dashboard/Dashboard'
 import PostsDashboard from '../pages/Admin/Posts/PostsDashboard'
 import EditPost from '../pages/Admin/Posts/EditPost'
 import Profile from '../pages/Admin/Profile/Profile'
+import CreatePost from '../pages/Admin/Posts/CreatePost'
 
 export default function AdminRoutes() {
   return (
@@ -45,6 +46,16 @@ export default function AdminRoutes() {
           </RequireAuth>
         }
       />
+
+      <Route
+        path='/wt-content/posts/create'
+        element={
+          <RequireAuth fallbackPath={'/login'}>
+            <CreatePost />
+          </RequireAuth>
+        }
+      />
+
       <Route
         path='/wt-content'
         element={<Navigate to='/wt-content/dashboard' replace />}

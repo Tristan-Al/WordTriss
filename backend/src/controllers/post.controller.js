@@ -130,15 +130,125 @@ export const getPostById = async (req, res) => {
  */
 export const createPost = async (req, res) => {
   try {
-    // Insert post in DB
-    const [result] = await insert(req.body)
+    // Destrucre post object from request body
+    const {
+      title,
+      content,
+      status,
+      thumbnail,
+      userId,
+      categories,
+      comments,
+      tags
+    } = req.body
 
-    // Get the new post ( returns an array )
-    const [posts] = await getById(result.insertId)
+    // Get current user from request
+    const curUser = req.user
 
-    // Get first occurrence and send it
-    const formattedPost = formatPost(posts[0])
+    // Check if any necessary field is empty
+    if (!title || !content || !status || !userId) {
+      return errorHandler(
+        { statusCode: 400, message: 'Necessary fields are required' },
+        req,
+        res
+      )
+    }
 
+    switch (curUser.roleName) {
+      case 'SUBSCRIBER':
+        console.log('User is a subscriber')
+
+        return errorHandler(
+          {
+            statusCode: 403,
+            message: 'You are not authorized to create posts'
+          },
+          req,
+          res
+        )
+
+        break
+      case 'CONTRIBUTOR':
+        console.log('User is a contributor')
+
+        // Check if the user is the author of the post
+        if (curUser.id !== userId) {
+          return errorHandler(
+            {
+              statusCode: 403,
+              message: 'You are not authorized to create this post'
+            },
+            req,
+            res
+          )
+        }
+
+        // Check if the post is published
+        if (status === 'published') {
+          return errorHandler(
+            {
+              statusCode: 403,
+              message: 'You are not authorized to publish this post'
+            },
+            req,
+            res
+          )
+        }
+
+        break
+      case 'AUTHOR':
+        console.log('User is an author')
+
+        // Check if the user is the author of the post
+        if (curUser.id !== userId) {
+          return errorHandler(
+            {
+              statusCode: 403,
+              message: 'You are not authorized to create this post'
+            },
+            req,
+            res
+          )
+        }
+    }
+
+    // Create post in DB
+    const newPost = await Post.create({
+      title,
+      content,
+      status,
+      thumbnail,
+      user_id: userId
+    })
+
+    // Handle categories
+    for (const category of categories) {
+      // Find category by name
+      const [cat, created] = await Category.findOrCreate({
+        where: { name: category.name },
+        defaults: category
+      })
+      await newPost.addCategory(cat)
+    }
+
+    // Handle tags
+    for (const tag of tags) {
+      const [tg, created] = await Tag.findOrCreate({
+        where: { name: tag.name },
+        defaults: tag
+      })
+      await newPost.addTag(tg)
+    }
+
+    // Get the new post
+    const newPostData = await Post.findByPk(newPost.id, {
+      include: [{ model: Category }, { model: Tag }, { model: Comment }]
+    })
+
+    // Format response as JSON
+    const formattedPost = formatPost(newPostData.dataValues)
+
+    console.log('Post created successfully')
     return successHandler(formattedPost, req, res)
   } catch (error) {
     // Send error message
@@ -198,6 +308,19 @@ export const updatePost = async (req, res) => {
     }
 
     switch (curUser.roleName) {
+      case 'SUBSCRIBER':
+        console.log('User is a subscriber')
+
+        return errorHandler(
+          {
+            statusCode: 403,
+            message: 'You are not authorized to update posts'
+          },
+          req,
+          res
+        )
+
+        break
       case 'CONTRIBUTOR':
         console.log('User is a contributor')
 

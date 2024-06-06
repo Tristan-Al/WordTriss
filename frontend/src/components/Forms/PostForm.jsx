@@ -15,7 +15,8 @@ export default function PostForm({
   post,
   setPost,
   handleSubmit,
-  handleInputChange
+  handleInputChange,
+  title = 'Edit Post'
 }) {
   const navigate = useNavigate()
   const editorRef = useRef(null)
@@ -28,7 +29,7 @@ export default function PostForm({
           shadow={false}
           className='m-0 p-3 rounded-b-none bg-gray-300 flex justify-between items-center'
         >
-          <Typography variant='h3'>Edit post</Typography>
+          <Typography variant='h3'>{title}</Typography>
           <div className='flex gap-2'>
             <Button
               variant='outlined'
