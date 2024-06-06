@@ -52,10 +52,14 @@ const categoryService = {
   },
 
   getPosts: async (categoryId, options = {}) => {
+    const { page, order, status, limit } = options
     try {
       const queryParams = new URLSearchParams({
         ...defaultQueryParams,
-        ...options
+        page: page || defaultQueryParams.page,
+        order: order || defaultQueryParams.order,
+        status: status || defaultQueryParams.status,
+        limit: limit || defaultQueryParams.limit
       })
 
       return await api.get(

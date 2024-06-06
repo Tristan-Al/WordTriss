@@ -17,13 +17,16 @@ export default function PublicRoutes() {
 
       <Route path='/register' element={<Register />} />
 
-      <Route path='/blog' element={<DefaultLayout children={<Blog />} />} />
+      <Route
+        path='/blog'
+        element={<DefaultLayout children={<Blog />} title={'Blog'} />}
+      />
 
       <Route path='/posts/:id' element={<SinglePost />} />
 
       <Route
         path='/:topic/:id'
-        element={<DefaultLayout children={<Archives />} />}
+        element={<DefaultLayout children={<Archives />} title={'Archives'} />}
       />
     </>
   )

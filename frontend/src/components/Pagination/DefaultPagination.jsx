@@ -1,6 +1,6 @@
 import { Button, IconButton } from '@material-tailwind/react'
 
-export default function AdminPostsPagination({
+export default function DefaultPagination({
   currentPage,
   totalPages,
   url,

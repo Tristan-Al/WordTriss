@@ -80,7 +80,7 @@ export default function TableAdmin({ posts }) {
                 </IconButton>
               </Tooltip>
             </Link>
-            {(roleName === 'ADMIN' || roleName === 'EDITOR') ?? (
+            {(roleName == 'ADMIN' || roleName == 'EDITOR') && (
               <Link to={`/wt-content/posts/delete/${id}`}>
                 <Tooltip content='Delete Post'>
                   <IconButton variant='text'>

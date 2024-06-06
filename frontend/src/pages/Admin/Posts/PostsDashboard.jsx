@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import postService from '../../../services/postService'
 import TableAdmin from '../../../components/Tables/TableAdmin'
-import AdminPostsPagination from '../../../components/Pagination/AdminPostsPagination'
+import DefaultPagination from '../../../components/Pagination/DefaultPagination'
 import useAlertToast from '../../../hooks/useToast'
 import {
   Button,
@@ -216,7 +216,7 @@ const PostsDashboard = () => {
         {loading ? (
           <Spinner size='sm' />
         ) : (
-          <AdminPostsPagination {...pagination} url={url} setUrl={setUrl} />
+          <DefaultPagination {...pagination} url={url} setUrl={setUrl} />
         )}
       </CardFooter>
     </Card>

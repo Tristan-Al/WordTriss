@@ -22,7 +22,7 @@ export default function DefaultLayout({ children, title }) {
           </div>
         </div>
         <div className='flex container mx-auto p-2 -mt-16'>
-          <div className='w-full mr-2'>{children}</div>
+          <div className='w-full mr-2 z-40'>{children}</div>
           <DefaultSidebar />
         </div>
       </main>
