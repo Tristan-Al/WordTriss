@@ -13,12 +13,9 @@ export default function PublicRoutes() {
     <>
       <Route index element={<Home />} />
 
-      <Route path='/login' element={<DefaultLayout children={<Login />} />} />
+      <Route path='/login' element={<Login />} />
 
-      <Route
-        path='/register'
-        element={<DefaultLayout children={<Register />} />}
-      />
+      <Route path='/register' element={<Register />} />
 
       <Route path='/blog' element={<DefaultLayout children={<Blog />} />} />
 
