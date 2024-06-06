@@ -1,10 +1,17 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Button, IconButton, Input } from '@material-tailwind/react'
+import {
+  ArrowLongRightIcon,
+  EyeIcon,
+  EyeSlashIcon
+} from '@heroicons/react/24/outline'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useAlertToast from '../../hooks/useToast.jsx'
-import { IconButton, Input } from '@material-tailwind/react'
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
 import authService from '../../services/authService.js'
+import DefaultNavbar from '../../components/Navbar/DefaultNavbar.jsx'
+import CustomLoginInput from '../../components/Inputs/CustomLoginInput.jsx'
+import CustomPasswordInput from '../../components/Inputs/CustomPasswordInput.jsx'
 
 export default function Login() {
   const { toast } = useAlertToast()
@@ -14,7 +21,6 @@ export default function Login() {
     username: '',
     password: ''
   })
-  const [pVisible, setPVisible] = useState(false)
 
   /**
    * Handle the input change event and update the state
@@ -37,16 +43,14 @@ export default function Login() {
       return
     }
 
-    console.log(inputs)
     // Call the signIn function
     try {
       // Make the request to api
       const response = await authService.login(inputs.username, inputs.password)
 
       // If the response isn't ok, throw an error
-      if (!response) {
-        const error = await response.json()
-        toast.showError(error.message || 'Error in request')
+      if (!response.ok) {
+        toast.showError(response.message || 'Error in request')
         return
       }
 
@@ -62,7 +66,7 @@ export default function Login() {
       })
 
       // Alert the user that the login was successful
-      toast.showSuccess(`Login successfully`)
+      toast.showSuccess(response.message || `Login successfully`)
 
       // Redirect to admin area
       navigate('/wt-content')
@@ -73,64 +77,30 @@ export default function Login() {
 
   return (
     <div className='min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col justify-center sm:py-12'>
+      <DefaultNavbar />
       <div className='p-10 xs:p-0 mx-auto md:w-full md:max-w-md'>
         <h1 className='font-bold text-center text-2xl mb-5 text-gray-800 dark:text-gray-200'>
           Logo
         </h1>
-        <form
-          className='bg-white dark:bg-gray-800 shadow w-full rounded-lg'
-          onSubmit={handleSubmit}
-        >
-          <div className='px-5 py-7'>
-            <div className='mb-5'>
-              <CustomLoginInput
-                label='Username'
-                name='username'
-                value={inputs.username}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className='relative flex justify-between w-full mb-5'>
-              <CustomLoginInput
-                label={'Password'}
-                type={pVisible ? 'text' : 'password'}
-                name={'password'}
-                value={inputs.password}
-                onChange={handleInputChange}
-              />
-              <IconButton
-                variant='text'
-                onClick={() => setPVisible(!pVisible)}
-                color={inputs.password ? 'gray' : 'blue-gray'}
-                className='!absolute right-0 bottom-0'
-              >
-                {pVisible ? (
-                  <EyeIcon width={20} />
-                ) : (
-                  <EyeSlashIcon width={20} />
-                )}
-              </IconButton>
-            </div>
-            <button
-              type='submit'
-              className='transition duration-200 bg-blue-500 hover:bg-blue-600  focus:bg-blue-700 focus:shadow-sm focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 text-white w-full p-4 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block'
-            >
+        <form className='bg-white dark:bg-gray-800 shadow w-full rounded-lg'>
+          <div className='px-5 py-7 flex flex-col gap-5'>
+            <CustomLoginInput
+              label='Username'
+              name='username'
+              value={inputs.username}
+              onChange={handleInputChange}
+            />
+            <CustomPasswordInput
+              label={'Password'}
+              name={'password'}
+              value={inputs.password}
+              onChange={handleInputChange}
+            />
+
+            <Button className='flex justify-center' onClick={handleSubmit}>
               <span className='inline-block mr-2'>Login</span>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-                className='w-4 h-4 inline-block text-white dark:text-gray-300'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M17 8l4 4m0 0l-4 4m4-4H3'
-                />
-              </svg>
-            </button>
+              <ArrowLongRightIcon width={18} />
+            </Button>
           </div>
 
           <div className='flex items-center px-5 py-2'>
@@ -231,30 +201,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-    </div>
-  )
-}
-
-function CustomLoginInput({
-  label,
-  name,
-  value,
-  onChange,
-  placeholder,
-  type = 'text',
-  className = ''
-}) {
-  return (
-    <div className='relative w-full'>
-      <Input
-        label={label}
-        type={type}
-        name={name}
-        placeholder={placeholder}
-        className={`p-3 placeholder-gray-500 text-gray-600 text-sm shadow-md shadow-gray-300 focus:shadow-xl w-full ease-linear transition-all duration-150 ${className}`}
-        value={value}
-        onChange={onChange}
-      />
     </div>
   )
 }
