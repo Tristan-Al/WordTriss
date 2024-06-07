@@ -2,10 +2,14 @@ import api, { defaultQueryParams } from './api'
 
 const userService = {
   getAllUsers: async (options = {}) => {
+    const { page, order, status, limit } = options
     try {
       const queryParams = new URLSearchParams({
         ...defaultQueryParams,
-        ...options
+        page: page || defaultQueryParams.page,
+        order: order || defaultQueryParams.order,
+        status: status || defaultQueryParams.status,
+        limit: limit || defaultQueryParams.limit
       })
 
       return await api.get(`users?${queryParams.toString()}`)
@@ -25,10 +29,14 @@ const userService = {
   },
 
   getPosts: async (userId, options = {}) => {
+    const { page, order, status, limit } = options
     try {
       const queryParams = new URLSearchParams({
         ...defaultQueryParams,
-        ...options
+        page: page || defaultQueryParams.page,
+        order: order || defaultQueryParams.order,
+        status: status || defaultQueryParams.status,
+        limit: limit || defaultQueryParams.limit
       })
 
       return await api.get(`users/${userId}/posts?${queryParams.toString()}`)

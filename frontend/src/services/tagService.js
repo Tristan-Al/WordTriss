@@ -2,10 +2,14 @@ import api, { defaultQueryParams } from './api'
 
 const tagService = {
   getAllTags: async (options = {}) => {
+    const { page, order, status, limit } = options
     try {
       const queryParams = new URLSearchParams({
         ...defaultQueryParams,
-        ...options
+        page: page || defaultQueryParams.page,
+        order: order || defaultQueryParams.order,
+        status: status || defaultQueryParams.status,
+        limit: limit || defaultQueryParams.limit
       })
 
       return await api.get(`tags?${queryParams.toString()}`)
@@ -51,10 +55,14 @@ const tagService = {
   },
 
   getPosts: async (tagId, options = {}) => {
+    const { page, order, status, limit } = options
     try {
       const queryParams = new URLSearchParams({
         ...defaultQueryParams,
-        ...options
+        page: page || defaultQueryParams.page,
+        order: order || defaultQueryParams.order,
+        status: status || defaultQueryParams.status,
+        limit: limit || defaultQueryParams.limit
       })
 
       return await api.get(`tags/${tagId}/posts?${queryParams.toString()}`)
