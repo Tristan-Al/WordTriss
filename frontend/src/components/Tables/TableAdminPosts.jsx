@@ -21,7 +21,7 @@ const PostTumbnail = ({ thumbnail }) => {
   )
 }
 
-export default function TableAdmin({ posts, url, setUrl }) {
+export default function TableAdminPosts({ posts, url, setUrl }) {
   const { roleName } = useAuth()
   const { toast } = useAlertToast()
 

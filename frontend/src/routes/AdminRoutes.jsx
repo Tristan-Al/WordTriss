@@ -7,6 +7,8 @@ import PostsDashboard from '../pages/Admin/Posts/PostsDashboard'
 import EditPost from '../pages/Admin/Posts/EditPost'
 import Profile from '../pages/Admin/Profile/Profile'
 import CreatePost from '../pages/Admin/Posts/CreatePost'
+import CategoriesDashboard from '../pages/Admin/Categories/CategoriesDashboard'
+import TagsDashboard from '../pages/Admin/Tags/TagsDashboard'
 
 export default function AdminRoutes() {
   return (
@@ -61,7 +63,7 @@ export default function AdminRoutes() {
         path='/wt-content/categories'
         element={
           <RequireAuth fallbackPath={'/login'}>
-            <AdminLayout children={<div>Categories</div>} />
+            <AdminLayout children={<CategoriesDashboard />} />
           </RequireAuth>
         }
       />
@@ -71,7 +73,7 @@ export default function AdminRoutes() {
         path='/wt-content/tags'
         element={
           <RequireAuth fallbackPath={'/login'}>
-            <AdminLayout children={<div>Tags</div>} />
+            <AdminLayout children={<TagsDashboard />} />
           </RequireAuth>
         }
       />

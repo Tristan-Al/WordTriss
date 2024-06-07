@@ -38,7 +38,7 @@ const tagService = {
 
   updateTag: async (tag) => {
     try {
-      return await api.post('tags', tag)
+      return await api.put(`tags/${tag.id}`, tag)
     } catch (error) {
       console.error('Error updating tag', error.message)
       throw error

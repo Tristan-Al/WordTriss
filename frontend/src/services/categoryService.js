@@ -39,7 +39,7 @@ const categoryService = {
 
   updateCategory: async (category) => {
     try {
-      return await api.post('categories', category)
+      return await api.put(`categories/${category.id}`, category)
     } catch (error) {
       console.error('Error updating category', error.message)
       throw error
@@ -48,7 +48,7 @@ const categoryService = {
 
   deleteCategory: async (categoryId) => {
     try {
-      await api.delete(`categories/${categoryId}`)
+      return await api.delete(`categories/${categoryId}`)
     } catch (error) {
       console.error('Error deleting category', error.message)
       throw error
