@@ -36,10 +36,14 @@ export default function AuthorCard({ authorId = null, subText = null }) {
     <div className='flex items-center gap-4'>
       <Avatar src={preview} alt='avatar' />
       <div>
-        <Typography variant='h6' color='gray'>
+        <Typography variant='h6' color='gray' className='dark:text-gray-200'>
           <Link to={`/authors/${authorId}`}>{author.displayName}</Link>
         </Typography>
-        <Typography variant='small' color='gray' className='font-normal'>
+        <Typography
+          variant='small'
+          color='gray'
+          className='font-normal dark:text-gray-400'
+        >
           {subText ? subText : author.email}
         </Typography>
       </div>

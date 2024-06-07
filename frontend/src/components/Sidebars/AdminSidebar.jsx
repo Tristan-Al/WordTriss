@@ -10,37 +10,47 @@ import {
   UserCircleIcon
 } from '@heroicons/react/24/outline'
 import AdminAuthorSidebarCard from '../Cards/AdminAuthorSidebarCard'
-
+import {
+  IconButton,
+  List,
+  ListItem,
+  Typography
+} from '@material-tailwind/react'
+import ColorModeSwitcher from '../Buttons/ColorModeSwitcher'
 const SidebarContext = createContext(null)
 
 export default function AdminSidebar({ expanded, onClick }) {
   return (
     <aside className='h-screen p-2 sticky top-0 z-50'>
-      <nav className='h-full flex flex-col bg-white border-r shadow-sm rounded-lg'>
-        <div className='p-4 pb-2 flex justify-between items-center'>
+      <nav className='h-full flex flex-col bg-white dark:bg-blue-gray-900 shadow-sm rounded-lg'>
+        <div
+          className={`p-2 pb-2 flex items-center ${
+            expanded ? 'justify-between' : 'justify-center'
+          }`}
+        >
           <Link
             to={'/'}
-            className={`flex items-center gap-2 hover:bg-gray-200 rounded-lg transition-all overflow-hidden ${
-              expanded ? 'p-1.5' : 'p-0 w-0'
+            className={`dark:text-gray-200 dark:hover:bg-blue-gray-800 rounded-md ${
+              expanded ? 'p-2' : 'p-0'
             }`}
           >
-            <GlobeAltIcon width={28} />
-            Home
+            <GlobeAltIcon width={expanded ? 28 : 0} />
           </Link>
-          <button
+          <IconButton
+            variant='text'
             onClick={onClick}
-            className='p-1.5 rounded-lg bg-gray-50 hover:bg-gray-200'
+            className='dark:text-gray-200 dark:hover:bg-blue-gray-800'
           >
             {expanded ? (
               <ChevronLeftIcon width={28} />
             ) : (
               <ChevronRightIcon width={28} />
             )}
-          </button>
+          </IconButton>
         </div>
 
         <SidebarContext.Provider value={{ expanded: expanded }}>
-          <ul className='flex-1 px-3'>
+          <List className='flex-1 min-w-0'>
             <SidebarItem
               icon={<ComputerDesktopIcon width={24} />}
               text={'Dashboard'}
@@ -57,13 +67,18 @@ export default function AdminSidebar({ expanded, onClick }) {
               link={'/wt-content/posts'}
               alert={true}
             />
-            <hr className='my-3' />
+            <hr className='my-3 border-gray-300 dark:border-gray-700' />
             <SidebarItem
               icon={<Cog6ToothIcon width={24} />}
               text={'Settings'}
               link={'/wt-content/settings'}
             />
-          </ul>
+            <SidebarItem
+              icon={<ColorModeSwitcher />}
+              text={'Theme'}
+              className={'p-0'}
+            />
+          </List>
         </SidebarContext.Provider>
 
         <AdminAuthorSidebarCard expanded={expanded} />
@@ -72,7 +87,13 @@ export default function AdminSidebar({ expanded, onClick }) {
   )
 }
 
-export function SidebarItem({ icon, text, alert, link = '/wt-content' }) {
+export function SidebarItem({
+  icon,
+  text,
+  alert,
+  link = '/wt-content',
+  className
+}) {
   const { expanded } = useContext(SidebarContext)
 
   // Determine if the current link is active
@@ -85,16 +106,17 @@ export function SidebarItem({ icon, text, alert, link = '/wt-content' }) {
       aria-current='page'
       className={(isActive) => isActive ?? 'active'}
     >
-      <li
+      <ListItem
         className={`
-        relative flex items-center py-2 px-3 my-1
+        relative flex items-center
         font-medium rounded-md cursor-pointer
-        transition-colors group
+        transition-colors group dark:text-gray-200 dark:hover:bg-blue-gray-800
         ${
           isActive
-            ? 'bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800'
+            ? 'bg-gray-300 dark:bg-blue-gray-700 dark:text-gray-100'
             : 'hover:bg-indigo-50 text-gray-600'
         }
+        ${!expanded ? className : ''}
     `}
       >
         {icon}
@@ -117,7 +139,7 @@ export function SidebarItem({ icon, text, alert, link = '/wt-content' }) {
           <div
             className={`
           absolute left-full rounded-md px-2 py-1 ml-6
-          bg-indigo-100 text-indigo-800 text-sm
+          bg-black text-gray-100  text-sm dark:bg-gray-100 dark:text-gray-900  
           invisible opacity-20 -translate-x-3 transition-all
           group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
       `}
@@ -125,7 +147,7 @@ export function SidebarItem({ icon, text, alert, link = '/wt-content' }) {
             {text}
           </div>
         )}
-      </li>
+      </ListItem>
     </NavLink>
   )
 }

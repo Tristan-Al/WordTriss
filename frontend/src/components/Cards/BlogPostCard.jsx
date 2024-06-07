@@ -15,7 +15,7 @@ export default function BlogPostCard({ post }) {
   const preview = usePostThumbnailPreview(post.thumbnail)
 
   return (
-    <Card className='w-full flex-row'>
+    <Card className='w-full flex-row dark:bg-gray-800'>
       <CardHeader
         shadow={false}
         floated={false}
@@ -38,11 +38,15 @@ export default function BlogPostCard({ post }) {
             </div>
           )
         }
-        <Typography variant='h4' color='blue-gray' className='mb-4'>
+        <Typography
+          variant='h4'
+          color='blue-gray'
+          className='mb-4 dark:text-gray-200'
+        >
           {post.title}
         </Typography>
         <div
-          className='mb-8 font-normal text-justify'
+          className='mb-8 font-normal text-justify dark:text-gray-100'
           dangerouslySetInnerHTML={{
             __html:
               post.content.length > 200
@@ -51,7 +55,10 @@ export default function BlogPostCard({ post }) {
           }}
         />
         <Link to={`/posts/${post.id}`}>
-          <Button variant='outlined' className='flex items-center gap-2'>
+          <Button
+            variant='outlined'
+            className='flex items-center gap-2 dark:text-gray-200 dark:border-gray-200'
+          >
             <span>Read more</span>
             <ArrowLongRightIcon width={18} />
           </Button>

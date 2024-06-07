@@ -19,6 +19,7 @@ export default function DefaultPagination({
         variant={currentPage === 1 ? 'outlined' : 'text'}
         size='sm'
         onClick={() => handlePageChange(1)}
+        className='dark:border-gray-200 dark:text-gray-200 dark:hover:bg-gray-700'
         disabled={currentPage === 1}
       >
         1
@@ -67,6 +68,7 @@ export default function DefaultPagination({
             variant={currentPage === page ? 'outlined' : 'text'}
             size='sm'
             onClick={() => handlePageChange(page)}
+            className='dark:border-gray-200 dark:text-gray-200 dark:hover:bg-gray-700'
             disabled={currentPage === page}
           >
             {page}
@@ -94,6 +96,7 @@ export default function DefaultPagination({
           variant={currentPage === totalPages ? 'outlined' : 'text'}
           size='sm'
           onClick={() => handlePageChange(totalPages)}
+          className='dark:border-gray-200 dark:text-gray-200 dark:hover:bg-gray-700'
           disabled={currentPage === totalPages}
         >
           {totalPages}
@@ -109,6 +112,7 @@ export default function DefaultPagination({
         variant='outlined'
         size='sm'
         disabled={currentPage === 1}
+        className='dark:border-gray-200 dark:text-gray-200 dark:hover:bg-gray-700'
         onClick={() => handlePageChange(currentPage - 1)}
       >
         Previous
@@ -118,6 +122,7 @@ export default function DefaultPagination({
         variant='outlined'
         size='sm'
         disabled={currentPage === totalPages}
+        className='dark:border-gray-200 dark:text-gray-200 dark:hover:bg-gray-700'
         onClick={() => handlePageChange(currentPage + 1)}
       >
         Next

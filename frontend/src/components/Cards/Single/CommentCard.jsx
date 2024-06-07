@@ -39,17 +39,25 @@ export default function CommentCard({ commentId, isLast = false }) {
               date={format(new Date(comment.createdAt), 'MMMM dd, yyyy')}
             />
           ) : (
-            <Typography variant='h6' color='gray'>
+            <Typography
+              variant='h6'
+              color='gray'
+              className='dark:text-gray-200 '
+            >
               {comment.userName}
             </Typography>
           )}
         </div>
         <div
-          className={`pb-7 ml-16 mt-4 ${
+          className={`pb-7 ml-16 mt-4 border-gray-300 dark:border-gray-700 ${
             isLast ? `border-none` : `border-b`
-          } border-gray-300`}
+          }`}
         >
-          <Typography variant='paragraph' color='gray'>
+          <Typography
+            variant='paragraph'
+            color='gray'
+            className='dark:text-gray-200 '
+          >
             {comment.content}
           </Typography>
         </div>

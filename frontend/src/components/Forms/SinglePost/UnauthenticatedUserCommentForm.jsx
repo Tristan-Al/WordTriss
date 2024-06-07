@@ -50,12 +50,13 @@ export default function UnauthenticatedUserCommentForm({ post, setPost }) {
           type='text'
           label='Name'
           placeholder='Your name'
+          className='dark:text-gray-200'
           onChange={(e) => setComment({ ...comment, userName: e.target.value })}
           required
         />
       </div>
       <Textarea
-        className='w-full h-32 p-2 mb-4 border border-gray-300 rounded-lg'
+        className='w-full h-32 p-2 mb-4 border border-gray-300 dark:text-gray-100 rounded-lg'
         label='Comment'
         onChange={(e) => setComment({ ...comment, content: e.target.value })}
       />

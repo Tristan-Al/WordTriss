@@ -73,12 +73,20 @@ export default function Archives() {
       <Spinner />
     </div>
   ) : (
-    <Card className='w-full'>
-      <CardHeader floated={false} shadow={false} className='rounded-none p-2'>
-        <Typography variant='h3' color='blue-gray'>
+    <Card className='w-full dark:bg-gray-800'>
+      <CardHeader
+        floated={false}
+        shadow={false}
+        className='m-0 p-5 rounded-b-none bg-gray-300 dark:bg-gray-700'
+      >
+        <Typography
+          variant='h3'
+          color='blue-gray'
+          className='dark:text-gray-100'
+        >
           {topic.charAt(0).toUpperCase() + topic.slice(1)} Archives
         </Typography>
-        <Typography variant='h5' color='gray'>
+        <Typography variant='h5' color='gray' className='dark:text-gray-100'>
           {posts.length === 0 ? 'No' : pagination.totalItems} posts found
         </Typography>
       </CardHeader>

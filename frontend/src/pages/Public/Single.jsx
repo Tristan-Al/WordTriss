@@ -86,10 +86,12 @@ export default function SinglePost() {
         </div>
         <div className='relative container flex mx-auto -mt-16 pb-4'>
           <div className='w-full h-full mr-2 flex flex-col gap-6'>
-            <div className='bg-white rounded-xl shadow-md'>
+            <div className='bg-white dark:bg-gray-800 rounded-xl shadow-md'>
               {/* <-------- POST TITLE --------> */}
               <div className='p-4 flex flex-col gap-4'>
-                <Typography variant='h2'>{post.title}</Typography>
+                <Typography variant='h2' className='dark:text-gray-100'>
+                  {post.title}
+                </Typography>
                 <div>
                   <AuthorCard
                     authorId={post.userId}
@@ -99,7 +101,7 @@ export default function SinglePost() {
               </div>
               {/* <-------- POST CONTENT --------> */}
               <div
-                className='p-4 text-gray-700 text-lg leading-relaxed'
+                className='p-4 text-gray-700 dark:text-gray-200 text-lg leading-relaxed'
                 dangerouslySetInnerHTML={{
                   __html: post.content
                 }}
@@ -113,9 +115,11 @@ export default function SinglePost() {
             />
 
             {/* <-------- COMMENT FORM --------> */}
-            <div className='bg-white rounded-xl shadow-md'>
+            <div className='bg-white dark:bg-gray-800 rounded-xl shadow-md'>
               <div className='p-4'>
-                <Typography variant='h4'>Leave a comment</Typography>
+                <Typography variant='h4' className='dark:text-gray-200'>
+                  Leave a comment
+                </Typography>
               </div>
               <div className='p-4'>
                 {isAuthenticated ? (
@@ -130,9 +134,11 @@ export default function SinglePost() {
             </div>
 
             {/* <-------- POST COMMENTS --------> */}
-            <div className='bg-white rounded-xl shadow-md'>
+            <div className='bg-white dark:bg-gray-800 rounded-xl shadow-md'>
               <div className='p-4'>
-                <Typography variant='h4'>Comments</Typography>
+                <Typography variant='h4' className='dark:text-gray-200 '>
+                  Comments
+                </Typography>
               </div>
               <div>
                 {post.comments.map((commentId) => (

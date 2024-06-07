@@ -25,12 +25,16 @@ function PostCard({ post }) {
   const preview = usePostThumbnailPreview(post.thumbnail)
   return (
     <Link to={`/posts/${post.id}`}>
-      <ListItem>
+      <ListItem className='hover:bg-gray-300 dark:hover:bg-gray-800'>
         <div>
-          <Typography variant='h6' color='gray'>
+          <Typography variant='h6' color='gray' className='dark:text-gray-100'>
             {post.title}
           </Typography>
-          <Typography variant='small' color='gray' className='font-normal'>
+          <Typography
+            variant='small'
+            color='gray'
+            className='font-normal dark:text-gray-100'
+          >
             {format(new Date(post.createdAt), 'MMM dd, yyyy')}
           </Typography>
         </div>
@@ -44,17 +48,22 @@ function AuthorCard({ author }) {
 
   return (
     <Link to={`/authors/${author.id}`}>
-      <ListItem>
+      <ListItem className='hover:bg-gray-300 dark:hover:bg-gray-800'>
         <ListItemPrefix>
           <Avatar src={preview} variant='circular' />
         </ListItemPrefix>
-        <Typography variant='h6' color='blue-gray'>
+        <Typography
+          variant='h6'
+          color='blue-gray'
+          className='dark:text-gray-100'
+        >
           {author.displayName}
         </Typography>
       </ListItem>
     </Link>
   )
 }
+
 export default function DefaultSidebar() {
   const [categories, setCategories] = useState([])
   const [tags, setTags] = useState([])
@@ -137,30 +146,21 @@ export default function DefaultSidebar() {
   }, [])
 
   return (
-    <div className='h-full z-40'>
-      <Card className='h-full w-full max-w-[18rem] p-4 shadow-xl shadow-blue-gray-900/5'>
-        <div className='mb-8 flex items-center gap-4'>
-          <img
-            src='https://docs.material-tailwind.com/img/logo-ct-dark.png'
-            alt='brand'
-            className='h-8 w-8'
-          />
-          <Typography variant='h5' color='blue-gray'>
-            Sidebar
-          </Typography>
-        </div>
+    <aside className='h-full z-40'>
+      <Card className='h-full w-full max-w-[18rem] p-4 shadow-xl shadow-blue-gray-900/5 dark:bg-gray-800'>
         <div className='mb-3'>
           <Input
             icon={<MagnifyingGlassIcon className='h-5 w-5' />}
+            className='dark:text-gray-100 '
             label='Search'
           />
         </div>
         <div className='mb-3'>
-          <Card className='w-full p-2 drop-shadow-sm'>
+          <Card className='w-full p-2 drop-shadow-sm bg-gray-200 dark:bg-gray-700'>
             <Typography
               variant='h5'
               color='blue-gray'
-              className='border-b border-gray-300 pb-2 mb-2'
+              className='border-b border-gray-300 pb-2 mb-2 dark:text-gray-100'
             >
               Categories
             </Typography>
@@ -171,7 +171,7 @@ export default function DefaultSidebar() {
                     value={category.name}
                     size='sm'
                     variant='filled'
-                    className='rounded-full cursor-pointer hover:bg-gray-400 hover:text-black'
+                    className='rounded-full cursor-pointer hover:bg-gray-200 hover:text-black'
                   />
                 </Link>
               ))}
@@ -179,22 +179,22 @@ export default function DefaultSidebar() {
           </Card>
         </div>
         <div className='mb-3'>
-          <Card className='w-full p-2 drop-shadow-sm'>
+          <Card className='w-full p-2 drop-shadow-sm  bg-gray-200 dark:bg-gray-700'>
             <Typography
               variant='h5'
               color='blue-gray'
-              className='border-b border-gray-300 pb-2 mb-2'
+              className='border-b border-gray-300 pb-2 mb-2 dark:text-gray-100'
             >
               Tags
             </Typography>
-            <div className='mb-2 flex flex-wrap gap-1'>
+            <div className='mb-2 flex flex-wrap gap-1 '>
               {tags.map((tag) => (
                 <Link key={tag.id} to={`/tags/${tag.id}`}>
                   <Chip
                     value={tag.name}
                     size='sm'
                     variant='filled'
-                    className='rounded-full cursor-pointer hover:bg-gray-400 hover:text-black'
+                    className='rounded-full cursor-pointer hover:bg-gray-200 hover:text-black'
                   />
                 </Link>
               ))}
@@ -202,11 +202,11 @@ export default function DefaultSidebar() {
           </Card>
         </div>
         <div className='mb-3'>
-          <Card className='w-full p-2 drop-shadow-sm'>
+          <Card className='w-full p-2 drop-shadow-sm  bg-gray-200 dark:bg-gray-700'>
             <Typography
               variant='h5'
               color='blue-gray'
-              className='border-b border-gray-300 pb-2 mb-2'
+              className='border-b border-gray-300 pb-2 mb-2 dark:text-gray-100'
             >
               Last entries
             </Typography>
@@ -220,11 +220,11 @@ export default function DefaultSidebar() {
           </Card>
         </div>
         <div className='mb-3'>
-          <Card className='w-full p-2 drop-shadow-sm'>
+          <Card className='w-full p-2 drop-shadow-sm  bg-gray-200 dark:bg-gray-700'>
             <Typography
               variant='h5'
               color='blue-gray'
-              className='border-b border-gray-300 pb-2 mb-2'
+              className='border-b border-gray-300 pb-2 mb-2 dark:text-gray-100'
             >
               Authors
             </Typography>
@@ -238,6 +238,6 @@ export default function DefaultSidebar() {
           </Card>
         </div>
       </Card>
-    </div>
+    </aside>
   )
 }

@@ -19,7 +19,7 @@ export default function CustomPasswordInput({ label, name, value, onChange }) {
         variant='text'
         onClick={() => setVisible(!visible)}
         color={value ? 'gray' : 'blue-gray'}
-        className='!absolute right-0 bottom-0'
+        className='!absolute right-0 bottom-0 dark:hover:bg-gray-700 dark:text-gray-200'
       >
         {visible ? <EyeIcon width={20} /> : <EyeSlashIcon width={20} />}
       </IconButton>

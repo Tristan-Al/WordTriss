@@ -160,12 +160,12 @@ export default function Profile() {
         <CardHeader
           floated={false}
           shadow={false}
-          className='m-0 p-3 rounded-b-none bg-gray-300 flex justify-between items-center'
+          className='m-0 p-3 rounded-b-none bg-gray-300 dark:bg-blue-gray-700 dark:text-gray-100 flex justify-between items-center'
         >
           <Typography variant='h3'>My account</Typography>
           <Button onClick={handleSubmit}>Save</Button>
         </CardHeader>
-        <CardBody className='flex justify-center items-center container mx-auto flex-auto bg-white'>
+        <CardBody className='flex justify-center items-center container mx-auto flex-auto bg-white dark:bg-blue-gray-900 dark:text-gray-100'>
           {loading ? (
             <Spinner />
           ) : (
@@ -224,6 +224,7 @@ export default function Profile() {
                         }
                         value={user.roleId.toString()}
                         disabled={roleName !== 'ADMIN'}
+                        className='!bg-gray-100 dark:!bg-blue-gray-800 text-gray-900 dark:text-gray-200'
                       >
                         <Option value='1'>Admin</Option>
                         <Option value='2'>Editor</Option>
@@ -282,7 +283,7 @@ export default function Profile() {
                 </div>
               </div>
 
-              <hr className='my-8 border-b-1 border-blueGray-300' />
+              <hr className='my-8 border-b-1  border-gray-400 dark:border-blue-gray-300' />
 
               <div>
                 <Typography
@@ -295,7 +296,7 @@ export default function Profile() {
                   <div className='w-full lg:w-12/12 px-4'>
                     <div className='relative w-full mb-3'>
                       <Textarea
-                        className='!border-0 placeholder-gray-500 text-gray-600 text-sm shadow-md shadow-gray-300 focus:shadow-xl'
+                        className='!border-0 !bg-gray-100 dark:!bg-blue-gray-800 placeholder-gray-500 text-gray-600 dark:text-gray-200 text-sm shadow-md shadow-gray-300 dark:shadow-gray-900 focus:shadow-xl'
                         labelProps={{
                           className: 'before:content-none after:content-none'
                         }}
@@ -333,7 +334,7 @@ function CustomInput({
         type={type}
         name={name}
         placeholder={placeholder}
-        className='!border-0 p-3 placeholder-gray-500 text-gray-600 text-sm shadow-md shadow-gray-300 focus:shadow-xl w-full ease-linear transition-all duration-150'
+        className='!bg-gray-100 dark:!bg-blue-gray-800 !border-0 p-3 placeholder-gray-500 text-gray-600 dark:text-gray-200 text-sm shadow-md shadow-gray-300 dark:shadow-gray-900 focus:shadow-xl w-full ease-linear transition-all duration-150'
         labelProps={{
           className: 'before:content-none after:content-none'
         }}

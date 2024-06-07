@@ -37,17 +37,17 @@ export default function TableAdmin({ posts }) {
               <Typography
                 variant='small'
                 color='blue-gray'
-                className='font-normal'
+                className='font-normal dark:text-gray-200'
               >
                 {title}
               </Typography>
-              <Typography
+              {/* <Typography
                 variant='small'
                 color='blue-gray'
-                className='font-normal opacity-70'
+                className='font-normal opacity-70 dark:text-gray-200'
               >
-                org
-              </Typography>
+                Post
+              </Typography> */}
             </div>
           </td>
           <td className={classes}>
@@ -57,7 +57,7 @@ export default function TableAdmin({ posts }) {
             <Typography
               variant='small'
               color='blue-gray'
-              className='font-normal'
+              className='font-normal dark:text-gray-200'
             >
               {format(new Date(createdAt), 'MMM dd, yyyy')}
             </Typography>
@@ -65,7 +65,6 @@ export default function TableAdmin({ posts }) {
           <td className={classes}>
             <div className='w-max'>
               <Chip
-                variant='ghost'
                 size='sm'
                 value={status == 'published' ? 'published' : 'draft'}
                 color={status == 'published' ? 'green' : 'blue-gray'}
@@ -74,17 +73,37 @@ export default function TableAdmin({ posts }) {
           </td>
           <td className={classes}>
             <Link to={`/wt-content/posts/edit/${id}`}>
-              <Tooltip content='Edit Post'>
-                <IconButton variant='text'>
-                  <PencilSquareIcon className='h-4 w-4' />
+              <Tooltip
+                content='Edit Post'
+                className='dark:text-gray-900 dark:bg-gray-100'
+                animate={{
+                  mount: { scale: 1, y: 0 },
+                  unmount: { scale: 0, y: 25 }
+                }}
+              >
+                <IconButton
+                  variant='text'
+                  className='dark:hover:bg-blue-gray-800 dark:text-gray-200'
+                >
+                  <PencilSquareIcon width={20} />
                 </IconButton>
               </Tooltip>
             </Link>
             {(roleName == 'ADMIN' || roleName == 'EDITOR') && (
               <Link to={`/wt-content/posts/delete/${id}`}>
-                <Tooltip content='Delete Post'>
-                  <IconButton variant='text'>
-                    <TrashIcon className='h-4 w-4' />
+                <Tooltip
+                  content='Delete Post'
+                  className='dark:text-gray-900 dark:bg-gray-100'
+                  animate={{
+                    mount: { scale: 1, y: 0 },
+                    unmount: { scale: 0, y: 25 }
+                  }}
+                >
+                  <IconButton
+                    variant='text'
+                    className='dark:hover:bg-blue-gray-800 dark:text-gray-200'
+                  >
+                    <TrashIcon width={20} />
                   </IconButton>
                 </Tooltip>
               </Link>

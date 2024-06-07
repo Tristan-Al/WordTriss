@@ -17,11 +17,10 @@ function PostCard({ post, isLast = false, onClick }) {
   const preview = usePostThumbnailPreview(post.thumbnail)
   const truncatedTitle = useTruncatedText(post.title, 50)
   const truncatedContent = useTruncatedText(post.content)
-  console.log('Is last:', isLast)
 
   return (
     <Card
-      className={`w-1/3 rounded-none border-gray-300 ${
+      className={`w-1/3 rounded-none border-gray-300 dark:border-gray-600 dark:bg-gray-800 ${
         isLast ? 'border-r-0' : 'border-r'
       }`}
       shadow={false}
@@ -39,10 +38,16 @@ function PostCard({ post, isLast = false, onClick }) {
         />
       </CardHeader>
       <CardBody>
-        <Typography variant='h5' color='blue-gray' className='mb-2'>
+        <Typography
+          variant='h5'
+          color='blue-gray'
+          className='mb-2 dark:text-gray-200'
+        >
           {truncatedTitle}
         </Typography>
-        <Typography>{truncatedContent}</Typography>
+        <Typography className='dark:text-gray-200'>
+          {truncatedContent}
+        </Typography>
       </CardBody>
       <CardFooter className='pt-0'>
         <Button onClick={onClick}>Read More</Button>
@@ -53,7 +58,7 @@ function PostCard({ post, isLast = false, onClick }) {
 
 export default function PostsCard({
   categories = null,
-  title,
+  title = null,
   excludedPostId
 }) {
   const [posts, setPosts] = useState([])
@@ -105,10 +110,14 @@ export default function PostsCard({
   return loading ? (
     <Spinner />
   ) : posts ? (
-    <div className='bg-white rounded-xl shadow-md p-4'>
-      <div className='p-4 mb-3'>
-        <Typography variant='h4'>{title}</Typography>
-      </div>
+    <div className='bg-white dark:bg-gray-800 rounded-xl shadow-md p-4'>
+      {title ? (
+        <div className='p-4 mb-3'>
+          <Typography variant='h4' className='dark:text-gray-200'>
+            {title}
+          </Typography>
+        </div>
+      ) : null}
       <div>
         <div className='flex justify-center rounded-xl gap-[.1rem]'>
           {posts.map(
@@ -117,7 +126,7 @@ export default function PostsCard({
                 <PostCard
                   key={post.id}
                   post={post}
-                  isLast={post.id === posts[posts.length - 1].id}
+                  isLast={post.id === posts[posts.length - 2].id}
                   onClick={() => navigate(`/posts/${post.id}`)}
                 />
               )

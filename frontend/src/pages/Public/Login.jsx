@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Button, IconButton, Input } from '@material-tailwind/react'
+import { Button, IconButton, Input, Typography } from '@material-tailwind/react'
 import {
   ArrowLongRightIcon,
   EyeIcon,
@@ -76,14 +76,17 @@ export default function Login() {
   }
 
   return (
-    <div className='min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col justify-center sm:py-12'>
+    <div className='min-h-screen bg-gray-200 dark:bg-gray-900 flex flex-col justify-center sm:py-12'>
       <DefaultNavbar />
       <div className='p-10 xs:p-0 mx-auto md:w-full md:max-w-md'>
-        <h1 className='font-bold text-center text-2xl mb-5 text-gray-800 dark:text-gray-200'>
-          Logo
-        </h1>
+        <Typography
+          variant='h2'
+          className='text-center mb-5 text-gray-800 dark:text-gray-200'
+        >
+          Login
+        </Typography>
         <form className='bg-white dark:bg-gray-800 shadow w-full rounded-lg'>
-          <div className='px-5 py-7 flex flex-col gap-5'>
+          <div className='p-5 flex flex-col gap-5'>
             <CustomLoginInput
               label='Username'
               name='username'

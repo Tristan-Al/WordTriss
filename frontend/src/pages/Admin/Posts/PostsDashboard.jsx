@@ -24,7 +24,7 @@ import {
 import { Link } from 'react-router-dom'
 import useAuth from '../../../hooks/useAuth'
 
-const PostsDashboard = () => {
+export default function PostsDashboard() {
   const { toast } = useAlertToast()
   const { roleName } = useAuth()
 
@@ -73,19 +73,33 @@ const PostsDashboard = () => {
   }
 
   return (
-    <Card className='w-full'>
-      <CardHeader floated={false} shadow={false} className='rounded-none'>
+    <Card className='w-full dark:bg-blue-gray-900'>
+      <CardHeader
+        floated={false}
+        shadow={false}
+        className='p-5 m-0 rounded-b-none bg-gray-300 dark:bg-blue-gray-700 dark:text-gray-100'
+      >
         <div className='mb-8 flex items-center justify-between gap-8'>
           <div>
-            <Typography variant='h5' color='blue-gray'>
+            <Typography
+              variant='h3'
+              className='text-blue-gray-900 dark:text-gray-200'
+            >
               Posts list
             </Typography>
-            <Typography color='gray' className='mt-1 font-normal'>
+            <Typography
+              color='gray'
+              className='mt-1 font-normal text-blue-gray-900 dark:text-gray-200'
+            >
               See and manage all posts
             </Typography>
           </div>
-          <div className='flex shrink-0 flex-col gap-2 sm:flex-row'>
-            <Button variant='outlined' size='sm'>
+          <div className='flex shrink-0 flex-col gap-2 sm:flex-row '>
+            <Button
+              variant='outlined'
+              size='sm'
+              className='text-blue-gray-900 dark:text-gray-200 dark:border-blue-gray-200'
+            >
               view all
             </Button>
             <Button size='sm' disabled={roleName === 'SUBSCRIBER'}>
@@ -133,38 +147,38 @@ const PostsDashboard = () => {
         </div>
       </CardHeader>
       <CardBody className='overflow-scroll px-0'>
-        <table className='mt-4 w-full min-w-max table-auto text-left'>
+        <table className='mt-0 w-full min-w-max table-auto text-left'>
           <thead>
             <tr>
-              <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+              <th className='border-y border-blue-gray-100 dark:bg-blue-gray-600 p-4'>
                 <Typography
                   variant='small'
                   color='blue-gray'
-                  className='font-normal leading-none opacity-70'
+                  className='font-normal leading-none opacity-70 dark:text-white'
                 >
                   Thumbnail
                 </Typography>
               </th>
-              <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+              <th className='border-y border-blue-gray-100 dark:bg-blue-gray-600  p-4'>
                 <Typography
                   variant='small'
                   color='blue-gray'
-                  className='flex items-center justify-between gap-2 font-normal leading-none opacity-70'
+                  className='flex items-center justify-between gap-2 font-normal leading-none opacity-70 dark:text-white'
                 >
                   Title
                 </Typography>
               </th>
-              <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+              <th className='border-y border-blue-gray-100 dark:bg-blue-gray-600  p-4'>
                 <Typography
                   variant='small'
                   color='blue-gray'
-                  className='font-normal leading-none opacity-70'
+                  className='font-normal leading-none opacity-70 dark:text-white'
                 >
                   Author
                 </Typography>
               </th>
               <th
-                className='cursor-pointer border-y border-blue-gray-100 bg-blue-gray-50/50 p-4 transition-colors hover:bg-blue-gray-50'
+                className='cursor-pointer border-y border-blue-gray-100 dark:bg-blue-gray-600  p-4 transition-colors hover:bg-blue-gray-50'
                 onClick={() => {
                   const urlDate = url.order === 'DESC' ? 'ASC' : 'DESC'
                   setUrl({ ...url, order: urlDate })
@@ -173,33 +187,33 @@ const PostsDashboard = () => {
                 <Typography
                   variant='small'
                   color='blue-gray'
-                  className='flex items-center justify-between gap-2 font-normal leading-none opacity-70'
+                  className='flex items-center justify-between gap-2 font-normal leading-none opacity-70 dark:text-white'
                 >
                   Date
                   <ChevronUpDownIcon strokeWidth={2} className='h-4 w-4' />
                 </Typography>
               </th>
-              <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+              <th className='border-y border-blue-gray-100 dark:bg-blue-gray-600  p-4'>
                 <Typography
                   variant='small'
                   color='blue-gray'
-                  className='font-normal leading-none opacity-70'
+                  className='font-normal leading-none opacity-70 dark:text-white'
                 >
                   Status
                 </Typography>
               </th>
-              <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+              <th className='border-y border-blue-gray-100 dark:bg-blue-gray-600  p-4'>
                 <Typography
                   variant='small'
                   color='blue-gray'
-                  className='font-normal leading-none opacity-70'
+                  className='font-normal leading-none opacity-70 dark:text-white'
                 >
                   Actions
                 </Typography>
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className='dark:text-gray-200'>
             {loading ? (
               <tr>
                 <td colSpan={6} className='h-20'>
@@ -222,5 +236,3 @@ const PostsDashboard = () => {
     </Card>
   )
 }
-
-export default PostsDashboard

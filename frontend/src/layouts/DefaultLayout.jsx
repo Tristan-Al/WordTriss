@@ -2,12 +2,13 @@ import React from 'react'
 import DefaultNavbar from '../components/Navbar/DefaultNavbar'
 import DefaultSidebar from '../components/Sidebars/DefaultSidebar'
 import { Typography } from '@material-tailwind/react'
+import { DefaultFooter } from '../components/Footer/DefaultFooter'
 
 export default function DefaultLayout({ children, title }) {
   return (
     <div className='flex flex-col bg-gray-200 dark:bg-gray-900'>
       <DefaultNavbar />
-      <main>
+      <main className='mb-10'>
         <div className='w-full h-96 relative'>
           <img
             src='https://source.unsplash.com/1600x900/?nature,water'
@@ -26,6 +27,7 @@ export default function DefaultLayout({ children, title }) {
           <DefaultSidebar />
         </div>
       </main>
+      <DefaultFooter />
     </div>
   )
 }

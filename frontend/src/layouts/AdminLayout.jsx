@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import AdminSidebar from '../components/Sidebars/AdminSidebar'
 
-const AdminAreaLayout = ({ children }) => {
+export default function AdminAreaLayout({ children }) {
   const [expanded, setExpanded] = useState(true)
 
   return (
-    <div className='App bg-gray-100 flex'>
+    <div className='App bg-gray-200 dark:bg-gray-900 flex'>
       <AdminSidebar
         expanded={expanded}
         onClick={() => setExpanded((curr) => !curr)}
@@ -14,5 +14,3 @@ const AdminAreaLayout = ({ children }) => {
     </div>
   )
 }
-
-export default AdminAreaLayout

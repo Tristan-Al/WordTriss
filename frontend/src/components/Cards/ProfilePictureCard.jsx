@@ -1,5 +1,6 @@
 import { PencilSquareIcon } from '@heroicons/react/24/outline'
 import {
+  Avatar,
   Button,
   Card,
   CardBody,
@@ -89,13 +90,13 @@ export default function ProfilePictureCard({ user, setUser }) {
     <div className='flex justify-center mb-8'>
       <div className='relative'>
         <img
-          className='h-80 w-80 rounded-full object-cover object-center'
+          className='h-80 w-80 rounded-full object-cover object-center shadow-lg shadow-gray-300 dark:shadow-gray-900'
           src={preview}
           alt='nature image'
         />
         <IconButton
           variant='text'
-          className='!absolute bottom-0 right-0'
+          className='!absolute bottom-0 right-0 dark:hover:bg-blue-gray-800 dark:text-gray-200'
           onClick={handleOpen}
         >
           <PencilSquareIcon width={20} />

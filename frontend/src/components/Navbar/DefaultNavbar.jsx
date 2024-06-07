@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import ColorModeSwitcher from '../Buttons/ColorModeSwitcher'
 import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated'
-
+import logo from '../../assets/img/logo.png'
 export default function DefaultNavbar() {
   const [open, setOpen] = useState(false)
   const isAuthenticated = useIsAuthenticated()
@@ -16,12 +16,13 @@ export default function DefaultNavbar() {
   return (
     <div className='fixed top-0 w-full z-50 pt-2 px-2'>
       <div className='flex flex-col lg:items-center lg:justify-between lg:flex-row container px-4 md:px-6 lg:px-8 mx-auto  text-gray-700 bg-white dark:text-gray-200 dark:bg-blue-gray-900 shadow-sm rounded-xl'>
-        <div className='flex flex-row items-center justify-between p-4'>
+        <div className='flex flex-row items-center justify-between py-4'>
           <NavLink
             to='/'
-            className='text-lg font-semibold tracking-widest text-gray-900 uppercase rounded-lg dark:text-white focus:outline-none focus:shadow-outline'
+            className='text-lg font-semibold tracking-widest text-gray-900 uppercase rounded-lg dark:text-white focus:outline-none focus:shadow-outline flex gap-4'
           >
             TemporalTrek
+            <img src={logo} alt='logo' className='w-8 h-8' />
           </NavLink>
           <button
             className='rounded-lg lg:hidden focus:outline-none focus:shadow-outline'

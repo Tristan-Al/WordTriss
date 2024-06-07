@@ -20,50 +20,50 @@ const PostTumbnail = ({ thumbnail }) => {
 
 export default function TableArchives({ posts }) {
   return (
-    <table className='mt-4 w-full min-w-max table-auto text-left'>
+    <table className='mt-0 w-full min-w-max table-auto text-left'>
       <thead>
         <tr>
-          <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+          <th className='border-y border-blue-gray-100 dark:bg-gray-700 p-4'>
             <Typography
               variant='small'
               color='blue-gray'
-              className='font-normal leading-none opacity-70'
+              className='font-normal leading-none opacity-90 dark:text-white'
             >
               Thumbnail
             </Typography>
           </th>
-          <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+          <th className='border-y border-blue-gray-100 dark:bg-gray-700 p-4'>
             <Typography
               variant='small'
               color='blue-gray'
-              className='flex items-center justify-between gap-2 font-normal leading-none opacity-70'
+              className='flex items-center justify-between gap-2 font-normal leading-none opacity-90 dark:text-white'
             >
               Title
             </Typography>
           </th>
-          <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+          <th className='border-y border-blue-gray-100 dark:bg-gray-700 p-4'>
             <Typography
               variant='small'
               color='blue-gray'
-              className='font-normal leading-none opacity-70'
+              className='font-normal leading-none opacity-90 dark:text-white'
             >
               Author
             </Typography>
           </th>
-          <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+          <th className='border-y border-blue-gray-100 dark:bg-gray-700 p-4'>
             <Typography
               variant='small'
               color='blue-gray'
-              className='font-normal leading-none opacity-70'
+              className='font-normal leading-none opacity-90 dark:text-white'
             >
               Date
             </Typography>
           </th>
-          <th className='border-y border-blue-gray-100 bg-blue-gray-50/50 p-4'>
+          <th className='border-y border-blue-gray-100 dark:bg-gray-700 p-4'>
             <Typography
               variant='small'
               color='blue-gray'
-              className='font-normal leading-none opacity-70'
+              className='font-normal leading-none opacity-90 dark:text-white'
             >
               Actions
             </Typography>
@@ -86,16 +86,16 @@ export default function TableArchives({ posts }) {
                     <Typography
                       variant='small'
                       color='blue-gray'
-                      className='font-normal'
+                      className='font-normal dark:text-gray-100'
                     >
                       {title}
                     </Typography>
                     <Typography
                       variant='small'
                       color='blue-gray'
-                      className='font-normal opacity-70'
+                      className='font-normal opacity-90 dark:text-gray-100'
                     >
-                      org
+                      Post
                     </Typography>
                   </div>
                 </td>
@@ -106,15 +106,25 @@ export default function TableArchives({ posts }) {
                   <Typography
                     variant='small'
                     color='blue-gray'
-                    className='font-normal'
+                    className='font-normal dark:text-gray-100'
                   >
                     {format(new Date(createdAt), 'MMM dd, yyyy')}
                   </Typography>
                 </td>
                 <td className={classes}>
                   <Link to={`/posts/${id}`}>
-                    <Tooltip content='Read more'>
-                      <IconButton variant='text'>
+                    <Tooltip
+                      content='Read more'
+                      className='dark:text-gray-900 dark:bg-gray-100'
+                      animate={{
+                        mount: { scale: 1, y: 0 },
+                        unmount: { scale: 0, y: 25 }
+                      }}
+                    >
+                      <IconButton
+                        variant='text'
+                        className='dark:text-gray-100 dark:hover:bg-gray-700'
+                      >
                         <ArrowLongRightIcon width={20} />
                       </IconButton>
                     </Tooltip>

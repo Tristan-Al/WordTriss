@@ -45,7 +45,7 @@ export default function AuthenticatedUserCommentForm({ post, setPost }) {
   return (
     <form>
       <Textarea
-        className='w-full h-32 p-2 mb-4 border border-gray-300 rounded-lg'
+        className='w-full h-32 p-2 mb-4 border border-gray-300 dark:border-gray-900 rounded-lg'
         label='Comment'
         onChange={(e) => setComment({ ...comment, content: e.target.value })}
       />

@@ -7,15 +7,21 @@ import Register from '../pages/Public/Register'
 import Blog from '../pages/Public/Blog'
 import SinglePost from '../pages/Public/Single'
 import Archives from '../pages/Public/Archives'
+import NotFound from '../pages/Public/NotFound'
+import Contact from '../pages/Public/Contact'
 
 export default function PublicRoutes() {
   return (
     <>
+      <Route path='*' element={<NotFound />} />
+
       <Route index element={<Home />} />
 
       <Route path='/login' element={<Login />} />
 
       <Route path='/register' element={<Register />} />
+
+      <Route path='/contact' element={<Contact />} />
 
       <Route
         path='/blog'
