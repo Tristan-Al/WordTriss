@@ -2,7 +2,7 @@ import { Tag } from '../models/tag.model.js'
 import { Post } from '../models/post.model.js'
 import { User } from '../models/user.model.js'
 import { Category } from '../models/category.model.js'
-import { formatPost } from '../utils/utils.js'
+import { formatCategoryTag, formatPost } from '../utils/utils.js'
 import { Comment } from '../models/comment.model.js'
 import {
   errorHandler,
@@ -39,10 +39,12 @@ export const getAllTags = async (req, res) => {
       )
     }
 
+    // Format response as JSON
+    const formattedTags = tags.map(formatCategoryTag)
     // Send tags in response as JSON
     return successHandler(
       {
-        tags,
+        tags: formattedTags,
         pagination: {
           currentPage: parseInt(page),
           totalPages: Math.ceil(count / limit),
@@ -75,7 +77,7 @@ export const getTagById = async (req, res) => {
     .then((tag) =>
       !tag
         ? errorHandler({ statusCode: 404, message: 'No tag found' }, req, res)
-        : successHandler(tag, req, res)
+        : successHandler(formatCategoryTag(tag), req, res)
     )
     .catch((error) =>
       errorHandler(
@@ -106,7 +108,7 @@ export const createTag = async (req, res) => {
 
   // Insert tag in DB
   Tag.create({ name })
-    .then((newTag) => successHandler(newTag, req, res)) // Send tag to response as JSON
+    .then((newTag) => successHandler(formatCategoryTag(newTag), req, res)) // Send tag to response as JSON
     .catch((error) =>
       errorHandler(
         { message: error.message, details: 'Internal Server Error' },
@@ -153,7 +155,11 @@ export const updateTag = async (req, res) => {
       tag.set({ name })
 
       // Save it in DB
-      tag.save().then((updatedTag) => successHandler(updatedTag, req, res))
+      tag
+        .save()
+        .then((updatedTag) =>
+          successHandler(formatCategoryTag(updatedTag), req, res)
+        )
     })
     .catch((error) =>
       errorHandler(

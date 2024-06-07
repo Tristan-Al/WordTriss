@@ -426,8 +426,20 @@ export const deletePost = async (req, res) => {
   try {
     // Get post ID from params
     const { postId } = req.params
+
     // Delete post from DB
-    await deleteById(postId)
+    const deletedPost = await Post.destroy({ where: { id: postId } })
+
+    // Check if post was deleted
+    if (!deletedPost) {
+      // Return error
+      return errorHandler(
+        { statusCode: 404, message: 'Post not found' },
+        req,
+        res
+      )
+    }
+
     // Send success message
     return successHandler('Post deleted successfully', req, res)
   } catch (error) {

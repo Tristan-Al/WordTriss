@@ -77,3 +77,13 @@ export const formatComment = (comment) => {
     updatedAt: comment.updated_at
   }
 }
+
+// Format category and tag as JSON response
+export const formatCategoryTag = (item) => {
+  return {
+    id: item.id,
+    name: item.name,
+    createdAt: item.created_at,
+    updatedAt: item.updated_at
+  }
+}

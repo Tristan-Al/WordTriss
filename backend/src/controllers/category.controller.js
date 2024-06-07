@@ -3,7 +3,7 @@ import { Comment } from '../models/comment.model.js'
 import { Post } from '../models/post.model.js'
 import { Tag } from '../models/tag.model.js'
 import { User } from '../models/user.model.js'
-import { formatPost } from '../utils/utils.js'
+import { formatCategoryTag, formatPost } from '../utils/utils.js'
 import {
   errorHandler,
   successHandler
@@ -39,10 +39,13 @@ export const getAllCategories = async (req, res) => {
       )
     }
 
+    // Format response as JSON
+    const formattedCategories = categories.map(formatCategoryTag)
+
     // Send categories in response as JSON
     return successHandler(
       {
-        categories,
+        categories: formattedCategories,
         pagination: {
           currentPage: parseInt(page),
           totalPages: Math.ceil(count / limit),
@@ -79,7 +82,7 @@ export const getCategoryById = async (req, res) => {
             req,
             res
           )
-        : successHandler(category, req, res)
+        : successHandler(formatCategoryTag(category), req, res)
     )
     .catch((error) =>
       errorHandler(
@@ -110,7 +113,9 @@ export const createCategory = async (req, res) => {
 
   // Insert category in DB
   Category.create({ name })
-    .then((newCategory) => successHandler(newCategory, req, res)) // Send category to response as JSON
+    .then((newCategory) =>
+      successHandler(formatCategoryTag(newCategory), req, res)
+    ) // Send category to response as JSON
     .catch((error) =>
       errorHandler(
         { message: error.message, details: 'Internal Server Error' },
@@ -159,7 +164,9 @@ export const updateCategory = async (req, res) => {
       // Save it in DB
       category
         .save()
-        .then((updatedCategory) => successHandler(updatedCategory, req, res))
+        .then((updatedCategory) =>
+          successHandler(formatCategoryTag(updatedCategory), req, res)
+        )
     })
     .catch((error) =>
       errorHandler(
