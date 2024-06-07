@@ -6,6 +6,8 @@ import { Chip, IconButton, Tooltip, Typography } from '@material-tailwind/react'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import AuthorCard from '../Cards/AuthorCard'
 import useAuth from '../../hooks/useAuth'
+import postService from '../../services/postService'
+import useAlertToast from '../../hooks/useToast'
 
 const PostTumbnail = ({ thumbnail }) => {
   const thumbnailPreview = usePostThumbnailPreview(thumbnail)
@@ -19,8 +21,10 @@ const PostTumbnail = ({ thumbnail }) => {
   )
 }
 
-export default function TableAdmin({ posts }) {
+export default function TableAdmin({ posts, url, setUrl }) {
   const { roleName } = useAuth()
+  const { toast } = useAlertToast()
+
   console.log('roleName', roleName)
   return posts.map(
     ({ id, thumbnail, title, userId, createdAt, status }, index) => {
@@ -41,13 +45,6 @@ export default function TableAdmin({ posts }) {
               >
                 {title}
               </Typography>
-              {/* <Typography
-                variant='small'
-                color='blue-gray'
-                className='font-normal opacity-70 dark:text-gray-200'
-              >
-                Post
-              </Typography> */}
             </div>
           </td>
           <td className={classes}>
@@ -90,23 +87,40 @@ export default function TableAdmin({ posts }) {
               </Tooltip>
             </Link>
             {(roleName == 'ADMIN' || roleName == 'EDITOR') && (
-              <Link to={`/wt-content/posts/delete/${id}`}>
-                <Tooltip
-                  content='Delete Post'
-                  className='dark:text-gray-900 dark:bg-gray-100'
-                  animate={{
-                    mount: { scale: 1, y: 0 },
-                    unmount: { scale: 0, y: 25 }
+              <Tooltip
+                content='Delete Post'
+                className='dark:text-gray-900 dark:bg-gray-100'
+                animate={{
+                  mount: { scale: 1, y: 0 },
+                  unmount: { scale: 0, y: 25 }
+                }}
+              >
+                <IconButton
+                  variant='text'
+                  className='dark:hover:bg-blue-gray-800 dark:text-gray-200'
+                  onClick={async () => {
+                    try {
+                      const response = await postService.deletePost(id)
+
+                      console.log('response', response)
+                      if (!response.ok) {
+                        console.error('Error deleting post', response)
+                        toast.showError(
+                          `Failed to delete post status code: ${response.statusCode}`
+                        )
+                      }
+
+                      toast.showSuccess('Post deleted successfully')
+                      setUrl({ ...url }) // Refresh the page
+                    } catch (error) {
+                      console.error('Error deleting post', error)
+                      toast.showError('Failed to delete post')
+                    }
                   }}
                 >
-                  <IconButton
-                    variant='text'
-                    className='dark:hover:bg-blue-gray-800 dark:text-gray-200'
-                  >
-                    <TrashIcon width={20} />
-                  </IconButton>
-                </Tooltip>
-              </Link>
+                  <TrashIcon width={20} />
+                </IconButton>
+              </Tooltip>
             )}
           </td>
         </tr>

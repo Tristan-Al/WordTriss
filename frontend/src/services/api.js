@@ -58,26 +58,24 @@ const api = {
       console.error('Error updating data:', error)
       throw error
     }
-  }
+  },
 
-  // delete: async (endpoint) => {
-  //   const { token } = useAuth()
-  //   try {
-  //     const response = await fetch(`${BASE_URL}/${endpoint}`, {
-  //       method: 'DELETE',
-  //       // Pass the token in the Authorization header
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'x-access-token': token // Add token in header
-  //       }
-  //     })
-  //     return api.handleResponse(response)
-  //   } catch (error) {
-  //     console.error('Error deleting data:', error)
-  //     throw error
-  //   }
-  // },
-  //
+  delete: async (endpoint) => {
+    try {
+      const response = await fetch(`${BASE_URL}/${endpoint}`, {
+        method: 'DELETE',
+        // Pass the token in the Authorization header
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: Cookies.get('_auth') // Add token in header
+        }
+      })
+      return api.handleResponse(response)
+    } catch (error) {
+      console.error('Error deleting data:', error)
+      throw error
+    }
+  }
 }
 
 export const defaultQueryParams = {

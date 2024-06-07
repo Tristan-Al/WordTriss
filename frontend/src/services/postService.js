@@ -50,7 +50,7 @@ const postService = {
 
   deletePost: async (postId) => {
     try {
-      await api.delete(`posts/${postId}`)
+      return await api.delete(`posts/${postId}`)
     } catch (error) {
       console.error('Error deleting post:', error.message)
       throw error

@@ -267,7 +267,7 @@ export default function Home() {
                 alt=''
               />
               <h1 className='mt-4 text-2xl font-semibold capitalize text-gray-700 dark:text-white'>
-                Sofia Anderson
+                Sofia Khudomyasova
               </h1>
               <p className='mt-2 capitalize text-gray-500 dark:text-gray-300'>
                 Lead Developer

@@ -56,6 +56,46 @@ export default function AdminRoutes() {
         }
       />
 
+      {/* Categories */}
+      <Route
+        path='/wt-content/categories'
+        element={
+          <RequireAuth fallbackPath={'/login'}>
+            <AdminLayout children={<div>Categories</div>} />
+          </RequireAuth>
+        }
+      />
+
+      {/* Tags */}
+      <Route
+        path='/wt-content/tags'
+        element={
+          <RequireAuth fallbackPath={'/login'}>
+            <AdminLayout children={<div>Tags</div>} />
+          </RequireAuth>
+        }
+      />
+
+      {/* Users */}
+      <Route
+        path='/wt-content/users'
+        element={
+          <RequireAuth fallbackPath={'/login'}>
+            <AdminLayout children={<div>Users</div>} />
+          </RequireAuth>
+        }
+      />
+
+      {/* Settings */}
+      <Route
+        path='/wt-content/settings'
+        element={
+          <RequireAuth fallbackPath={'/login'}>
+            <AdminLayout children={<div>Settings</div>} />
+          </RequireAuth>
+        }
+      />
+
       <Route
         path='/wt-content'
         element={<Navigate to='/wt-content/dashboard' replace />}

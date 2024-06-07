@@ -7,7 +7,10 @@ import {
   ComputerDesktopIcon,
   DocumentTextIcon,
   GlobeAltIcon,
-  UserCircleIcon
+  NewspaperIcon,
+  TagIcon,
+  UserCircleIcon,
+  UsersIcon
 } from '@heroicons/react/24/outline'
 import AdminAuthorSidebarCard from '../Cards/AdminAuthorSidebarCard'
 import {
@@ -57,15 +60,29 @@ export default function AdminSidebar({ expanded, onClick }) {
               link={'/wt-content/dashboard'}
             />
             <SidebarItem
-              icon={<UserCircleIcon width={24} />}
-              text={'Profile'}
-              link={'/wt-content/profile'}
+              icon={<NewspaperIcon width={24} />}
+              text={'Posts'}
+              link={'/wt-content/posts'}
             />
             <SidebarItem
               icon={<DocumentTextIcon width={24} />}
-              text={'Posts'}
-              link={'/wt-content/posts'}
-              alert={true}
+              text={'Categories'}
+              link={'/wt-content/categories'}
+            />
+            <SidebarItem
+              icon={<TagIcon width={24} />}
+              text={'Tags'}
+              link={'/wt-content/tags'}
+            />
+            <SidebarItem
+              icon={<UsersIcon width={24} />}
+              text={'Users'}
+              link={'/wt-content/users'}
+            />
+            <SidebarItem
+              icon={<UserCircleIcon width={24} />}
+              text={'Profile'}
+              link={'/wt-content/profile'}
             />
             <hr className='my-3 border-gray-300 dark:border-gray-700' />
             <SidebarItem

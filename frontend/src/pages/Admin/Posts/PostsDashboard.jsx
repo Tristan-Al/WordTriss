@@ -221,7 +221,7 @@ export default function PostsDashboard() {
                 </td>
               </tr>
             ) : (
-              <TableAdmin posts={posts} />
+              <TableAdmin posts={posts} url={url} setUrl={setUrl} />
             )}
           </tbody>
         </table>
