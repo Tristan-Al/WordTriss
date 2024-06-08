@@ -1,5 +1,7 @@
 import express from 'express'
 import {
+  changeStatus,
+  createAnonymousComment,
   createComment,
   deleteComment,
   getAllComments,
@@ -13,11 +15,17 @@ const router = express.Router()
 
 router.get('/', getAllComments)
 router.get('/:commentId', getCommentById)
-router.post('/', createComment)
+router.post('/', checkToken, createComment)
+router.post('/anonymous', createAnonymousComment)
 router.put(
   '/:commentId',
   [checkToken, checkRole(['EDITOR', 'ADMIN'])],
   updateComment
+)
+router.put(
+  '/:commentId/status',
+  [checkToken, checkRole(['EDITOR', 'ADMIN'])],
+  changeStatus
 )
 router.delete(
   '/:commentId',

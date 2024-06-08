@@ -118,7 +118,7 @@ export const createComment = async (req, res) => {
   console.log('req.body', req.body)
   console.log('Role name', roleName)
   // Validate the fields
-  if (!Comment.validateAllFields(content, postId)) {
+  if (!Comment.validateAllFields({ content, postId })) {
     return errorHandler(
       { statusCode: 400, message: 'Invalid fields' },
       req,
@@ -232,6 +232,50 @@ export const updateComment = async (req, res) => {
         post_id: postId,
         parent_id: parentId
       })
+    })
+    .then((comment) => successHandler(formatComment(comment), req, res))
+    .catch((error) =>
+      errorHandler(
+        { message: error.message, details: 'Internal Server Error' },
+        req,
+        res
+      )
+    )
+}
+
+/**
+ * Change the status of a comment in database by id
+ * @param {*} req The request object from Express
+ * @param {*} res The response object from Express
+ */
+export const changeStatus = async (req, res) => {
+  // Get comment ID from request params
+  const { commentId } = req.params // Same as: commentId = req.params.commentId;
+
+  // Destructure request body to get values
+  const { status } = req.body
+
+  // Validate the fields
+  if (!Comment.validateAllFields({ status })) {
+    return errorHandler(
+      { statusCode: 400, message: 'Invalid fields' },
+      req,
+      res
+    )
+  }
+
+  // Update the comment status
+  Comment.findByPk(commentId)
+    .then((comment) => {
+      if (!comment) {
+        return errorHandler(
+          { statusCode: 404, message: 'No comment found' },
+          req,
+          res
+        )
+      }
+
+      return comment.update({ status })
     })
     .then((comment) => successHandler(formatComment(comment), req, res))
     .catch((error) =>
