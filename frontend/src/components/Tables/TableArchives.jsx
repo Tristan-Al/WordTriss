@@ -76,62 +76,64 @@ export default function TableArchives({ posts }) {
             const isLast = index === posts.length - 1
             const classes = isLast ? 'p-4' : 'p-4 border-b border-blue-gray-50'
 
-            return (
-              <tr key={title}>
-                <td className={classes}>
-                  <PostTumbnail thumbnail={thumbnail} />
-                </td>
-                <td className={classes}>
-                  <div className='flex flex-col'>
+            if (status == 'published') {
+              return (
+                <tr key={title}>
+                  <td className={classes}>
+                    <PostTumbnail thumbnail={thumbnail} />
+                  </td>
+                  <td className={classes}>
+                    <div className='flex flex-col'>
+                      <Typography
+                        variant='small'
+                        color='blue-gray'
+                        className='font-normal dark:text-gray-100'
+                      >
+                        {title}
+                      </Typography>
+                      <Typography
+                        variant='small'
+                        color='blue-gray'
+                        className='font-normal opacity-90 dark:text-gray-100'
+                      >
+                        Post
+                      </Typography>
+                    </div>
+                  </td>
+                  <td className={classes}>
+                    <AuthorCard authorId={userId} />
+                  </td>
+                  <td className={classes}>
                     <Typography
                       variant='small'
                       color='blue-gray'
                       className='font-normal dark:text-gray-100'
                     >
-                      {title}
+                      {format(new Date(createdAt), 'MMM dd, yyyy')}
                     </Typography>
-                    <Typography
-                      variant='small'
-                      color='blue-gray'
-                      className='font-normal opacity-90 dark:text-gray-100'
-                    >
-                      Post
-                    </Typography>
-                  </div>
-                </td>
-                <td className={classes}>
-                  <AuthorCard authorId={userId} />
-                </td>
-                <td className={classes}>
-                  <Typography
-                    variant='small'
-                    color='blue-gray'
-                    className='font-normal dark:text-gray-100'
-                  >
-                    {format(new Date(createdAt), 'MMM dd, yyyy')}
-                  </Typography>
-                </td>
-                <td className={classes}>
-                  <Link to={`/posts/${id}`}>
-                    <Tooltip
-                      content='Read more'
-                      className='dark:text-gray-900 dark:bg-gray-100'
-                      animate={{
-                        mount: { scale: 1, y: 0 },
-                        unmount: { scale: 0, y: 25 }
-                      }}
-                    >
-                      <IconButton
-                        variant='text'
-                        className='dark:text-gray-100 dark:hover:bg-gray-700'
+                  </td>
+                  <td className={classes}>
+                    <Link to={`/posts/${id}`}>
+                      <Tooltip
+                        content='Read more'
+                        className='dark:text-gray-900 dark:bg-gray-100'
+                        animate={{
+                          mount: { scale: 1, y: 0 },
+                          unmount: { scale: 0, y: 25 }
+                        }}
                       >
-                        <ArrowLongRightIcon width={20} />
-                      </IconButton>
-                    </Tooltip>
-                  </Link>
-                </td>
-              </tr>
-            )
+                        <IconButton
+                          variant='text'
+                          className='dark:text-gray-100 dark:hover:bg-gray-700'
+                        >
+                          <ArrowLongRightIcon width={20} />
+                        </IconButton>
+                      </Tooltip>
+                    </Link>
+                  </td>
+                </tr>
+              )
+            }
           }
         )}
       </tbody>

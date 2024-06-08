@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { format } from 'date-fns'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { usePostThumbnailPreview } from '../../hooks/useImagePreview'
 import { Chip, IconButton, Tooltip, Typography } from '@material-tailwind/react'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
@@ -24,8 +24,8 @@ const PostTumbnail = ({ thumbnail }) => {
 export default function TableAdminPosts({ posts, url, setUrl }) {
   const { roleName } = useAuth()
   const { toast } = useAlertToast()
+  const navigate = useNavigate()
 
-  console.log('roleName', roleName)
   return posts.map(
     ({ id, thumbnail, title, userId, createdAt, status }, index) => {
       const isLast = index === posts.length - 1
@@ -69,59 +69,61 @@ export default function TableAdminPosts({ posts, url, setUrl }) {
             </div>
           </td>
           <td className={classes}>
-            <Link to={`/wt-content/posts/edit/${id}`}>
-              <Tooltip
-                content='Edit Post'
-                className='dark:text-gray-900 dark:bg-gray-100'
-                animate={{
-                  mount: { scale: 1, y: 0 },
-                  unmount: { scale: 0, y: 25 }
+            <Tooltip
+              content='Edit'
+              className='dark:text-gray-900 dark:bg-gray-100'
+              animate={{
+                mount: { scale: 1, y: 0 },
+                unmount: { scale: 0, y: 25 }
+              }}
+            >
+              <IconButton
+                variant='text'
+                className='dark:hover:bg-blue-gray-800 dark:text-gray-200'
+                disabled={roleName == 'SUBSCRIBER'}
+                onClick={() => {
+                  navigate('/wt-content/posts/edit/' + id)
                 }}
               >
-                <IconButton
-                  variant='text'
-                  className='dark:hover:bg-blue-gray-800 dark:text-gray-200'
-                >
-                  <PencilSquareIcon width={20} />
-                </IconButton>
-              </Tooltip>
-            </Link>
-            {(roleName == 'ADMIN' || roleName == 'EDITOR') && (
-              <Tooltip
-                content='Delete Post'
-                className='dark:text-gray-900 dark:bg-gray-100'
-                animate={{
-                  mount: { scale: 1, y: 0 },
-                  unmount: { scale: 0, y: 25 }
-                }}
-              >
-                <IconButton
-                  variant='text'
-                  className='dark:hover:bg-blue-gray-800 dark:text-gray-200'
-                  onClick={async () => {
-                    try {
-                      const response = await postService.deletePost(id)
+                <PencilSquareIcon width={20} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip
+              content='Delete'
+              className='dark:text-gray-900 dark:bg-gray-100'
+              animate={{
+                mount: { scale: 1, y: 0 },
+                unmount: { scale: 0, y: 25 }
+              }}
+            >
+              <IconButton
+                variant='text'
+                className='dark:hover:bg-blue-gray-800 dark:text-gray-200'
+                disabled={roleName != 'ADMIN' && roleName != 'EDITOR'}
+                onClick={async () => {
+                  try {
+                    const response = await postService.deletePost(id)
 
-                      console.log('response', response)
-                      if (!response.ok) {
-                        console.error('Error deleting post', response)
-                        toast.showError(
-                          `Failed to delete post status code: ${response.statusCode}`
-                        )
-                      }
-
-                      toast.showSuccess('Post deleted successfully')
-                      setUrl({ ...url }) // Refresh the page
-                    } catch (error) {
-                      console.error('Error deleting post', error)
-                      toast.showError('Failed to delete post')
+                    console.log('response', response)
+                    if (!response.ok) {
+                      console.error('Error deleting post', response)
+                      toast.showError(
+                        `Failed to delete post status code: ${response.statusCode}`
+                      )
+                      return
                     }
-                  }}
-                >
-                  <TrashIcon width={20} />
-                </IconButton>
-              </Tooltip>
-            )}
+
+                    toast.showSuccess('Post deleted successfully')
+                    setUrl({ ...url }) // Refresh the page
+                  } catch (error) {
+                    console.error('Error deleting post', error)
+                    toast.showError('Failed to delete post')
+                  }
+                }}
+              >
+                <TrashIcon width={20} />
+              </IconButton>
+            </Tooltip>
           </td>
         </tr>
       )

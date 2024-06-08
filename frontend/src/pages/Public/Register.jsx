@@ -9,6 +9,7 @@ import useAlertToast from '../../hooks/useToast.jsx'
 import userService from '../../services/userService.js'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import authService from '../../services/authService.js'
+import bgImage from '../../assets/img/bgRegister.png'
 
 function Register() {
   const { toast } = useAlertToast()
@@ -89,13 +90,19 @@ function Register() {
   }
 
   return (
-    <div className='min-h-screen bg-gray-200 dark:bg-gray-900 flex flex-col justify-center sm:py-12'>
+    <div
+      className='min-h-screen bg-gray-200 dark:bg-gray-900 flex flex-col justify-center'
+      style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: 'cover',
+        position: 'relative'
+      }}
+    >
+      <div className='absolute top-0 right-0 bottom-0 left-0 z-0 bg-black/25'></div>
+
       <DefaultNavbar />
-      <div className='p-10 xs:p-0 mx-auto md:w-full md:max-w-md'>
-        <Typography
-          variant='h2'
-          className='text-center mb-5 text-gray-800 dark:text-gray-200'
-        >
+      <div className='p-10 xs:p-0 mx-auto md:w-full md:max-w-md static z-10'>
+        <Typography variant='h2' className='text-center mb-5 text-gray-200'>
           Register
         </Typography>
         <form className='bg-white dark:bg-gray-800 shadow w-full rounded-lg'>
@@ -173,9 +180,9 @@ function Register() {
         </form>
         <div className='py-5'>
           <div className='grid grid-cols-2 gap-1'>
-            <div className='text-center sm:text-left whitespace-nowrap font-normal text-sm text-gray-500 mx-5'>
+            <div className='text-center sm:text-left whitespace-nowrap font-normal text-sm text-gray-100 mx-5'>
               <span className='inline-block'>Do you have an account?</span>
-              <Link to='/login' className='font-bold ml-2 hover:text-gray-600'>
+              <Link to='/login' className='font-bold ml-2 hover:text-gray-400'>
                 Login
               </Link>
             </div>

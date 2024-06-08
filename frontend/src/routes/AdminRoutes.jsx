@@ -9,6 +9,10 @@ import Profile from '../pages/Admin/Profile/Profile'
 import CreatePost from '../pages/Admin/Posts/CreatePost'
 import CategoriesDashboard from '../pages/Admin/Categories/CategoriesDashboard'
 import TagsDashboard from '../pages/Admin/Tags/TagsDashboard'
+import UsersDashboard from '../pages/Admin/Users/UsersDashboard'
+import EditUser from '../pages/Admin/Users/EditUser'
+import CreateUser from '../pages/Admin/Users/CreateUser'
+import CommentsDashboard from '../pages/Admin/Comments/CommentsDashboard'
 
 export default function AdminRoutes() {
   return (
@@ -83,7 +87,35 @@ export default function AdminRoutes() {
         path='/wt-content/users'
         element={
           <RequireAuth fallbackPath={'/login'}>
-            <AdminLayout children={<div>Users</div>} />
+            <AdminLayout children={<UsersDashboard />} />
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path='/wt-content/users/edit/:id'
+        element={
+          <RequireAuth fallbackPath={'/login'}>
+            <AdminLayout children={<EditUser />} />
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path='/wt-content/users/create'
+        element={
+          <RequireAuth fallbackPath={'/login'}>
+            <AdminLayout children={<CreateUser />} />
+          </RequireAuth>
+        }
+      />
+
+      {/* Comments */}
+      <Route
+        path='/wt-content/comments'
+        element={
+          <RequireAuth fallbackPath={'/login'}>
+            <AdminLayout children={<CommentsDashboard />} />
           </RequireAuth>
         }
       />

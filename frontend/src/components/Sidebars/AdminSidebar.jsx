@@ -1,6 +1,7 @@
 import React, { createContext, useContext } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import {
+  ChatBubbleBottomCenterTextIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   Cog6ToothIcon,
@@ -13,12 +14,7 @@ import {
   UsersIcon
 } from '@heroicons/react/24/outline'
 import AdminAuthorSidebarCard from '../Cards/AdminAuthorSidebarCard'
-import {
-  IconButton,
-  List,
-  ListItem,
-  Typography
-} from '@material-tailwind/react'
+import { IconButton, List, ListItem } from '@material-tailwind/react'
 import ColorModeSwitcher from '../Buttons/ColorModeSwitcher'
 const SidebarContext = createContext(null)
 
@@ -63,6 +59,11 @@ export default function AdminSidebar({ expanded, onClick }) {
               icon={<NewspaperIcon width={24} />}
               text={'Posts'}
               link={'/wt-content/posts'}
+            />
+            <SidebarItem
+              icon={<ChatBubbleBottomCenterTextIcon width={24} />}
+              text={'Comments'}
+              link={'/wt-content/comments'}
             />
             <SidebarItem
               icon={<DocumentTextIcon width={24} />}

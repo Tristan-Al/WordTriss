@@ -18,7 +18,7 @@ import useAlertToast from '../../hooks/useToast'
 import tagService from '../../services/tagService'
 import categoryService from '../../services/categoryService'
 
-function EditButton({ url, setUrl, singleName, id, dataName }) {
+function EditButton({ url, setUrl, singleName, id, dataName, roleName }) {
   const { toast } = useAlertToast()
   const [open, setOpen] = React.useState(false)
   const [name, setName] = React.useState(dataName)
@@ -56,7 +56,7 @@ function EditButton({ url, setUrl, singleName, id, dataName }) {
   return (
     <>
       <Tooltip
-        content={`Edit ` + singleName}
+        content='Edit'
         className='dark:text-gray-900 dark:bg-gray-100'
         animate={{
           mount: { scale: 1, y: 0 },
@@ -66,6 +66,7 @@ function EditButton({ url, setUrl, singleName, id, dataName }) {
         <IconButton
           variant='text'
           className='dark:hover:bg-blue-gray-800 dark:text-gray-200'
+          disabled={roleName != 'ADMIN' && roleName != 'EDITOR'}
           onClick={handleOpen}
         >
           <PencilSquareIcon width={20} />
@@ -159,49 +160,49 @@ export default function TableAdminCatTag({
             singleName={singleName}
             id={id}
             dataName={name}
+            roleName={roleName}
           />
-          {(roleName == 'ADMIN' || roleName == 'EDITOR') && (
-            <Tooltip
-              content={`Delete ` + singleName}
-              className='dark:text-gray-900 dark:bg-gray-100'
-              animate={{
-                mount: { scale: 1, y: 0 },
-                unmount: { scale: 0, y: 25 }
+          <Tooltip
+            content='Delete'
+            className='dark:text-gray-900 dark:bg-gray-100'
+            animate={{
+              mount: { scale: 1, y: 0 },
+              unmount: { scale: 0, y: 25 }
+            }}
+          >
+            <IconButton
+              variant='text'
+              className='dark:hover:bg-blue-gray-800 dark:text-gray-200'
+              disabled={roleName != 'ADMIN' && roleName != 'EDITOR'}
+              onClick={async () => {
+                try {
+                  console.log('singleName', singleName)
+                  let response
+                  if (singleName === 'tag') {
+                    response = await tagService.deleteTag(id)
+                  } else if (singleName === 'category') {
+                    response = await categoryService.deleteCategory(id)
+                  }
+
+                  console.log('response', response)
+                  if (!response.ok) {
+                    console.error('Error deleting post', response)
+                    toast.showError(
+                      `Failed to delete, status code: ${response.statusCode}`
+                    )
+                  }
+
+                  toast.showSuccess('Post deleted successfully')
+                  setUrl({ ...url }) // Refresh the page
+                } catch (error) {
+                  console.error('Error deleting post', error)
+                  toast.showError('Failed to delete post')
+                }
               }}
             >
-              <IconButton
-                variant='text'
-                className='dark:hover:bg-blue-gray-800 dark:text-gray-200'
-                onClick={async () => {
-                  try {
-                    console.log('singleName', singleName)
-                    let response
-                    if (singleName === 'tag') {
-                      response = await tagService.deleteTag(id)
-                    } else if (singleName === 'category') {
-                      response = await categoryService.deleteCategory(id)
-                    }
-
-                    console.log('response', response)
-                    if (!response.ok) {
-                      console.error('Error deleting post', response)
-                      toast.showError(
-                        `Failed to delete, status code: ${response.statusCode}`
-                      )
-                    }
-
-                    toast.showSuccess('Post deleted successfully')
-                    setUrl({ ...url }) // Refresh the page
-                  } catch (error) {
-                    console.error('Error deleting post', error)
-                    toast.showError('Failed to delete post')
-                  }
-                }}
-              >
-                <TrashIcon width={20} />
-              </IconButton>
-            </Tooltip>
-          )}
+              <TrashIcon width={20} />
+            </IconButton>
+          </Tooltip>
         </td>
       </tr>
     )

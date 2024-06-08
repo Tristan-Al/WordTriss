@@ -15,6 +15,59 @@ import {
 } from '@material-tailwind/react'
 import DefaultPagination from '../../components/Pagination/DefaultPagination'
 import postService from '../../services/postService'
+import { set } from 'date-fns'
+
+function Title({ topic, id }) {
+  const [title, setTitle] = useState('')
+
+  useEffect(() => {
+    async function fetchTitle() {
+      let response
+      try {
+        switch (topic) {
+          case 'categories':
+            response = await categoryService.getCategoryById(id)
+
+            if (!response.ok) {
+              setTitle('Category not found')
+              return
+            }
+
+            setTitle(`Category: ${response.body.name}`)
+            break
+          case 'tags':
+            response = await tagService.getTagById(id)
+
+            if (!response.ok) {
+              setTitle('Tag not found')
+              return
+            }
+
+            setTitle(`Tag: ${response.body.name}`)
+            break
+          case 'authors':
+            response = await userService.getUserById(id)
+
+            if (!response.ok) {
+              setTitle('Author not found')
+              return
+            }
+
+            setTitle(`Author: ${response.body.displayName}`)
+            break
+          default:
+            setTitle('All Posts')
+        }
+      } catch (error) {
+        console.error('Failed to get title: ', error.message)
+      }
+    }
+
+    fetchTitle()
+  }, [topic, id])
+
+  return <Typography variant='h4'>{title}</Typography>
+}
 
 export default function Archives() {
   const { topic, id } = useParams()
@@ -25,6 +78,7 @@ export default function Archives() {
   const [url, setUrl] = useState({
     page: 1
   })
+  const [totalItems, setTotalItems] = useState(0)
   const [pagination, setPagination] = useState({})
   const [loading, setLoading] = useState(true)
 
@@ -55,6 +109,14 @@ export default function Archives() {
         }
 
         const posts = response.body.posts
+
+        // Set total items
+        const totalItems = posts.reduce(
+          (count, post) => (post.status === 'published' ? count + 1 : count),
+          0
+        )
+        setTotalItems(totalItems)
+
         setPosts(posts)
         setPagination(response.body.pagination)
         setLoading(false)
@@ -66,7 +128,7 @@ export default function Archives() {
     }
 
     fetchPosts()
-  }, [url, topic])
+  }, [url, topic, id])
 
   return loading ? (
     <div className='flex justify-center pt-10'>
@@ -79,15 +141,10 @@ export default function Archives() {
         shadow={false}
         className='m-0 p-5 rounded-b-none bg-gray-300 dark:bg-gray-700'
       >
-        <Typography
-          variant='h3'
-          color='blue-gray'
-          className='dark:text-gray-100'
-        >
-          {topic.charAt(0).toUpperCase() + topic.slice(1)} Archives
-        </Typography>
+        <Title topic={topic} id={id} />
         <Typography variant='h5' color='gray' className='dark:text-gray-100'>
-          {posts.length === 0 ? 'No' : pagination.totalItems} posts found
+          {posts.length === 0 ? 'No' : totalItems} posts found
+          {/* 10 posts found */}
         </Typography>
       </CardHeader>
       <CardBody className='overflow-scroll px-0'>

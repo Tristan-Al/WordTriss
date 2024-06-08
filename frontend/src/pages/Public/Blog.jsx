@@ -53,11 +53,11 @@ function Blog() {
     </div>
   ) : (
     <div className='flex flex-col gap-4'>
-      {posts.map((post) => (
-        <div id={'post-' + post.id} key={post.id}>
-          <BlogPostCard post={post} />
-        </div>
-      ))}
+      {posts.map((post) => {
+        if (post.status == 'published') {
+          return <BlogPostCard key={post.id} post={post} />
+        }
+      })}
       <div className='flex items-center justify-between border-t border-blue-gray-50 p-4'>
         {loading ? (
           <Spinner />

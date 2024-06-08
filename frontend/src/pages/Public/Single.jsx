@@ -16,6 +16,7 @@ import UnauthenticatedUserCommentForm from '../../components/Forms/SinglePost/Un
 import CommentCard from '../../components/Cards/Single/CommentCard'
 import AuthorCard from '../../components/Cards/AuthorCard'
 import PostsCard from '../../components/Cards/Single/PostsCard'
+import { DefaultFooter } from '../../components/Footer/DefaultFooter.jsx'
 
 function PostThumbnail({ thumbnail }) {
   const preview = usePostThumbnailPreview(thumbnail)
@@ -72,20 +73,20 @@ export default function SinglePost() {
   return loading ? (
     <Spinner />
   ) : (
-    <div className='flex flex-col bg-gray-200 dark:bg-gray-900'>
+    <div className='bg-gray-200 dark:bg-gray-900'>
       <DefaultNavbar />
       <main>
-        <div className='w-full h-[40rem] relative'>
+        <div className='w-full h-[calc(100vh-40vh)] relative'>
           <PostThumbnail thumbnail={post.thumbnail} />
           <div className='absolute inset-0 h-full w-full bg-black/50 z-0'></div>
-          <div className='relative container mx-auto h-full pb-20 flex items-end gap-2'>
+          <div className='relative container mx-auto h-full pb-20 flex items-end gap-2 px-2 lg:px-0'>
             {post.categories.map((categoryId) => (
               <BlogCategoryLink categoryId={categoryId} key={categoryId} />
             ))}
           </div>
         </div>
-        <div className='relative container flex mx-auto -mt-16 pb-4'>
-          <div className='w-full h-full mr-2 flex flex-col gap-6'>
+        <div className='relative container flex gap-4 lg:gap-2 flex-col lg:flex-row mx-auto -mt-16 pb-4 px-2 lg:px-0'>
+          <div className='w-full h-full flex flex-col gap-6'>
             <div className='bg-white dark:bg-gray-800 rounded-xl shadow-md'>
               {/* <-------- POST TITLE --------> */}
               <div className='p-4 flex flex-col gap-4'>
@@ -158,6 +159,7 @@ export default function SinglePost() {
           <DefaultSidebar />
         </div>
       </main>
+      <DefaultFooter />
     </div>
   )
 }

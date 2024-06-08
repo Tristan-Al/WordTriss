@@ -16,12 +16,12 @@ import useTruncatedText from '../../../hooks/useTruncatedText'
 function PostCard({ post, isLast = false, onClick }) {
   const preview = usePostThumbnailPreview(post.thumbnail)
   const truncatedTitle = useTruncatedText(post.title, 50)
-  const truncatedContent = useTruncatedText(post.content)
+  const truncatedContent = useTruncatedText(post.content, 100)
 
   return (
     <Card
-      className={`w-1/3 rounded-none border-gray-300 dark:border-gray-600 dark:bg-gray-800 ${
-        isLast ? 'border-r-0' : 'border-r'
+      className={`w-full md:w-1/3 rounded-none border-gray-300 dark:border-gray-600 dark:bg-gray-800 ${
+        isLast ? 'md:border-r-0' : 'md:border-r'
       }`}
       shadow={false}
     >
@@ -45,9 +45,10 @@ function PostCard({ post, isLast = false, onClick }) {
         >
           {truncatedTitle}
         </Typography>
-        <Typography className='dark:text-gray-200'>
-          {truncatedContent}
-        </Typography>
+        <Typography
+          className='dark:text-gray-200'
+          dangerouslySetInnerHTML={{ __html: truncatedContent }}
+        />
       </CardBody>
       <CardFooter className='pt-0'>
         <Button onClick={onClick}>Read More</Button>
@@ -119,14 +120,14 @@ export default function PostsCard({
         </div>
       ) : null}
       <div>
-        <div className='flex justify-center rounded-xl gap-[.1rem]'>
+        <div className='flex flex-col md:flex-row justify-center rounded-xl gap-[.1rem]'>
           {posts.map(
             (post) =>
               post.id !== excludedPostId && (
                 <PostCard
                   key={post.id}
                   post={post}
-                  isLast={post.id === posts[posts.length - 2].id}
+                  isLast={post.id === posts[posts.length - 1].id}
                   onClick={() => navigate(`/posts/${post.id}`)}
                 />
               )

@@ -147,7 +147,7 @@ export default function DefaultSidebar() {
 
   return (
     <aside className='h-full z-40'>
-      <Card className='h-full w-full max-w-[18rem] p-4 shadow-xl shadow-blue-gray-900/5 dark:bg-gray-800'>
+      <Card className='h-full w-full lg:max-w-[18rem] p-4 shadow-xl shadow-blue-gray-900/5 dark:bg-gray-800'>
         <div className='mb-3'>
           <Input
             icon={<MagnifyingGlassIcon className='h-5 w-5' />}
@@ -171,7 +171,7 @@ export default function DefaultSidebar() {
                     value={category.name}
                     size='sm'
                     variant='filled'
-                    className='rounded-full cursor-pointer hover:bg-gray-200 hover:text-black'
+                    className='rounded-full cursor-pointer hover:bg-gray-800'
                   />
                 </Link>
               ))}
@@ -194,7 +194,7 @@ export default function DefaultSidebar() {
                     value={tag.name}
                     size='sm'
                     variant='filled'
-                    className='rounded-full cursor-pointer hover:bg-gray-200 hover:text-black'
+                    className='rounded-full cursor-pointer hover:bg-gray-800'
                   />
                 </Link>
               ))}

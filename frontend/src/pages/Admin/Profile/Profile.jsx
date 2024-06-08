@@ -143,9 +143,6 @@ export default function Profile() {
       // Refresh token
       await refreshToken(response.body)
 
-      // Reload the page
-      window.location.reload()
-
       // Show a success toast
       toast.showSuccess(response.message)
     } catch (error) {

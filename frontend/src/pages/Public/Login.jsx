@@ -1,18 +1,14 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Button, IconButton, Input, Typography } from '@material-tailwind/react'
-import {
-  ArrowLongRightIcon,
-  EyeIcon,
-  EyeSlashIcon
-} from '@heroicons/react/24/outline'
+import { Button, Typography } from '@material-tailwind/react'
+import { ArrowLongRightIcon } from '@heroicons/react/24/outline'
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 import useAlertToast from '../../hooks/useToast.jsx'
 import authService from '../../services/authService.js'
 import DefaultNavbar from '../../components/Navbar/DefaultNavbar.jsx'
 import CustomLoginInput from '../../components/Inputs/CustomLoginInput.jsx'
 import CustomPasswordInput from '../../components/Inputs/CustomPasswordInput.jsx'
-
+import bgImage from '../../assets/img/bgLogin.jpg'
 export default function Login() {
   const { toast } = useAlertToast()
   const navigate = useNavigate()
@@ -76,13 +72,18 @@ export default function Login() {
   }
 
   return (
-    <div className='min-h-screen bg-gray-200 dark:bg-gray-900 flex flex-col justify-center sm:py-12'>
+    <div
+      className='min-h-screen bg-gray-200 dark:bg-gray-900 flex flex-col justify-center static'
+      style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: 'cover',
+        position: 'relative'
+      }}
+    >
+      <div className='absolute top-0 right-0 bottom-0 left-0 z-0 bg-black/25'></div>
       <DefaultNavbar />
-      <div className='p-10 xs:p-0 mx-auto md:w-full md:max-w-md'>
-        <Typography
-          variant='h2'
-          className='text-center mb-5 text-gray-800 dark:text-gray-200'
-        >
+      <div className='p-10 xs:p-0 mx-auto md:w-full md:max-w-md static z-10'>
+        <Typography variant='h2' className='text-center mb-5 text-gray-200'>
           Login
         </Typography>
         <form className='bg-white dark:bg-gray-800 shadow w-full rounded-lg'>
@@ -192,11 +193,11 @@ export default function Login() {
         </form>
         <div className='py-5'>
           <div className='grid grid-cols-2 gap-1'>
-            <div className='text-center sm:text-left whitespace-nowrap font-normal text-sm text-gray-500 dark:text-gray-300 mx-5'>
+            <div className='text-center sm:text-left whitespace-nowrap font-normal text-sm text-gray-100 mx-5'>
               <span className='inline-block'>Don't have an account?</span>
               <Link
                 to='/register'
-                className='font-bold ml-2 hover:text-gray-600 dark:hover:text-gray-400'
+                className='font-bold ml-2 hover:text-gray-400'
               >
                 Register
               </Link>

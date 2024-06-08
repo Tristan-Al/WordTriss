@@ -3,15 +3,16 @@ import DefaultNavbar from '../components/Navbar/DefaultNavbar'
 import DefaultSidebar from '../components/Sidebars/DefaultSidebar'
 import { Typography } from '@material-tailwind/react'
 import { DefaultFooter } from '../components/Footer/DefaultFooter'
+import bgImage from '../assets/img/bgBlog.jpg'
 
 export default function DefaultLayout({ children, title }) {
   return (
-    <div className='flex flex-col bg-gray-200 dark:bg-gray-900'>
+    <div className='bg-gray-200 dark:bg-gray-900'>
       <DefaultNavbar />
       <main className='mb-10'>
-        <div className='w-full h-96 relative'>
+        <div className='w-full h-[calc(100vh-60vh)] relative'>
           <img
-            src='https://source.unsplash.com/1600x900/?nature,water'
+            src={bgImage}
             alt='TemporalTrek'
             className='absolute inset-0 w-full h-full object-cover'
           />
@@ -22,8 +23,8 @@ export default function DefaultLayout({ children, title }) {
             </Typography>
           </div>
         </div>
-        <div className='flex container mx-auto p-2 -mt-16'>
-          <div className='w-full mr-2 z-40'>{children}</div>
+        <div className='flex flex-col lg:flex-row gap-4 lg:gap-2 container mx-auto -mt-16 pb-4 px-2 lg:px-0'>
+          <div className='w-full z-40'>{children}</div>
           <DefaultSidebar />
         </div>
       </main>

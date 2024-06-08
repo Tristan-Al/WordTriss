@@ -15,11 +15,11 @@ export default function BlogPostCard({ post }) {
   const preview = usePostThumbnailPreview(post.thumbnail)
 
   return (
-    <Card className='w-full flex-row dark:bg-gray-800'>
+    <Card className='w-full lg:flex-row dark:bg-gray-800'>
       <CardHeader
         shadow={false}
         floated={false}
-        className='m-0 w-2/5 h-96 shrink-0 rounded-r-none'
+        className='m-0 lg:w-2/5 h-96 shrink-0 rounded-b-none lg:rounded-bl-2xl lg:rounded-tr-none'
       >
         <img
           src={preview}
