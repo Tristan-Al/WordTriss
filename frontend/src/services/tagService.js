@@ -18,6 +18,7 @@ const tagService = {
       throw error
     }
   },
+
   getTagById: async (id) => {
     try {
       return await api.get(`tags/${id}`)

@@ -55,9 +55,18 @@ const commentService = {
     }
   },
 
+  changeStatus: async (commentId, status) => {
+    try {
+      return await api.put(`comments/${commentId}/status`, { status })
+    } catch (error) {
+      console.error('Error changing comment status', error.message)
+      throw error
+    }
+  },
+
   deleteComment: async (commentId) => {
     try {
-      await api.delete(`comments/${commentId}`)
+      return await api.delete(`comments/${commentId}`)
     } catch (error) {
       console.error('Error deleting comment', error.message)
       throw error

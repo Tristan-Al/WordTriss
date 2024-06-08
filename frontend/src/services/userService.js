@@ -49,6 +49,47 @@ const userService = {
     }
   },
 
+  createUser: async (user) => {
+    try {
+      // Check if any necessary field is empty
+      //Check if any necessary field is empty
+      if (!user.displayName || !user.username || !user.email) {
+        return {
+          ok: false,
+          message: 'Necessary fields are required'
+        }
+      }
+
+      // Check password and confirm password match
+      if (user.password) {
+        if (user.confirmPassword) {
+          if (user.password !== user.confirmPassword) {
+            return {
+              ok: false,
+              message: 'Passwords do not match'
+            }
+          }
+        } else {
+          return {
+            ok: false,
+            message: 'Confirm password is required'
+          }
+        }
+      } else {
+        return {
+          ok: false,
+          message: 'Password is required'
+        }
+      }
+
+      // Make the request to the api
+      return await api.post('users', user)
+    } catch (error) {
+      console.error('Error creating user:', error.message)
+      throw error
+    }
+  },
+
   updateUser: async (user, curUserId, curUserRoleName) => {
     try {
       // Check if the user is an admin or the user is not updating itself
@@ -97,6 +138,15 @@ const userService = {
       return await api.put(`users/${user.id}`, updateUser)
     } catch (error) {
       console.error('Error updating user:', error.message)
+      throw error
+    }
+  },
+
+  deleteUser: async (id) => {
+    try {
+      return await api.delete(`users/${id}`)
+    } catch (error) {
+      console.error('Error deleting user:', error.message)
       throw error
     }
   }
