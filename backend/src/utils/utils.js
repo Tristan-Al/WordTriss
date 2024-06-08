@@ -59,7 +59,8 @@ export const formatUser = (user) => {
     email: user.email,
     biography: user.biography,
     picture: user.picture,
-    roleId: user.role_id
+    roleId: user.role_id,
+    createdAt: user.created_at
   }
 }
 
