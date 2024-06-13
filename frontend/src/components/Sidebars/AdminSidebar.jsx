@@ -4,7 +4,6 @@ import {
   ChatBubbleBottomCenterTextIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  Cog6ToothIcon,
   ComputerDesktopIcon,
   DocumentTextIcon,
   GlobeAltIcon,
@@ -86,11 +85,11 @@ export default function AdminSidebar({ expanded, onClick }) {
               link={'/wt-content/profile'}
             />
             <hr className='my-3 border-gray-300 dark:border-gray-700' />
-            <SidebarItem
+            {/* <SidebarItem
               icon={<Cog6ToothIcon width={24} />}
               text={'Settings'}
               link={'/wt-content/settings'}
-            />
+            /> */}
             <SidebarItem
               icon={<ColorModeSwitcher />}
               text={'Theme'}

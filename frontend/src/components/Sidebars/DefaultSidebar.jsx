@@ -151,7 +151,7 @@ export default function DefaultSidebar() {
         <div className='mb-3'>
           <Input
             icon={<MagnifyingGlassIcon className='h-5 w-5' />}
-            className='dark:text-gray-100 '
+            className='dark:text-gray-100'
             label='Search'
           />
         </div>

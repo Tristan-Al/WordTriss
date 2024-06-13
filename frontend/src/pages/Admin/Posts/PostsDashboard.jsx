@@ -31,7 +31,7 @@ export default function PostsDashboard() {
   const [posts, setPosts] = useState([])
   const [url, setUrl] = useState({
     page: null,
-    order: null,
+    order: 'DESC',
     status: null,
     limit: null
   })

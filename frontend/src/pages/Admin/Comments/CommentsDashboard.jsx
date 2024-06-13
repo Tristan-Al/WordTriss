@@ -12,7 +12,8 @@ import {
   Tab,
   Typography,
   CardBody,
-  Spinner
+  Spinner,
+  CardFooter
 } from '@material-tailwind/react'
 import { Link } from 'react-router-dom'
 import {
@@ -21,6 +22,7 @@ import {
   PlusIcon
 } from '@heroicons/react/24/outline'
 import TableAdminComments from '../../../components/Tables/TableAdminComments'
+import DefaultPagination from '../../../components/Pagination/DefaultPagination'
 
 export default function CommentsDashboard() {
   const { toast } = useAlertToast()
@@ -30,7 +32,7 @@ export default function CommentsDashboard() {
 
   const [url, setUrl] = useState({
     page: null,
-    order: null,
+    order: 'DESC',
     limit: null
   })
 
@@ -226,6 +228,13 @@ export default function CommentsDashboard() {
           </tbody>
         </table>
       </CardBody>
+      <CardFooter className='flex items-center justify-between border-t border-blue-gray-50 p-4'>
+        {loading ? (
+          <Spinner size='sm' />
+        ) : (
+          <DefaultPagination {...pagination} url={url} setUrl={setUrl} />
+        )}
+      </CardFooter>
     </Card>
   )
 }

@@ -28,7 +28,7 @@ export default function UsersDashboard() {
   const [users, setUsers] = useState([])
   const [url, setUrl] = useState({
     page: null,
-    order: null,
+    order: 'DESC',
     limit: null
   })
 

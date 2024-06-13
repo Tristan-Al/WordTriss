@@ -22,17 +22,33 @@ export default function PostForm({
   const editorRef = useRef(null)
 
   return (
-    <form onSubmit={handleSubmit} className='flex items-start bg-gray-200'>
-      <Card className='w-full ml-2 my-2'>
+    <form
+      onSubmit={handleSubmit}
+      className='min-h-screen flex flex-col lg:flex-row gap-4 lg:gap-2 mx-auto px-2 lg:px-0 bg-gray-200 dark:bg-gray-900'
+    >
+      <Card className='w-full h-min ml-2 my-2 dark:bg-blue-gray-900'>
         <CardHeader
           floated={false}
           shadow={false}
-          className='m-0 p-3 rounded-b-none bg-gray-300 flex justify-between items-center'
+          className='m-0 p-3 rounded-b-none bg-gray-300 dark:bg-blue-gray-700 dark:text-gray-100 flex justify-between items-center'
         >
-          <Typography variant='h3'>{title}</Typography>
+          <div className='flex gap-2'>
+            <Typography variant='h3'>{title}</Typography>
+            {post.id && (
+              <Button
+                size='sm'
+                variant='text'
+                onClick={() => navigate(`/posts/${post.id}`)}
+                className='text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-300'
+              >
+                Preview
+              </Button>
+            )}
+          </div>
           <div className='flex gap-2'>
             <Button
               variant='outlined'
+              className='dark:text-gray-200 dark:border-gray-200'
               onClick={() => navigate('/wt-content/posts')}
             >
               Cancel
@@ -40,11 +56,11 @@ export default function PostForm({
             <Button onClick={handleSubmit}>Save</Button>
           </div>
         </CardHeader>
-        <CardBody className='container mx-auto h-auto bg-white flex flex-col gap-5'>
+        <CardBody className='container mx-auto h-auto flex flex-col gap-5'>
           <Input
             variant='static'
             placeholder='Title'
-            className='text-xl'
+            className='text-xl dark:text-gray-200'
             name='title'
             labelProps={{
               className: 'before:content-none after:content-none'

@@ -6,7 +6,6 @@ import {
   MagnifyingGlassIcon,
   PlusIcon
 } from '@heroicons/react/24/outline'
-import { Link } from 'react-router-dom'
 import {
   Button,
   Card,
@@ -109,7 +108,7 @@ export default function CategoriesDashboard() {
   const [categories, setCategories] = useState([])
   const [url, setUrl] = useState({
     page: null,
-    order: null,
+    order: 'DESC',
     limit: null
   })
   const [pagination, setPagination] = useState({})

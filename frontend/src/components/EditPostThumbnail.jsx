@@ -103,12 +103,20 @@ export default function EditPostThumbnail({ post, setPost }) {
   }
 
   return (
-    <Card className='w-full p-2 drop-shadow-sm'>
+    <Card className='w-full p-2 drop-shadow-sm bg-gray-200 dark:bg-blue-gray-800'>
       <div className='flex justify-between items-center pb-2 mb-2 border-b border-gray-300 '>
-        <Typography variant='h5' color='blue-gray' className=''>
+        <Typography
+          variant='h5'
+          color='blue-gray'
+          className='dark:text-gray-100'
+        >
           Thumbnail
         </Typography>
-        <IconButton variant='text' onClick={handleOpen}>
+        <IconButton
+          variant='text'
+          onClick={handleOpen}
+          className='dark:text-gray-200 dark:hover:bg-blue-gray-700'
+        >
           <PencilSquareIcon width={20} />
         </IconButton>
       </div>

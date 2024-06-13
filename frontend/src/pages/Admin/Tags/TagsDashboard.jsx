@@ -104,7 +104,7 @@ export default function TagsDashboard() {
   const [tags, setTags] = useState([])
   const [url, setUrl] = useState({
     page: null,
-    order: null,
+    order: 'DESC',
     limit: null
   })
 
