@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route } from 'react-router-dom'
 import DefaultLayout from '../layouts/DefaultLayout'
+import DefaultNoSidebarLayout from '../layouts/DefaultNoSidebarLayout'
 import Home from '../pages/Public/Home'
 import Login from '../pages/Public/Login'
 import Register from '../pages/Public/Register'
@@ -21,7 +22,12 @@ export default function PublicRoutes() {
 
       <Route path='/register' element={<Register />} />
 
-      <Route path='/contact' element={<Contact />} />
+      <Route
+        path='/contact'
+        element={
+          <DefaultNoSidebarLayout children={<Contact />} title='Contact' />
+        }
+      />
 
       <Route
         path='/blog'
