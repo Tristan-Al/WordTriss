@@ -8,7 +8,7 @@ import {
 
 export default function Contact() {
   return (
-    <div className='bg-white rounded-xl'>
+    <div className='bg-white dark:bg-gray-800 rounded-xl'>
       <section className='px-8 py-8 lg:py-16'>
         <div className='container mx-auto text-center'>
           <Typography
@@ -148,7 +148,7 @@ export default function Contact() {
               >
                 Get in Touch
               </Typography>
-              <Typography className='mb-10 font-normal !text-lg mx-auto max-w-3xl !text-gray-500'>
+              <Typography className='mb-10 font-normal !text-lg mx-auto max-w-3xl text-gray-500 dark:text-gray-400'>
                 You need more information? Check what other persons are saying
                 about our product. They are very happy to help you.
               </Typography>
