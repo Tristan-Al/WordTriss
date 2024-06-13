@@ -19,6 +19,8 @@ dist/
 
 # Testing
 /coverage
+/src/uploads/avatars/*
+/src/uploads/posts/*
 
 # Production
 /build
