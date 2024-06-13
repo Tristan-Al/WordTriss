@@ -2,7 +2,7 @@
 
 # Stage 1: Build the React app with Vite
 # Use a Node.js image as the base
-FROM node:21-alpine
+FROM node:21-alpine as build
 
 # Set the working directory
 WORKDIR /app
